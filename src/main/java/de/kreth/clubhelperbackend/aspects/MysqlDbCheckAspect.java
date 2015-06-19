@@ -10,6 +10,8 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
@@ -17,6 +19,7 @@ import de.kreth.clubhelperbackend.DatabaseConfiguration;
 import de.kreth.dbmanager.Database;
 import de.kreth.dbmanager.DbValue;
 
+@Aspect
 public class MysqlDbCheckAspect implements Database {
 
 	private Connection con;
@@ -30,6 +33,7 @@ public class MysqlDbCheckAspect implements Database {
 		}
 	}
 	
+	@Before("execution (* de.kreth.clubhelperbackend.dao.*.*(..))")
 	public synchronized void checkDb() {
 		if(isChecked)
 			return;

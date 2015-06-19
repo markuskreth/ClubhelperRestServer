@@ -19,12 +19,6 @@ public class Person implements java.io.Serializable {
     /** Not-null value. */
     private java.util.Date created;
 
-    /** Used to resolve relations */
-
-    /** Used for active entity operations. */
-
-
-
     public Person() {
     }
 

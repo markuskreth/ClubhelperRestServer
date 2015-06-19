@@ -29,7 +29,7 @@
 	</bean>
 	
 	<bean id="personDao"
-		class="de.kreth.clubhelperbackend.PersonDao">
+		class="de.kreth.clubhelperbackend.dao.PersonDao">
 		<property name="sqlDialect" ref="sqlForDialect" />
 		<property name="jdbcTemplate" ref="jdbcTemplate" />
 	</bean>
@@ -38,11 +38,18 @@
 		<constructor-arg ref="dataSource" />
 	</bean> 
 	
-	<aop:config>
-		<aop:aspect ref="dbcheckAspect">
-			<aop:before
-				pointcut="execution (* de.kreth.clubhelperbackend.PersonDao.*(..))" 
-				method="checkDb"/>
-		</aop:aspect>
-	</aop:config>
+<!-- 	<bean id="logger" class="de.kreth.clubhelperbackend.aspects.LoggerAspect" /> -->
+	
+	<aop:aspectj-autoproxy>
+        <aop:include name="dbcheckAspect"/>
+<!--         <aop:include name="logger"/> -->
+    </aop:aspectj-autoproxy>
+    
+<!-- 	<aop:config> -->
+<!-- 		<aop:aspect ref="dbcheckAspect"> -->
+<!-- 			<aop:before -->
+<!-- 				pointcut="execution (* de.kreth.clubhelperbackend.PersonDao.*(..))"  -->
+<!-- 				method="checkDb"/> -->
+<!-- 		</aop:aspect> -->
+<!-- 	</aop:config> -->
 </beans>

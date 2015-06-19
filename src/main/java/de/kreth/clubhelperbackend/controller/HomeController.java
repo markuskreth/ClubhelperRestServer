@@ -1,5 +1,6 @@
-package de.kreth.clubhelperbackend;
+package de.kreth.clubhelperbackend.controller;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -33,6 +34,8 @@ public class HomeController {
 		
 		model.addAttribute("serverTime", formattedDate );
 		
+		String dir = new File(".").getAbsolutePath();
+		model.addAttribute("directory", dir);
 		return "home";
 	}
 	
