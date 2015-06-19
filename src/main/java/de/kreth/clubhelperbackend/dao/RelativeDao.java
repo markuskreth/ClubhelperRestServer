@@ -1,13 +1,11 @@
 package de.kreth.clubhelperbackend.dao;
 
-import java.util.Date;
 import java.util.List;
 
 import de.kreth.clubhelperbackend.pojo.Relative;
 
-public class RelativeDao extends AbstractDao implements Dao<Relative> {
+public class RelativeDao extends AbstractDao<Relative> implements Dao<Relative> {
 
-//	private static final String relativeAllFields[] 	= {"_id", "prename", "surname", "type", "birth", "changed", "created"};
 	private static final String relativeFields[] 		= {"person1", "person2", "TO_PERSON1_RELATION", "TO_PERSON2_RELATION", "changed", "created"};
 	private static final String relativeValues[] 		= {"person1", "person2", "TO_PERSON1_RELATION", "TO_PERSON2_RELATION", "changed"};
 	private static final String SQL_INSERT = "insert into relative (" + String.join(", ", relativeFields) + ") values (?,?,?,?,?,?)";
@@ -15,51 +13,57 @@ public class RelativeDao extends AbstractDao implements Dao<Relative> {
 	private static final String SQL_DELETE = "delete from relative where _id=?";
 	private static final String SQL_QUERY_BY_ID = "select " + relativeFields + " from relative where id=?";
 	private static final String SQL_QUERY_ALL = "select * from relative";
-	
+
+	public RelativeDao() {
+		super(Relative.class);
+	}
+
 	@Override
 	public Relative getById(long id) {
-		return getJdbcTemplate().queryForObject(SQL_QUERY_BY_ID, Relative.class, id);
+		return super.getById(SQL_QUERY_BY_ID, id);
 	}
 
 	@Override
 	public List<Relative> getAll() {
-		return getJdbcTemplate().queryForList(SQL_QUERY_ALL, Relative.class);
+		return super.getAll(SQL_QUERY_ALL);
 	}
 
 	@Override
 	public Relative insert(Relative obj) {
-		Date now = new Date();
-		obj = new Relative(null, obj.getPerson1(), obj.getPerson2(), obj.getToPerson1Relation(), obj.getToPerson2Relation(), now, now);
-		int inserted = getJdbcTemplate().update(SQL_INSERT, 
-				obj.getPerson1(),
-				obj.getPerson2(),
-				obj.getToPerson1Relation(),
-				obj.getToPerson2Relation(),
-				obj.getChanged(),
-				obj.getCreated());
-
-		if(inserted == 1) {
-			obj.setId(sqlDialect.queryForIdentity());
-		} else
-			obj = null;
-		return obj;
+		return super.insert(obj, SQL_INSERT);
 	}
 
 	@Override
 	public boolean update(Relative obj) {
-		int update = getJdbcTemplate().update(SQL_UPDATE, 
-				obj.getPerson1(),
-				obj.getPerson2(),
-				obj.getToPerson1Relation(),
-				obj.getToPerson2Relation(),
-				obj.getChanged());
-		return update==1;
+		return super.update(obj, SQL_UPDATE);
 	}
 
 	@Override
 	public boolean delete(Relative obj) {
-		int update = getJdbcTemplate().update(SQL_DELETE, obj.getId());
-		return update == 1;
+		return super.delete(obj, SQL_DELETE);
+	}
+
+	@Override
+	protected Object[] getInsertValues(Relative obj) {
+		Object[] values = new Object[6];
+		values[0] = obj.getPerson1();
+		values[1] = obj.getPerson2();
+		values[2] = obj.getToPerson1Relation();
+		values[3] = obj.getToPerson2Relation();
+		values[4] = obj.getChanged();
+		values[5] = obj.getCreated();
+		return values;
+	}
+
+	@Override
+	protected Object[] getUpdateValues(Relative obj) {
+		Object[] values = new Object[5];
+		values[0] = obj.getPerson1();
+		values[1] = obj.getPerson2();
+		values[2] = obj.getToPerson1Relation();
+		values[3] = obj.getToPerson2Relation();
+		values[4] = obj.getChanged();
+		return values;
 	}
 
 }

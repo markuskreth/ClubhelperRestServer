@@ -2,7 +2,9 @@ package de.kreth.clubhelperbackend.dao;
 
 import java.util.List;
 
-public interface Dao<T> {
+import de.kreth.clubhelperbackend.pojo.Data;
+
+public interface Dao<T extends Data> {
 
 	/**
 	 * Liefert das Objekt zur übergebenen ID
@@ -18,7 +20,8 @@ public interface Dao<T> {
 	public abstract List<T> getAll();
 	
 	/**
-	 * Erstellt ein neues Objekt in der Datenbank. Created und Changed wird neu gesetzt, Id wird im rückgabetyp gesetzt.
+	 * Erstellt ein neues Objekt in der Datenbank. Id wird im rückgabeobjekt gesetzt.
+	 * <br /> changed und created müssen vor aufruf gesetzt sein!
 	 * @param obj	Daten des zu zu erstellenden Datenbankeintrags
 	 * @return	Aktualisiertes Objekt oder null, wenn update fehlgeschlagen.
 	 */

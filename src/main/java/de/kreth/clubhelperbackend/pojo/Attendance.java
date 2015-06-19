@@ -4,7 +4,7 @@ package de.kreth.clubhelperbackend.pojo;
 /**
  * Entity mapped to table ATTENDANCE.
  */
-public class Attendance {
+public class Attendance implements Data {
 
     private Long id;
     private java.util.Date onDate;

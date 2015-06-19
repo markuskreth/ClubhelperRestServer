@@ -4,7 +4,7 @@ package de.kreth.clubhelperbackend.pojo;
 /**
  * Entity mapped to table RELATIVE.
  */
-public class Relative {
+public class Relative implements Data {
 
     private Long id;
     private long person1;

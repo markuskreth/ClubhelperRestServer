@@ -1,13 +1,16 @@
 package de.kreth.clubhelperbackend.dao;
 
-import java.util.Date;
 import java.util.List;
 
 import de.kreth.clubhelperbackend.pojo.Attendance;
 
-public class AttendanceDao extends AbstractDao implements Dao<Attendance> {
+public class AttendanceDao extends AbstractDao<Attendance> implements Dao<Attendance> {
 
-//	private static final String attendanceAllFields[] 	= {"_id", "prename", "surname", "type", "birth", "changed", "created"};
+public AttendanceDao() {
+		super(Attendance.class);
+	}
+
+	//	private static final String attendanceAllFields[] 	= {"_id", "prename", "surname", "type", "birth", "changed", "created"};
 	private static final String attendanceFields[] 		= {"on_date", "person_id", "changed", "created"};
 	private static final String attendanceValues[] 		= {"on_date", "person_id", "changed"};
 	private static final String SQL_INSERT = "insert into attendance (" + String.join(", ", attendanceFields) + ") values (?,?,?,?)";
@@ -18,44 +21,46 @@ public class AttendanceDao extends AbstractDao implements Dao<Attendance> {
 	
 	@Override
 	public Attendance getById(long id) {
-		return getJdbcTemplate().queryForObject(SQL_QUERY_BY_ID, Attendance.class, id);
+		return super.getById(SQL_QUERY_BY_ID, id);
 	}
 
 	@Override
 	public List<Attendance> getAll() {
-		return getJdbcTemplate().queryForList(SQL_QUERY_ALL, Attendance.class);
+		return super.getAll(SQL_QUERY_ALL);
 	}
 
 	@Override
 	public Attendance insert(Attendance obj) {
-		Date now = new Date();
-		obj = new Attendance(null, obj.getOnDate(), obj.getPersonId(), now, now);
-		int inserted = getJdbcTemplate().update(SQL_INSERT, 
-				obj.getOnDate(),
-				obj.getPersonId(),
-				obj.getChanged(),
-				obj.getCreated());
-
-		if(inserted == 1) {
-			obj.setId(sqlDialect.queryForIdentity());
-		} else
-			obj = null;
-		return obj;
+		return super.insert(obj, SQL_INSERT);
 	}
 
 	@Override
 	public boolean update(Attendance obj) {
-		int update = getJdbcTemplate().update(SQL_UPDATE,  
-				obj.getOnDate(),
-				obj.getPersonId(),
-				obj.getChanged());
-		return update==1;
+		return super.update(obj, SQL_UPDATE);
 	}
 
 	@Override
 	public boolean delete(Attendance obj) {
-		int update = getJdbcTemplate().update(SQL_DELETE, obj.getId());
-		return update == 1;
+		return super.delete(obj, SQL_DELETE);
+	}
+
+	@Override
+	protected Object[] getInsertValues(Attendance obj) {
+		Object[] values = new Object[4];
+		values[0] = obj.getOnDate();
+		values[1] = obj.getPersonId();
+		values[2] = obj.getChanged();
+		values[3] = obj.getCreated();
+		return values;
+	}
+
+	@Override
+	protected Object[] getUpdateValues(Attendance obj) {
+		Object[] values = new Object[3];
+		values[0] = obj.getOnDate();
+		values[1] = obj.getPersonId();
+		values[2] = obj.getChanged();
+		return values;
 	}
 
 }

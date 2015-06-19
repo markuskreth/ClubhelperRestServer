@@ -5,15 +5,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import de.kreth.clubhelperbackend.dao.Dao;
-import de.kreth.clubhelperbackend.pojo.Person;
+import de.kreth.clubhelperbackend.pojo.Contact;
 
 @Controller
-@RequestMapping("/person")
-public class PersonController extends AbstractController<Person>{
+@RequestMapping("/contact")
+public class ContactController extends AbstractController<Contact> {
 
 	@Autowired
-	public PersonController(Dao<Person> dao) {
-		super(dao, Person.class);
+	public ContactController(Dao<Contact> dao) {
+		super(dao, Contact.class);
 	}
-    
+
 }
