@@ -16,7 +16,7 @@ public class MockDao<T extends Data> implements Dao<T> {
 	public Map<Long, T> byId = new HashMap<Long, T>();
 	public List<T> inserted = new ArrayList<T>();
 	public List<T> updated = new ArrayList<T>();
-	public List<T> deleted = new ArrayList<T>();
+	public List<Long> deleted = new ArrayList<Long>();
 	public Long lastInsertId = 0L;
 	
 	@Override
@@ -45,7 +45,13 @@ public class MockDao<T extends Data> implements Dao<T> {
 
 	@Override
 	public boolean delete(T obj) {
-		deleted.add(obj);
+		deleted.add(obj.getId());
+		return true;
+	}
+
+	@Override
+	public boolean delete(long id) {
+		deleted.add(id);
 		return true;
 	}
 

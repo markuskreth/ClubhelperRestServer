@@ -40,5 +40,13 @@ public interface Dao<T extends Data> {
 	 * @param obj	Objekt, das gelöscht werden soll.
 	 * @return	true, wenn löschen erfolgreich.
 	 */
-	public boolean delete(T obj);
+	public abstract boolean delete(T obj);
+
+	/**
+	 * 
+	 * Löscht einen Datenbankeintrag über die Id des Objekts
+	 * @param id	id des Objekts, das gelöscht werden soll.
+	 * @return	true, wenn löschen erfolgreich.
+	 */
+	public abstract boolean delete(long id);
 }

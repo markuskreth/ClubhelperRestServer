@@ -1,16 +1,14 @@
 package de.kreth.clubhelperbackend.dao;
 
-import java.util.List;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.springframework.jdbc.core.RowMapper;
 
 import de.kreth.clubhelperbackend.pojo.Attendance;
 
 public class AttendanceDao extends AbstractDao<Attendance> implements Dao<Attendance> {
 
-public AttendanceDao() {
-		super(Attendance.class);
-	}
-
-	//	private static final String attendanceAllFields[] 	= {"_id", "prename", "surname", "type", "birth", "changed", "created"};
 	private static final String attendanceFields[] 		= {"on_date", "person_id", "changed", "created"};
 	private static final String attendanceValues[] 		= {"on_date", "person_id", "changed"};
 	private static final String SQL_INSERT = "insert into attendance (" + String.join(", ", attendanceFields) + ") values (?,?,?,?)";
@@ -18,30 +16,9 @@ public AttendanceDao() {
 	private static final String SQL_DELETE = "delete from attendance where _id=?";
 	private static final String SQL_QUERY_BY_ID = "select " + attendanceFields + " from attendance where id=?";
 	private static final String SQL_QUERY_ALL = "select * from attendance";
-	
-	@Override
-	public Attendance getById(long id) {
-		return super.getById(SQL_QUERY_BY_ID, id);
-	}
 
-	@Override
-	public List<Attendance> getAll() {
-		return super.getAll(SQL_QUERY_ALL);
-	}
-
-	@Override
-	public Attendance insert(Attendance obj) {
-		return super.insert(obj, SQL_INSERT);
-	}
-
-	@Override
-	public boolean update(Attendance obj) {
-		return super.update(obj, SQL_UPDATE);
-	}
-
-	@Override
-	public boolean delete(Attendance obj) {
-		return super.delete(obj, SQL_DELETE);
+	public AttendanceDao() {
+		super(Attendance.class, SQL_QUERY_BY_ID, SQL_INSERT, SQL_UPDATE, SQL_DELETE, SQL_QUERY_ALL);
 	}
 
 	@Override
@@ -56,11 +33,25 @@ public AttendanceDao() {
 
 	@Override
 	protected Object[] getUpdateValues(Attendance obj) {
-		Object[] values = new Object[3];
+		Object[] values = new Object[4];
 		values[0] = obj.getOnDate();
 		values[1] = obj.getPersonId();
 		values[2] = obj.getChanged();
+		values[3] = obj.getId();
 		return values;
 	}
 
+	@Override
+	protected RowMapper<Attendance> getRowMapper() {
+		return rowMapper;
+	}
+
+	private RowMapper<Attendance> rowMapper = new RowMapper<Attendance>() {
+//		{"on_date", "person_id", "changed", "created"};
+		@Override
+		public Attendance mapRow(ResultSet rs, int rowNr) throws SQLException {
+			Attendance a = new Attendance(rs.getLong("_id"), rs.getDate("on_date"), rs.getLong("person_id"), rs.getDate("changed"), rs.getDate("created"));
+			return a;
+		}
+	};
 }

@@ -1,7 +1,9 @@
 package de.kreth.clubhelperbackend.dao;
 
-import java.util.List;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import de.kreth.clubhelperbackend.pojo.Person;
@@ -9,67 +11,22 @@ import de.kreth.clubhelperbackend.pojo.Person;
 @Component
 public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 
-	public PersonDao() {
-		super(Person.class);
-	}
-
-	// private static final String personAllFields[] = {"_id", "prename",
-	// "surname", "type", "birth", "changed", "created"};
 	private static final String personFields[] = { "prename", "surname",
 			"type", "birth", "changed", "created" };
 	private static final String personValues[] = { "prename", "surname",
 			"type", "birth", "changed" };
-	private static final String SQL_INSERT_PERSON = "insert into person ("
+	private static final String SQL_INSERT = "insert into person ("
 			+ String.join(", ", personFields) + ") values (?,?,?,?,?,?)";
-	private static final String SQL_UPDATE_PERSON = "update person set "
+	private static final String SQL_UPDATE = "update person set "
 			+ String.join("=?, ", personValues) + "=? WHERE _id=?";
-	private static final String SQL_DELETE_PERSON = "delete from person where _id=?";
-	private static final String SQL_QUERY_PERSON_BY_ID = "select "
-			+ personFields + " from person where id=?";
-	private static final String SQL_QUERY_ALL_PERSON = "select * from person";
+	private static final String SQL_DELETE = "delete from person where _id=?";
+	private static final String SQL_QUERY_ALL = "select * from person";
+	private static final String SQL_QUERY_BY_ID = SQL_QUERY_ALL + " where _id=?";
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.kreth.clubhelperbackend.IPersonDao#getById(long)
-	 */
-	@Override
-	public Person getById(long id) {
-		return super.getById(SQL_QUERY_PERSON_BY_ID, id);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.kreth.clubhelperbackend.Dao#insert(de.kreth.clubhelperbackend.pojo
-	 * .Person)
-	 */
-	@Override
-	public Person insert(Person p) {
-		return super.insert(p, SQL_INSERT_PERSON);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.kreth.clubhelperbackend.Dao#update(de.kreth.clubhelperbackend.pojo
-	 * .Person)
-	 */
-	@Override
-	public boolean update(Person p) {
-		return super.update(p, SQL_UPDATE_PERSON);
-	}
-
-	@Override
-	public boolean delete(Person obj) {
-		return super.delete(obj, SQL_DELETE_PERSON);
-	}
-
-	@Override
-	public List<Person> getAll() {
-		return super.getAll(SQL_QUERY_ALL_PERSON);
+	private final PersonRowMapper rowMapper = new PersonRowMapper();
+	
+	public PersonDao() {
+		super(Person.class, SQL_QUERY_BY_ID, SQL_INSERT, SQL_UPDATE, SQL_DELETE, SQL_QUERY_ALL);
 	}
 
 	@Override
@@ -86,13 +43,27 @@ public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 
 	@Override
 	protected Object[] getUpdateValues(Person p) {
-		Object[] values = new Object[5];
+		Object[] values = new Object[6];
 		values[0] = p.getPrename();
 		values[1] = p.getSurname();
 		values[2] = p.getType();
 		values[3] = p.getBirth();
 		values[4] = p.getChanged();
+		values[5] = p.getId();
 		return values;
 	}
 
+	@Override
+	protected RowMapper<Person> getRowMapper() {
+		return rowMapper;
+	}
+
+	private class PersonRowMapper implements RowMapper<Person> {
+		@Override
+		public Person mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Person p = new Person(rs.getLong("_id"), rs.getString("prename"), rs.getString("surname"), rs.getString("type"), rs.getDate("birth"), rs.getDate("changed"), rs.getDate("created"));
+			return p;
+		}
+	}
+	
 }

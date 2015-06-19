@@ -1,10 +1,13 @@
 package de.kreth.clubhelperbackend.dao;
 
-import java.util.List;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.springframework.jdbc.core.RowMapper;
 
 import de.kreth.clubhelperbackend.pojo.Adress;
 
-public class AdressDao extends AbstractDao<Adress> implements Dao<Adress>{
+public class AdressDao extends AbstractDao<Adress> {
 
 	private static final String adressFields[] 		= {"adress1", "adress2", "plz", "city", "person_id", "changed", "created"};
 	private static final String adressValues[] 		= {"adress1", "adress2", "plz", "city", "person_id", "changed"};
@@ -15,32 +18,7 @@ public class AdressDao extends AbstractDao<Adress> implements Dao<Adress>{
 	private static final String SQL_QUERY_ALL = "select * from adress";
 	
 	public AdressDao() {
-		super(Adress.class);
-	}
-
-	@Override
-	public Adress getById(long id) {
-		return super.getById(SQL_QUERY_BY_ID, id);
-	}
-
-	@Override
-	public List<Adress> getAll() {
-		return super.getAll(SQL_QUERY_ALL);
-	}
-
-	@Override
-	public Adress insert(Adress obj) {
-		return insert(obj, SQL_INSERT);
-	}
-
-	@Override
-	public boolean update(Adress obj) {
-		return super.update(obj, SQL_UPDATE);
-	}
-
-	@Override
-	public boolean delete(Adress obj) {
-		return super.delete(obj, SQL_DELETE);
+		super(Adress.class, SQL_QUERY_BY_ID, SQL_INSERT, SQL_UPDATE, SQL_DELETE, SQL_QUERY_ALL);
 	}
 
 	@Override
@@ -58,14 +36,28 @@ public class AdressDao extends AbstractDao<Adress> implements Dao<Adress>{
 
 	@Override
 	protected Object[] getUpdateValues(Adress obj) {
-		Object[] values = new Object[6];
+		Object[] values = new Object[7];
 		values[0] = obj.getAdress1();
 		values[1] = obj.getAdress2();
 		values[2] = obj.getPlz();
 		values[3] = obj.getCity();
 		values[4] = obj.getPersonId();
 		values[5] = obj.getChanged();
+		values[6] = obj.getId();
 		return values;
 	}
 
+	@Override
+	protected RowMapper<Adress> getRowMapper() {
+		return rowMapper;
+	}
+
+	private final RowMapper<Adress> rowMapper = new RowMapper<Adress>() {
+ 
+		@Override
+		public Adress mapRow(ResultSet rs, int rowNr) throws SQLException {
+			Adress a = new Adress(rs.getLong("_id"), rs.getString("adress1"), rs.getString("adress2"), rs.getString("plz"), rs.getString("city"), rs.getLong("person_id"), rs.getDate("changed"), rs.getDate("created"));
+			return a;
+		}
+	}; 
 }

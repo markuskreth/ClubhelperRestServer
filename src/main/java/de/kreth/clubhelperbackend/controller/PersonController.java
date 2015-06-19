@@ -15,5 +15,5 @@ public class PersonController extends AbstractController<Person>{
 	public PersonController(Dao<Person> dao) {
 		super(dao, Person.class);
 	}
-    
+
 }

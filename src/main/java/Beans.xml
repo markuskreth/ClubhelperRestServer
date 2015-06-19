@@ -2,54 +2,46 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
            http://www.springframework.org/schema/beans/spring-beans.xsd
            http://www.springframework.org/schema/context
            http://www.springframework.org/schema/context/spring-context.xsd
            http://www.springframework.org/schema/aop
            http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
-           
-    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost/clubhelperbackend"/>
-        <property name="username" value="markus"/>
-        <property name="password" value="0773"/>
-    </bean>
 
-	<bean id="jdbcTemplate"
-		class="org.springframework.jdbc.core.JdbcTemplate">
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost/clubhelperbackend" />
+		<property name="username" value="markus" />
+		<property name="password" value="0773" />
+	</bean>
+
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
 		<constructor-arg ref="dataSource" />
 	</bean>
-	
-	<bean id="sqlForDialect"
-		class="de.kreth.clubhelperbackend.SqlForMysql">
+
+	<bean id="sqlForDialect" class="de.kreth.clubhelperbackend.SqlForMysql">
 		<constructor-arg ref="jdbcTemplate" />
 	</bean>
-	
-	<bean id="personDao"
-		class="de.kreth.clubhelperbackend.dao.PersonDao">
+
+	<bean id="personDao" class="de.kreth.clubhelperbackend.dao.PersonDao">
 		<property name="sqlDialect" ref="sqlForDialect" />
 		<property name="jdbcTemplate" ref="jdbcTemplate" />
 	</bean>
-	
-	<bean id="dbcheckAspect" class="de.kreth.clubhelperbackend.aspects.MysqlDbCheckAspect">	
+
+	<bean id="dbcheckAspect" class="de.kreth.clubhelperbackend.aspects.MysqlDbCheckAspect">
 		<constructor-arg ref="dataSource" />
-	</bean> 
-	
-<!-- 	<bean id="logger" class="de.kreth.clubhelperbackend.aspects.LoggerAspect" /> -->
-	
+	</bean>
+
+	<!-- <bean id="logger" class="de.kreth.clubhelperbackend.aspects.LoggerAspect" 
+		/> -->
+
 	<aop:aspectj-autoproxy>
-        <aop:include name="dbcheckAspect"/>
-<!--         <aop:include name="logger"/> -->
-    </aop:aspectj-autoproxy>
-    
-<!-- 	<aop:config> -->
-<!-- 		<aop:aspect ref="dbcheckAspect"> -->
-<!-- 			<aop:before -->
-<!-- 				pointcut="execution (* de.kreth.clubhelperbackend.PersonDao.*(..))"  -->
-<!-- 				method="checkDb"/> -->
-<!-- 		</aop:aspect> -->
-<!-- 	</aop:config> -->
+		<aop:include name="dbcheckAspect" />
+		<!-- <aop:include name="logger"/> -->
+	</aop:aspectj-autoproxy>
+
 </beans>
