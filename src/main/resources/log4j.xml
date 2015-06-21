@@ -21,7 +21,7 @@
   
 	<!-- Application Loggers -->
 	<logger name="de.kreth.clubhelperbackend">
-		<level value="info" />
+		<level value="all" />
 	</logger>
 	
 	<!-- 3rdparty Loggers -->

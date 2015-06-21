@@ -112,20 +112,17 @@ public class MysqlDbCheckAspect implements Database {
 	@Override
 	public long insert(String table, List<DbValue> values)
 			throws SQLException {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public boolean needUpgrade(int newVersion) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public Iterator<Collection<DbValue>> query(String table,
 			String[] columns) throws SQLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -154,7 +151,6 @@ public class MysqlDbCheckAspect implements Database {
 			try {
 				con.setAutoCommit(autoCommit);
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -164,7 +160,6 @@ public class MysqlDbCheckAspect implements Database {
 	@Override
 	public int delete(String table, String whereClause, String[] whereArgs)
 			throws SQLException {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 	

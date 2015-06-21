@@ -36,12 +36,11 @@
 		<constructor-arg ref="dataSource" />
 	</bean>
 
-	<!-- <bean id="logger" class="de.kreth.clubhelperbackend.aspects.LoggerAspect" 
-		/> -->
+<!-- 	<bean id="logger" class="de.kreth.clubhelperbackend.aspects.LoggerAspect" /> -->
 
 	<aop:aspectj-autoproxy>
 		<aop:include name="dbcheckAspect" />
-		<!-- <aop:include name="logger"/> -->
+<!-- 		<aop:include name="logger"/> -->
 	</aop:aspectj-autoproxy>
 
 </beans>
