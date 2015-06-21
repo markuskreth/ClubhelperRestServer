@@ -34,25 +34,24 @@ public class RelativeDao extends AbstractDao<Relative> implements Dao<Relative> 
 	}
 
 	@Override
-	protected Object[] getUpdateValues(Relative obj) {
+	protected Object[] getUpdateValues(long id, Relative obj) {
 		Object[] values = new Object[6];
 		values[0] = obj.getPerson1();
 		values[1] = obj.getPerson2();
 		values[2] = obj.getToPerson1Relation();
 		values[3] = obj.getToPerson2Relation();
 		values[4] = obj.getChanged();
-		values[5] = obj.getId();
+		values[5] = id;
 		return values;
 	}
 
 	@Override
 	protected RowMapper<Relative> getRowMapper() {
-		// TODO Auto-generated method stub
 		return rowMapper;
 	}
 
 	private final RowMapper<Relative> rowMapper = new RowMapper<Relative>() {
-//		private static final String relativeFields[] 		= {"person1", "person2", "TO_PERSON1_RELATION", "TO_PERSON2_RELATION", "changed", "created"};
+		
 		@Override
 		public Relative mapRow(ResultSet rs, int rowNo) throws SQLException {
 			Relative r = new Relative(

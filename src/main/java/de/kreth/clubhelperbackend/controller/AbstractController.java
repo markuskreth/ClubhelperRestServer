@@ -124,7 +124,7 @@ public class AbstractController<T extends Data> implements ClubController<T> {
 	@RequestMapping(value="/{id}", method=RequestMethod.PUT)
 	public void updateObject(@PathVariable("id") long id, @RequestBody T toUpdate, Model m) {
 		toUpdate.setChanged(new Date());
-		dao.update(toUpdate);
+		dao.update(id, toUpdate);
 		logger.debug("PUT " + getClass().getSimpleName() + "." + id + ": " + toUpdate);
 		m.addAttribute(toUpdate);
 	}

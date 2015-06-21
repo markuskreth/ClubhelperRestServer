@@ -42,14 +42,14 @@ public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 	}
 
 	@Override
-	protected Object[] getUpdateValues(Person p) {
+	protected Object[] getUpdateValues(long id, Person p) {
 		Object[] values = new Object[6];
 		values[0] = p.getPrename();
 		values[1] = p.getSurname();
 		values[2] = p.getType();
 		values[3] = p.getBirth();
 		values[4] = p.getChanged();
-		values[5] = p.getId();
+		values[5] = id;
 		return values;
 	}
 

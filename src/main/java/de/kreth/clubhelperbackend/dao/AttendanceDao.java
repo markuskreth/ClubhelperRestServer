@@ -32,15 +32,15 @@ public class AttendanceDao extends AbstractDao<Attendance> implements Dao<Attend
 	}
 
 	@Override
-	protected Object[] getUpdateValues(Attendance obj) {
+	protected Object[] getUpdateValues(long id, Attendance obj) {
 		Object[] values = new Object[4];
 		values[0] = obj.getOnDate();
 		values[1] = obj.getPersonId();
 		values[2] = obj.getChanged();
-		values[3] = obj.getId();
+		values[3] = id;
 		return values;
 	}
-
+	
 	@Override
 	protected RowMapper<Attendance> getRowMapper() {
 		return rowMapper;
@@ -54,4 +54,5 @@ public class AttendanceDao extends AbstractDao<Attendance> implements Dao<Attend
 			return a;
 		}
 	};
+
 }

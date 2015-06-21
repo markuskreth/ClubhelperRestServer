@@ -35,7 +35,7 @@ public class AdressDao extends AbstractDao<Adress> {
 	}
 
 	@Override
-	protected Object[] getUpdateValues(Adress obj) {
+	protected Object[] getUpdateValues(long id, Adress obj) {
 		Object[] values = new Object[7];
 		values[0] = obj.getAdress1();
 		values[1] = obj.getAdress2();
@@ -43,10 +43,10 @@ public class AdressDao extends AbstractDao<Adress> {
 		values[3] = obj.getCity();
 		values[4] = obj.getPersonId();
 		values[5] = obj.getChanged();
-		values[6] = obj.getId();
+		values[6] = id;
 		return values;
 	}
-
+	
 	@Override
 	protected RowMapper<Adress> getRowMapper() {
 		return rowMapper;
@@ -59,5 +59,6 @@ public class AdressDao extends AbstractDao<Adress> {
 			Adress a = new Adress(rs.getLong("_id"), rs.getString("adress1"), rs.getString("adress2"), rs.getString("plz"), rs.getString("city"), rs.getLong("person_id"), rs.getDate("changed"), rs.getDate("created"));
 			return a;
 		}
-	}; 
+	};
+
 }

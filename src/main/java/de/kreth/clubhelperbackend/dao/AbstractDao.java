@@ -61,6 +61,11 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		return inserted == 1;
 	}
 
+	public boolean update(long id, T obj) {
+		int inserted = getJdbcTemplate().update(SQL_UPDATE, getUpdateValues(id, obj));
+		return inserted == 1;
+	}
+
 	public boolean delete(T obj) {
 		return delete(obj.getId());
 	}
@@ -77,6 +82,11 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 	
 	protected abstract RowMapper<T> getRowMapper();
 	protected abstract Object[] getInsertValues(T obj);
-	protected abstract Object[] getUpdateValues(T obj);
+	
+	protected final Object[] getUpdateValues(T obj) {
+		return getUpdateValues(obj.getId(), obj);
+	}
+	
+	protected abstract Object[] getUpdateValues(long id, T obj);
 
 }

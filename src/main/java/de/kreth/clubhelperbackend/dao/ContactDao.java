@@ -33,13 +33,13 @@ public class ContactDao  extends AbstractDao<Contact> implements Dao<Contact> {
 	}
 
 	@Override
-	protected Object[] getUpdateValues(Contact obj) {
+	protected Object[] getUpdateValues(long id, Contact obj) {
 		Object[] values = new Object[5];
 		values[0] = obj.getType();
 		values[1] = obj.getValue();
 		values[2] = obj.getPersonId();
 		values[3] = obj.getChanged();
-		values[4] = obj.getId();
+		values[4] = id;
 		return values;
 	}
 

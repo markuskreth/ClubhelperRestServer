@@ -34,6 +34,13 @@ public interface Dao<T extends Data> {
 	 * @return	true, wenn update erfolgreich.
 	 */
 	public abstract boolean update(T obj);
+	/**
+	 * Aktualisiert den Datenbankeintrag mit der angegebenen Id und setzt die Werte des Objekts. Keine werte (auch changed nicht!) werden geändert.
+	 * <br /> changed muss vor aufruf gesetzt sein!
+	 * @param obj Zu aktualiserendes Objekt mit aktualisiertem Changed-Eintrag.
+	 * @return	true, wenn update erfolgreich.
+	 */
+	public abstract boolean update(long id, T obj);
 
 	/**
 	 * Löscht einen Datenbankeintrag.

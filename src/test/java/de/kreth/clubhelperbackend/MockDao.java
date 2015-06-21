@@ -55,4 +55,10 @@ public class MockDao<T extends Data> implements Dao<T> {
 		return true;
 	}
 
+	@Override
+	public boolean update(long id, T obj) {
+		updated.add(obj);
+		return true;
+	}
+
 }
