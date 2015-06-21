@@ -81,7 +81,7 @@ public class AbstractController<T extends Data> implements ClubController<T> {
 		String output = null;
 		try {
 			output = mapper.writeValueAsString(p);
-			m.addAttribute("output", output);			
+			m.addAttribute("output", output);
 		} catch (JsonProcessingException e) {
 			logger.error("create output Error: " + toCreate, e);
 		}
@@ -116,6 +116,7 @@ public class AbstractController<T extends Data> implements ClubController<T> {
 	@ResponseBody
 	public T getObject(@PathVariable("id") long id) {
 		T obj = dao.getById(id);
+		logger.debug("GET " + getClass().getSimpleName() + "." + id + ": " + obj);
 		return obj;
 	}
 
@@ -124,13 +125,17 @@ public class AbstractController<T extends Data> implements ClubController<T> {
 	public void updateObject(@PathVariable("id") long id, @RequestBody T toUpdate, Model m) {
 		toUpdate.setChanged(new Date());
 		dao.update(toUpdate);
+		logger.debug("PUT " + getClass().getSimpleName() + "." + id + ": " + toUpdate);
 		m.addAttribute(toUpdate);
 	}
 
 	@Override
 	@RequestMapping(value="/{id}", method=RequestMethod.DELETE)
 	public void delete(@PathVariable("id") long id, Model m) {
+		T obj = getObject(id);
 		dao.delete(id);
+		logger.debug("DELETE " + getClass().getSimpleName() + "." + id + ": " + obj);
+		m.addAttribute(obj);
 	}
 
 }
