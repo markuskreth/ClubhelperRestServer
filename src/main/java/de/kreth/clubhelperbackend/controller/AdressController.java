@@ -12,8 +12,13 @@ import de.kreth.clubhelperbackend.pojo.Adress;
 public class AdressController extends AbstractController<Adress> {
 
 	@Autowired
-	public AdressController(Dao<Adress> dao) {
-		super(dao, Adress.class);
+	public AdressController(Dao<Adress> adressDao) {
+		super(adressDao, Adress.class);
+	}
+
+	@Override
+	protected String getBaseMapping() {
+		return "/adress";
 	}
 
 }

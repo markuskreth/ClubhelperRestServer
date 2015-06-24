@@ -12,8 +12,13 @@ import de.kreth.clubhelperbackend.pojo.Attendance;
 public class AttendanceController extends AbstractController<Attendance> {
 
 	@Autowired
-	public AttendanceController(Dao<Attendance> dao) {
-		super(dao, Attendance.class);
+	public AttendanceController(Dao<Attendance> attendanceDao) {
+		super(attendanceDao, Attendance.class);
+	}
+
+	@Override
+	protected String getBaseMapping() {
+		return "/attendance";
 	}
 
 }

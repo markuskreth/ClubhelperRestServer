@@ -27,10 +27,10 @@
 		<constructor-arg ref="jdbcTemplate" />
 	</bean>
 
-	<bean id="personDao" class="de.kreth.clubhelperbackend.dao.PersonDao">
-		<property name="sqlDialect" ref="sqlForDialect" />
-		<property name="jdbcTemplate" ref="jdbcTemplate" />
-	</bean>
+<!-- 	<bean id="personDao" class="de.kreth.clubhelperbackend.dao.PersonDao"> -->
+<!-- 		<property name="sqlDialect" ref="sqlForDialect" /> -->
+<!-- 		<property name="jdbcTemplate" ref="jdbcTemplate" /> -->
+<!-- 	</bean> -->
 
 	<bean id="dbcheckAspect" class="de.kreth.clubhelperbackend.aspects.MysqlDbCheckAspect">
 		<constructor-arg ref="dataSource" />

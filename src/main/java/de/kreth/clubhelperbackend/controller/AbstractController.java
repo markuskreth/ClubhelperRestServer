@@ -1,9 +1,8 @@
 package de.kreth.clubhelperbackend.controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.kreth.clubhelperbackend.dao.Dao;
 import de.kreth.clubhelperbackend.pojo.Data;
 
-public class AbstractController<T extends Data> implements ClubController<T> {
+public abstract class AbstractController<T extends Data> implements ClubController<T> {
 
 	private final Logger logger;
 	private Dao<T> dao;
@@ -34,32 +33,55 @@ public class AbstractController<T extends Data> implements ClubController<T> {
 		logger = LoggerFactory.getLogger(getClass());
 	}
 
-	@Override
-	@RequestMapping(value = "/update", method = RequestMethod.GET)
-    public String update(@RequestParam String toUpdate, Model m) {
-    	T p = null;
+//	@Override
+//	@RequestMapping(value = "/update", method = RequestMethod.GET)
+//    public String update(@RequestParam String toUpdate, Model m) {
+//    	T p = null;
+//
+//    	logger.debug("update" + elementClass.getSimpleName() + ": " + toUpdate);
+//    	ObjectMapper mapper = new ObjectMapper();
+//
+//		try {
+//			p = mapper.readValue(toUpdate, elementClass);
+//			p.setChanged(new Date());
+//			boolean update = dao.update(p);
+//			logger.info("Update " + (update?"erfolgreich":"nicht erfolgreich") + " erfolgreich: " + toUpdate);
+//		} catch (IOException e) {
+//			logger.error("updatePerson Error: " + toUpdate, e);
+//		}
+//		String output = null;
+//		try {
+//			output = mapper.writeValueAsString(p);
+//			m.addAttribute("output", output);
+//		} catch (JsonProcessingException e) {
+//			logger.error("updatePerson Error: " + toUpdate, e);
+//		}
+//    	return "output";
+//    }
+//	
+//	@Override
+//	@RequestMapping(value = "/delete", method = RequestMethod.GET)
+//	public String delete(String toDelete, Model m) {
+//    	T p = null;
+//
+//    	ObjectMapper mapper = new ObjectMapper();
+//    	try {
+//			p = mapper.readValue(toDelete, elementClass);
+//			boolean deleted = dao.delete(p);
+//			logger.info("delete " + (deleted?"erfolgreich":"nicht erfolgreich") + ": " + toDelete);
+//			m.addAttribute("output", "Person " + p + (deleted?"":"not")  + " deleted");		
+//		} catch (IOException e) {
+//			logger.error("create output Error: " + toDelete, e);
+//			StringWriter wr = new StringWriter();
+//			PrintWriter out = new PrintWriter(wr);
+//			e.printStackTrace(out);
+//			m.addAttribute("output", "Person " + toDelete + " not deleted" + wr.toString());
+//			p=null;
+//		}
+//
+//    	return "output";
+//	}
 
-    	logger.debug("update" + elementClass.getSimpleName() + ": " + toUpdate);
-    	ObjectMapper mapper = new ObjectMapper();
-
-		try {
-			p = mapper.readValue(toUpdate, elementClass);
-			p.setChanged(new Date());
-			boolean update = dao.update(p);
-			logger.info("Update " + (update?"erfolgreich":"nicht erfolgreich") + " erfolgreich: " + toUpdate);
-		} catch (IOException e) {
-			logger.error("updatePerson Error: " + toUpdate, e);
-		}
-		String output = null;
-		try {
-			output = mapper.writeValueAsString(p);
-			m.addAttribute("output", output);			
-		} catch (JsonProcessingException e) {
-			logger.error("updatePerson Error: " + toUpdate, e);
-		}
-    	return "output";
-    }
-	
 	@Override
 	@RequestMapping(value = "/create", method = RequestMethod.GET)
     public String create(@RequestParam String toCreate, Model m){
@@ -89,28 +111,22 @@ public class AbstractController<T extends Data> implements ClubController<T> {
     }
 
 	@Override
-	@RequestMapping(value = "/delete", method = RequestMethod.GET)
-	public String delete(String toDelete, Model m) {
-    	T p = null;
-
-    	ObjectMapper mapper = new ObjectMapper();
-    	try {
-			p = mapper.readValue(toDelete, elementClass);
-			boolean deleted = dao.delete(p);
-			logger.info("delete " + (deleted?"erfolgreich":"nicht erfolgreich") + ": " + toDelete);
-			m.addAttribute("output", "Person " + p + (deleted?"":"not")  + " deleted");		
-		} catch (IOException e) {
-			logger.error("create output Error: " + toDelete, e);
-			StringWriter wr = new StringWriter();
-			PrintWriter out = new PrintWriter(wr);
-			e.printStackTrace(out);
-			m.addAttribute("output", "Person " + toDelete + " not deleted" + wr.toString());
-			p=null;
-		}
-
-    	return "output";
+	@RequestMapping(value="/get/{id}", method=RequestMethod.GET)
+	public String get(@PathVariable("id") long id, Model m) {
+		String mapping = getBaseMapping().substring(1);
+		m.addAttribute(mapping, getObject(id));
+		return mapping + "/get";
 	}
 
+	@RequestMapping(value = "/all", method = RequestMethod.GET)
+	public String getAll(Model m) {
+		String mapping = getBaseMapping().substring(1);
+		m.addAttribute(mapping + "List", getAll());
+		return mapping + "/all";
+	}
+	
+	protected abstract String getBaseMapping();
+	
 	@Override
 	@RequestMapping(value="/{id}", method=RequestMethod.GET)
 	@ResponseBody
@@ -136,6 +152,13 @@ public class AbstractController<T extends Data> implements ClubController<T> {
 		dao.delete(id);
 		logger.debug("DELETE " + getClass().getSimpleName() + "." + id + ": " + obj);
 		m.addAttribute(obj);
+	}
+
+	@Override
+	@RequestMapping(value={"/"}, method=RequestMethod.GET)
+	@ResponseBody
+	public List<T> getAll() {
+		return dao.getAll();
 	}
 
 }

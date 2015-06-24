@@ -12,8 +12,13 @@ import de.kreth.clubhelperbackend.pojo.Contact;
 public class ContactController extends AbstractController<Contact> {
 
 	@Autowired
-	public ContactController(Dao<Contact> dao) {
-		super(dao, Contact.class);
+	public ContactController(Dao<Contact> contactDao) {
+		super(contactDao, Contact.class);
+	}
+
+	@Override
+	protected String getBaseMapping() {
+		return "/contact";
 	}
 
 }

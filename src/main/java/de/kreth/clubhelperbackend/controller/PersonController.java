@@ -12,8 +12,13 @@ import de.kreth.clubhelperbackend.pojo.Person;
 public class PersonController extends AbstractController<Person>{
 
 	@Autowired
-	public PersonController(Dao<Person> dao) {
-		super(dao, Person.class);
+	public PersonController(Dao<Person> personDao) {
+		super(personDao, Person.class);
+	}
+
+	@Override
+	protected String getBaseMapping() {
+		return "/person";
 	}
 
 }

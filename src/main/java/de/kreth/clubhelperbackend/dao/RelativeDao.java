@@ -4,9 +4,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
 import de.kreth.clubhelperbackend.pojo.Relative;
 
+@Repository
 public class RelativeDao extends AbstractDao<Relative> implements Dao<Relative> {
 
 	private static final String relativeFields[] 		= {"person1", "person2", "TO_PERSON1_RELATION", "TO_PERSON2_RELATION", "changed", "created"};
@@ -18,7 +20,7 @@ public class RelativeDao extends AbstractDao<Relative> implements Dao<Relative> 
 	private static final String SQL_QUERY_ALL = "select * from relative";
 
 	public RelativeDao() {
-		super(Relative.class, SQL_QUERY_BY_ID, SQL_INSERT, SQL_UPDATE, SQL_DELETE, SQL_QUERY_ALL);
+		super(SQL_QUERY_BY_ID, SQL_INSERT, SQL_UPDATE, SQL_DELETE, SQL_QUERY_ALL);
 	}
 
 	@Override

@@ -4,11 +4,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import de.kreth.clubhelperbackend.pojo.Person;
 
-@Component
+@Repository
 public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 
 	private static final String personFields[] = { "prename", "surname",
@@ -26,7 +26,7 @@ public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 	private final PersonRowMapper rowMapper = new PersonRowMapper();
 	
 	public PersonDao() {
-		super(Person.class, SQL_QUERY_BY_ID, SQL_INSERT, SQL_UPDATE, SQL_DELETE, SQL_QUERY_ALL);
+		super(SQL_QUERY_BY_ID, SQL_INSERT, SQL_UPDATE, SQL_DELETE, SQL_QUERY_ALL);
 	}
 
 	@Override

@@ -4,9 +4,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
 import de.kreth.clubhelperbackend.pojo.Attendance;
 
+@Repository
 public class AttendanceDao extends AbstractDao<Attendance> implements Dao<Attendance> {
 
 	private static final String attendanceFields[] 		= {"on_date", "person_id", "changed", "created"};
@@ -18,7 +20,7 @@ public class AttendanceDao extends AbstractDao<Attendance> implements Dao<Attend
 	private static final String SQL_QUERY_ALL = "select * from attendance";
 
 	public AttendanceDao() {
-		super(Attendance.class, SQL_QUERY_BY_ID, SQL_INSERT, SQL_UPDATE, SQL_DELETE, SQL_QUERY_ALL);
+		super(SQL_QUERY_BY_ID, SQL_INSERT, SQL_UPDATE, SQL_DELETE, SQL_QUERY_ALL);
 	}
 
 	@Override

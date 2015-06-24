@@ -12,8 +12,13 @@ import de.kreth.clubhelperbackend.pojo.Relative;
 public class RelativeController extends AbstractController<Relative> {
 
 	@Autowired
-	public RelativeController(Dao<Relative> dao) {
-		super(dao, Relative.class);
+	public RelativeController(Dao<Relative> relativeDao) {
+		super(relativeDao, Relative.class);
+	}
+
+	@Override
+	protected String getBaseMapping() {
+		return "/relative";
 	}
 
 }

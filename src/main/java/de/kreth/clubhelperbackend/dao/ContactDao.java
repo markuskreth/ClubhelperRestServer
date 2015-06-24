@@ -4,9 +4,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
 import de.kreth.clubhelperbackend.pojo.Contact;
 
+@Repository
 public class ContactDao  extends AbstractDao<Contact> implements Dao<Contact> {
 
 	private static final String contactFields[] 		= {"type", "value", "person_id", "changed", "created"};
@@ -18,7 +20,7 @@ public class ContactDao  extends AbstractDao<Contact> implements Dao<Contact> {
 	private static final String SQL_QUERY_ALL = "select * from person";
 	
 	public ContactDao() {
-		super(Contact.class, SQL_QUERY_BY_ID, SQL_INSERT, SQL_UPDATE, SQL_DELETE, SQL_QUERY_ALL);
+		super(SQL_QUERY_BY_ID, SQL_INSERT, SQL_UPDATE, SQL_DELETE, SQL_QUERY_ALL);
 	}
 
 	@Override
