@@ -16,9 +16,4 @@ public class ContactController extends AbstractController<Contact> {
 		super(contactDao, Contact.class);
 	}
 
-	@Override
-	protected String getBaseMapping() {
-		return "/contact";
-	}
-
 }

@@ -16,9 +16,4 @@ public class AttendanceController extends AbstractController<Attendance> {
 		super(attendanceDao, Attendance.class);
 	}
 
-	@Override
-	protected String getBaseMapping() {
-		return "/attendance";
-	}
-
 }

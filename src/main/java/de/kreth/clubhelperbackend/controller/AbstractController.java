@@ -23,7 +23,7 @@ import de.kreth.clubhelperbackend.pojo.Data;
 public abstract class AbstractController<T extends Data> implements ClubController<T> {
 
 	private final Logger logger;
-	private Dao<T> dao;
+	protected Dao<T> dao;
 	private Class<T> elementClass;
 
 	public AbstractController(Dao<T> dao, Class<T> element) {
@@ -33,55 +33,6 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 		logger = LoggerFactory.getLogger(getClass());
 	}
 
-//	@Override
-//	@RequestMapping(value = "/update", method = RequestMethod.GET)
-//    public String update(@RequestParam String toUpdate, Model m) {
-//    	T p = null;
-//
-//    	logger.debug("update" + elementClass.getSimpleName() + ": " + toUpdate);
-//    	ObjectMapper mapper = new ObjectMapper();
-//
-//		try {
-//			p = mapper.readValue(toUpdate, elementClass);
-//			p.setChanged(new Date());
-//			boolean update = dao.update(p);
-//			logger.info("Update " + (update?"erfolgreich":"nicht erfolgreich") + " erfolgreich: " + toUpdate);
-//		} catch (IOException e) {
-//			logger.error("updatePerson Error: " + toUpdate, e);
-//		}
-//		String output = null;
-//		try {
-//			output = mapper.writeValueAsString(p);
-//			m.addAttribute("output", output);
-//		} catch (JsonProcessingException e) {
-//			logger.error("updatePerson Error: " + toUpdate, e);
-//		}
-//    	return "output";
-//    }
-//	
-//	@Override
-//	@RequestMapping(value = "/delete", method = RequestMethod.GET)
-//	public String delete(String toDelete, Model m) {
-//    	T p = null;
-//
-//    	ObjectMapper mapper = new ObjectMapper();
-//    	try {
-//			p = mapper.readValue(toDelete, elementClass);
-//			boolean deleted = dao.delete(p);
-//			logger.info("delete " + (deleted?"erfolgreich":"nicht erfolgreich") + ": " + toDelete);
-//			m.addAttribute("output", "Person " + p + (deleted?"":"not")  + " deleted");		
-//		} catch (IOException e) {
-//			logger.error("create output Error: " + toDelete, e);
-//			StringWriter wr = new StringWriter();
-//			PrintWriter out = new PrintWriter(wr);
-//			e.printStackTrace(out);
-//			m.addAttribute("output", "Person " + toDelete + " not deleted" + wr.toString());
-//			p=null;
-//		}
-//
-//    	return "output";
-//	}
-
 	@Override
 	@RequestMapping(value = "/create", method = RequestMethod.GET)
     public String create(@RequestParam String toCreate, Model m){
@@ -89,10 +40,12 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 
     	ObjectMapper mapper = new ObjectMapper();
     	try {
-    		Date now = new Date();
 			p = mapper.readValue(toCreate, elementClass);
-			p.setChanged(now);
-			p.setCreated(now);
+			if(p.getId() == null || p.getId()<0) {
+	    		Date now = new Date();
+				p.setChanged(now);
+				p.setCreated(now);
+			}
 			p = dao.insert(p);
 			logger.info("insert erfolgreich: " + toCreate);
 		} catch (IOException e) {
@@ -113,19 +66,17 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 	@Override
 	@RequestMapping(value="/get/{id}", method=RequestMethod.GET)
 	public String get(@PathVariable("id") long id, Model m) {
-		String mapping = getBaseMapping().substring(1);
+		String mapping = elementClass.getSimpleName();
 		m.addAttribute(mapping, getObject(id));
-		return mapping + "/get";
+		return mapping + ".get";
 	}
 
 	@RequestMapping(value = "/all", method = RequestMethod.GET)
 	public String getAll(Model m) {
-		String mapping = getBaseMapping().substring(1);
+		String mapping = elementClass.getSimpleName();
 		m.addAttribute(mapping + "List", getAll());
-		return mapping + "/all";
+		return mapping + ".all";
 	}
-	
-	protected abstract String getBaseMapping();
 	
 	@Override
 	@RequestMapping(value="/{id}", method=RequestMethod.GET)
@@ -147,11 +98,11 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 
 	@Override
 	@RequestMapping(value="/{id}", method=RequestMethod.DELETE)
-	public void delete(@PathVariable("id") long id, Model m) {
+	public T delete(@PathVariable("id") long id) {
 		T obj = getObject(id);
 		dao.delete(id);
 		logger.debug("DELETE " + getClass().getSimpleName() + "." + id + ": " + obj);
-		m.addAttribute(obj);
+		return obj;
 	}
 
 	@Override
@@ -159,6 +110,13 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 	@ResponseBody
 	public List<T> getAll() {
 		return dao.getAll();
+	}
+
+	@Override
+	@RequestMapping(value="/for/{id}", method=RequestMethod.GET)
+	@ResponseBody
+	public List<T> getForId(long id) {
+		return dao.getByWhere("person_id=" + id);
 	}
 
 }

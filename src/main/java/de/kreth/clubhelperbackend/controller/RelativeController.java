@@ -16,9 +16,4 @@ public class RelativeController extends AbstractController<Relative> {
 		super(relativeDao, Relative.class);
 	}
 
-	@Override
-	protected String getBaseMapping() {
-		return "/relative";
-	}
-
 }

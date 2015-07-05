@@ -1,5 +1,7 @@
 package de.kreth.clubhelperbackend.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,8 +19,9 @@ public class AdressController extends AbstractController<Adress> {
 	}
 
 	@Override
-	protected String getBaseMapping() {
-		return "/adress";
+	public List<Adress> getForId(long id) {
+		
+		return null;
 	}
 
 }

@@ -8,7 +8,7 @@ import java.util.Map;
 import de.kreth.clubhelperbackend.dao.Dao;
 import de.kreth.clubhelperbackend.pojo.Data;
 
-public class MockDao<T extends Data> implements Dao<T> {
+public class StubDao<T extends Data> implements Dao<T> {
 
 	/**
 	 * Used to deliver Testobjects in {@link #getById(long)} and {@link #getAll()}
@@ -59,6 +59,11 @@ public class MockDao<T extends Data> implements Dao<T> {
 	public boolean update(long id, T obj) {
 		updated.add(obj);
 		return true;
+	}
+
+	@Override
+	public List<T> getByWhere(String where) {
+		return new ArrayList<T>();
 	}
 
 }

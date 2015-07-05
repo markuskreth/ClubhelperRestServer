@@ -24,12 +24,12 @@ public class PersonControllerTest {
 	private final Date now = new GregorianCalendar(2015, Calendar.JUNE, 19, 13, 40, 0).getTime();
 	private final ObjectMapper mapper = new ObjectMapper();
 	private PersonController controller;
-	private MockDao<Person> dao;
+	private StubDao<Person> dao;
 	private ExtendedModelMap model;
 	
 	@Before
 	public void setUp() {
-		dao = new MockDao<Person>(); 
+		dao = new StubDao<Person>(); 
 		controller = new PersonController(dao);
 		model = new ExtendedModelMap();
 	}
@@ -57,22 +57,37 @@ public class PersonControllerTest {
 
 	@Test
 	public void testUpdate() throws JsonParseException, JsonMappingException, IOException {
-		String input = "{\"id\":2,\"prename\":\"Markus\",\"surname\":\"Kreth\",\"type\":\"Trainer\",\"birth\":" + birth.getTime() + ",\"created\":" + now.getTime() + ",\"changed\":" + now.getTime() + "}";
-		String viewName = controller.update(input, model);
 		
-		assertEquals("output", viewName);
+		Person p = new Person(2L, "Markus", "Kreth", "Trainer", birth, now, now);
+		controller.updateObject(2, p, model);
 		assertEquals(1, dao.updated.size());
 
-		assertTrue("Model enthält kein Output!", model.containsKey("output"));
-		String out = (String) model.get("output");
-		Person p = mapper.readValue(out, Person.class);
+		assertTrue("Model enthält kein Output!", model.containsKey("person"));
+		Person out = (Person) model.get("person");
 
-		assertEquals((long)2, p.getId().longValue());
-		assertEquals("Markus", p.getPrename());
-		assertEquals("Kreth", p.getSurname());
-		assertEquals("Trainer", p.getType());
-		assertEquals(birth, p.getBirth());
-		assertEquals(now, p.getCreated());
-		assertTrue("Created not before changed!", p.getCreated().before(p.getChanged()));
+		assertEquals(2L, out.getId().longValue());
+		assertEquals("Markus", out.getPrename());
+		assertEquals("Kreth", out.getSurname());
+		assertEquals("Trainer", out.getType());
+		assertEquals(birth, out.getBirth());
+		assertEquals(now, out.getCreated());
+		assertTrue("Created not before changed!", out.getCreated().before(out.getChanged()));
+	}
+	
+	@Test
+	public void testDelete() {
+
+		Person p = new Person(2L, "Markus", "Kreth", "Trainer", birth, now, now);
+		dao.byId.put(2L, p);
+		Person out = controller.delete(2L);
+
+		assertEquals(1, dao.deleted.size());
+		assertEquals(2L, dao.deleted.get(0).longValue());
+		
+		assertEquals((long)2, out.getId().longValue());
+		assertEquals("Markus", out.getPrename());
+		assertEquals("Kreth", out.getSurname());
+		assertEquals("Trainer", out.getType());
+		assertEquals(birth, out.getBirth());
 	}
 }
