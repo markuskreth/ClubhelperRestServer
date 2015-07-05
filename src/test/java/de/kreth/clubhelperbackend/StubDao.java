@@ -18,6 +18,7 @@ public class StubDao<T extends Data> implements Dao<T> {
 	public List<T> updated = new ArrayList<T>();
 	public List<Long> deleted = new ArrayList<Long>();
 	public Long lastInsertId = 0L;
+	public List<String> getByWhere = new ArrayList<String>();
 	
 	@Override
 	public T getById(long id) {
@@ -63,6 +64,7 @@ public class StubDao<T extends Data> implements Dao<T> {
 
 	@Override
 	public List<T> getByWhere(String where) {
+		getByWhere.add(where);
 		return new ArrayList<T>();
 	}
 
