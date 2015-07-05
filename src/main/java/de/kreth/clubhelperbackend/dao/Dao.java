@@ -15,9 +15,15 @@ public interface Dao<T extends Data> {
 
 	/**
 	 * Liefert alle Datenbankeinträge
-	 * @return Collection aller Datenbankeinträge
+	 * @return List aller Datenbankeinträge
 	 */
 	public abstract List<T> getAll();
+
+	/**
+	 * Delivers List of objects matching the Where clause. No where Statement is needed.
+	 * @return List of Objects matching the where clause.
+	 */
+	public abstract List<T> getByWhere(String where);
 	
 	/**
 	 * Erstellt ein neues Objekt in der Datenbank. Id wird im rückgabeobjekt gesetzt.

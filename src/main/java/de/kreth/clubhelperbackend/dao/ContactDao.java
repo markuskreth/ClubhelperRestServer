@@ -2,8 +2,10 @@ package de.kreth.clubhelperbackend.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import de.kreth.clubhelperbackend.pojo.Contact;
@@ -11,51 +13,29 @@ import de.kreth.clubhelperbackend.pojo.Contact;
 @Repository
 public class ContactDao  extends AbstractDao<Contact> implements Dao<Contact> {
 
-	private static final String contactFields[] 		= {"type", "value", "person_id", "changed", "created"};
-	private static final String contactValues[] 		= {"type", "value", "person_id", "changed"};
-	private static final String SQL_INSERT = "insert into person (" + String.join(", ", contactFields) + ") values (?,?,?,?,?)";
-	private static final String SQL_UPDATE = "update person set " + String.join("=?, ", contactValues) + "=? WHERE _id=?";
-	private static final String SQL_DELETE = "delete from person where _id=?";
-	private static final String SQL_QUERY_BY_ID = "select " + contactFields + " from person where id=?";
-	private static final String SQL_QUERY_ALL = "select * from person";
+	private static final String columnNames[] 		= {"type", "value", "person_id"};
+
+	private static AbstractDao.DaoConfig<Contact> daoConfig = new DaoConfig<Contact>("contact", columnNames, new ContactRowMapper());
 	
 	public ContactDao() {
-		super(SQL_QUERY_BY_ID, SQL_INSERT, SQL_UPDATE, SQL_DELETE, SQL_QUERY_ALL);
+		super(daoConfig);
 	}
 
-	@Override
-	protected Object[] getInsertValues(Contact obj) {
-		Object[] values = new Object[5];
-		values[0] = obj.getType();
-		values[1] = obj.getValue();
-		values[2] = obj.getPersonId();
-		values[3] = obj.getChanged();
-		values[4] = obj.getCreated();
-		return values;
-	}
+	static class ContactRowMapper implements RowMapper<Contact> {
 
-	@Override
-	protected Object[] getUpdateValues(long id, Contact obj) {
-		Object[] values = new Object[5];
-		values[0] = obj.getType();
-		values[1] = obj.getValue();
-		values[2] = obj.getPersonId();
-		values[3] = obj.getChanged();
-		values[4] = id;
-		return values;
-	}
-
-	@Override
-	protected RowMapper<Contact> getRowMapper() {
-		return rowMapper;
-	}
-
-	private final RowMapper<Contact> rowMapper = new RowMapper<Contact>() {
-//		private static final String contactFields[] 		= {"type", "value", "person_id", "changed", "created"};
 		@Override
 		public Contact mapRow(ResultSet rs, int rowNo) throws SQLException {
 			Contact c = new Contact(rs.getLong("_id"), rs.getString("type"), rs.getString("value"), rs.getLong("person_id"), rs.getDate("changed"), rs.getDate("created"));
 			return c;
+		}
+
+		@Override
+		public Collection<Object> mapObject(Contact obj) {
+			List<Object> values = new ArrayList<Object>();
+			values.add(obj.getType());
+			values.add(obj.getValue());
+			values.add(obj.getPersonId());
+			return values;
 		}
 	};
 }
