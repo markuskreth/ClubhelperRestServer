@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC 
+    "-//Apache Software Foundation//DTD Tiles Configuration 2.2//EN" 
+    "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+	<definition name="template" template="/WEB-INF/views/main_template.jsp">
+		<put-attribute name="top" value="/WEB-INF/views/tiles/header.jsp" />
+		<put-attribute name="side" value="/WEB-INF/views/tiles/menu.jsp" />
+	</definition>
+	<definition name="home" extends="template">
+		<put-attribute name="content" value="/WEB-INF/views/home.jsp" />
+	</definition>
+	<definition name="output" extends="template">
+		<put-attribute name="content" value="/WEB-INF/views/output.jsp" />
+	</definition>
+	<definition name="Person.all" extends="template">
+		<put-attribute name="content" value="/WEB-INF/views/personlist.jsp" />
+	</definition>
+	<definition name="Person.get" extends="template">
+		<put-attribute name="content" value="/WEB-INF/views/person.jsp" />
+	</definition>
+</tiles-definitions>
