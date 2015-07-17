@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
@@ -25,7 +26,7 @@ public class AdressDao extends AbstractDao<Adress> {
  
 		@Override
 		public Adress mapRow(ResultSet rs, int rowNr) throws SQLException {
-			Adress a = new Adress(rs.getLong("_id"), rs.getString("adress1"), rs.getString("adress2"), rs.getString("plz"), rs.getString("city"), rs.getLong("person_id"), rs.getDate("changed"), rs.getDate("created"));
+			Adress a = new AdressWrapper(rs.getLong("_id"), rs.getString("adress1"), rs.getString("adress2"), rs.getString("plz"), rs.getString("city"), rs.getLong("person_id"), rs.getDate("changed"), rs.getDate("created"));
 			return a;
 		}
 
@@ -41,4 +42,19 @@ public class AdressDao extends AbstractDao<Adress> {
 		}
 	};
 
+	public static class AdressWrapper extends Adress {
+
+		public AdressWrapper(Long id, String adress1, String adress2,
+				String plz, String city, long personId, Date changed,
+				Date created) {
+			super(id, adress1, adress2, plz, city, personId, changed, created);
+		}
+		
+		@Override
+		public String toString() {
+			StringBuilder bld = new StringBuilder();
+			bld.append(getAdress1()).append(", ").append(getAdress2()).append(", ").append(getPlz()).append(" ").append(getCity());
+			return bld.toString();
+		}
+	}
 }

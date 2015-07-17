@@ -106,7 +106,7 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 	}
 
 	@Override
-	@RequestMapping(value={"/"}, method=RequestMethod.GET)
+	@RequestMapping(value={"/", ""}, method=RequestMethod.GET)
 	@ResponseBody
 	public List<T> getAll() {
 		return dao.getAll();
@@ -115,8 +115,15 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 	@Override
 	@RequestMapping(value="/for/{id}", method=RequestMethod.GET)
 	@ResponseBody
-	public List<T> getForId(long id) {
+	public List<T> getForId(@PathVariable("id") long id) {
 		return dao.getByWhere("person_id=" + id);
+	}
+
+	@Override
+	@RequestMapping(value="/changed/{changed}", method=RequestMethod.GET)
+	@ResponseBody
+	public List<T> getChangedSince(@PathVariable("changed") long changed) {
+		return dao.getChangedSince(new Date(changed));
 	}
 
 }

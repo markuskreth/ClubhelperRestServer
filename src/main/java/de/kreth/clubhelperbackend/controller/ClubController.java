@@ -68,7 +68,7 @@ public interface ClubController<T> {
 	 * <p>Mapping: /
 	 * @return
 	 */
-	@RequestMapping(value="/", method=RequestMethod.GET)
+	@RequestMapping(value={"/", ""}, method=RequestMethod.GET)
 	@ResponseBody
 	List<T> getAll();
 
@@ -92,5 +92,14 @@ public interface ClubController<T> {
 	@RequestMapping(value="/{id}", method=RequestMethod.DELETE)
 	@ResponseBody
 	T delete(@PathVariable("id") long id);
+
+	/**
+	 * 
+	 * @param changed
+	 * @return
+	 */
+	@RequestMapping(value="/changed/{changed}", method=RequestMethod.GET)
+	@ResponseBody
+	List<T> getChangedSince(long changed);
 
 }

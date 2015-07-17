@@ -1,5 +1,6 @@
 package de.kreth.clubhelperbackend.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import de.kreth.clubhelperbackend.pojo.Data;
@@ -24,6 +25,12 @@ public interface Dao<T extends Data> {
 	 * @return List of Objects matching the where clause.
 	 */
 	public abstract List<T> getByWhere(String where);
+
+	/**
+	 * Delivers List of objects that changed since provided Date
+	 * @return List of Objects changed since Date
+	 */
+	public abstract List<T> getChangedSince(Date changed);
 	
 	/**
 	 * Erstellt ein neues Objekt in der Datenbank. Id wird im rückgabeobjekt gesetzt.

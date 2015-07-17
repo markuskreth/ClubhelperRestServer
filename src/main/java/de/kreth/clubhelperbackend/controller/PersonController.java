@@ -43,7 +43,7 @@ public class PersonController extends AbstractController<Person>{
 	public void setAdressController(AdressController adressController) {
 		this.adressController = adressController;
 	}
-	
+
 	@Override
 	@RequestMapping(value="/get/{id}", method=RequestMethod.GET)
 	public String get(@PathVariable("id") long id, Model m) {
@@ -54,7 +54,21 @@ public class PersonController extends AbstractController<Person>{
 		m.addAttribute(Adress.class.getSimpleName() + "List", adresses);
 		
 		List<Relative> relatives = relativeController.getForId(id);
-		m.addAttribute(Relative.class.getSimpleName() + "List", relatives);
+		List<PersonRelative> rel = new ArrayList<PersonController.PersonRelative>();
+		for(Relative r: relatives) {
+			PersonRelative current = new PersonRelative(r);
+			long otherId;
+			if(r.getPerson1() == id) {
+				current.relation = r.getToPerson2Relation();
+				otherId = r.getPerson2();
+			} else {
+				current.relation = r.getToPerson1Relation();
+				otherId = r.getPerson1();
+			}
+			current.toPerson = dao.getById(otherId);
+			rel.add(current);
+		}
+		m.addAttribute(PersonRelative.class.getSimpleName() + "List", rel);
 		
 		return super.get(id, m);
 	}
@@ -69,4 +83,28 @@ public class PersonController extends AbstractController<Person>{
 		return all;
 	}
 
+	public class PersonRelative extends Relative {
+		
+		private Person toPerson;
+		private String relation;
+		
+		public PersonRelative(Relative r) {
+			super(r.getId(), r.getPerson1(), r.getPerson2(), r.getToPerson2Relation(), r.getToPerson1Relation(), r.getChanged(), r.getCreated());
+		}
+
+		public Person getToPerson() {
+			return toPerson;
+		}
+
+		public String getRelation() {
+			return relation;
+		}
+		
+		@Override
+		public String toString() {
+			StringBuilder bld = new StringBuilder();
+			bld.append(relation).append(" ").append(toPerson.getId()).append(": ").append(toPerson.getPrename()).append(" ").append(toPerson.getSurname());
+			return bld.toString();
+		}
+	}
 }

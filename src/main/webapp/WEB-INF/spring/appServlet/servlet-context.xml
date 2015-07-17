@@ -24,6 +24,7 @@
 	<bean class="org.springframework.web.servlet.view.tiles2.TilesViewResolver">
 		<property name="order" value="1" />
 	</bean>
+	
 	<bean class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">
 		<property name="definitions">
 			<list>

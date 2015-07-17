@@ -1,6 +1,7 @@
 package de.kreth.clubhelperbackend;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ public class StubDao<T extends Data> implements Dao<T> {
 	public List<Long> deleted = new ArrayList<Long>();
 	public Long lastInsertId = 0L;
 	public List<String> getByWhere = new ArrayList<String>();
+	public List<Date> changedSince = new ArrayList<Date>();
 	
 	@Override
 	public T getById(long id) {
@@ -65,6 +67,12 @@ public class StubDao<T extends Data> implements Dao<T> {
 	@Override
 	public List<T> getByWhere(String where) {
 		getByWhere.add(where);
+		return new ArrayList<T>();
+	}
+
+	@Override
+	public List<T> getChangedSince(Date changed) {
+		changedSince.add(changed);
 		return new ArrayList<T>();
 	}
 

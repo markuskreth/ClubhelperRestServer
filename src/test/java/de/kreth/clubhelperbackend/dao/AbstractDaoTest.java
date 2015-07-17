@@ -1,5 +1,7 @@
 package de.kreth.clubhelperbackend.dao;
 
+import static de.kreth.clubhelperbackend.string.String.*;
+
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
@@ -119,7 +121,7 @@ public class AbstractDaoTest {
 		long personId = 1L;
 		Contact obj = new Contact(512L, type , value , personId , now, now );
 		
-		String regex = "(?iu)insert\\s+into\\s+tablename\\s*\\(\\s*_id\\s*,\\s*"+ String.join("\\s*,\\s*", columnNames)
+		String regex = "(?iu)insert\\s+into\\s+tablename\\s*\\(\\s*_id\\s*,\\s*"+ join("\\s*,\\s*", columnNames)
 				
 				+ "\\s*,\\s*changed\\s*,\\s*created\\s*\\)\\s*values\\s*\\(\\s*" + countToQuestionmarkList(columnNames.length + 3) + "\\s*\\)";
 		
@@ -187,7 +189,7 @@ public class AbstractDaoTest {
 		long personId = 1L;
 		Contact obj = new Contact(null, type , value , personId , now, now );
 		
-		String regex = "(?iu)insert\\s+into\\s+tablename\\s*\\(\\s*"+ String.join("\\s*,\\s*", columnNames)
+		String regex = "(?iu)insert\\s+into\\s+tablename\\s*\\(\\s*"+ join("\\s*,\\s*", columnNames)
 				
 				+ "\\s*,\\s*changed\\s*,\\s*created\\s*\\)\\s*values\\s*\\(\\s*" + countToQuestionmarkList(columnNames.length + 2) + "\\s*\\)";
 		
@@ -222,7 +224,7 @@ public class AbstractDaoTest {
 		long personId = 1L;
 		Contact obj = new Contact(personId, type , value , personId , now, calendar.getTime() );
 
-		String regex = "(?iu)update\\s+tablename\\s+set\\s+"+ String.join("\\s*=\\s*\\?\\s*,\\s*", columnNames)
+		String regex = "(?iu)update\\s+tablename\\s+set\\s+"+ join("\\s*=\\s*\\?\\s*,\\s*", columnNames)
 				+ "\\s*=\\s*\\?\\s*,\\s*changed\\s*=\\s*\\?\\s+where\\s+_id\\s*=\\s*\\?\\s*";
 
 		when(jdbcTemplate.update(Matchers.anyString(), Matchers.any(Object[].class))).thenReturn(1);

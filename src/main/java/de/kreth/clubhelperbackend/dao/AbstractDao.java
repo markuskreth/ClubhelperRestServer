@@ -1,13 +1,16 @@
 package de.kreth.clubhelperbackend.dao;
 
+import static de.kreth.clubhelperbackend.string.String.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
@@ -18,6 +21,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 
 	private SqlForDialect sqlDialect;
 	private String SQL_QUERY_BY_ID;
+	private String SQL_QUERY_CHANGED;
 	private String SQL_UPDATE;
 	private String SQL_DELETE;
 	private String SQL_QUERY_ALL;
@@ -28,20 +32,22 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 	public AbstractDao(DaoConfig<T> config) {
 		super();
 
+//		LoggerFactory.getLogger(getClass());
 		List<String> columnNames = new ArrayList<String>(Arrays.asList(config.columnNames));
 		columnNames.add("changed");
-		this.SQL_UPDATE = "update " + config.tableName + " set " + String.join("=?, ", columnNames) + "=? WHERE _id=?";
+		this.SQL_UPDATE = "update " + config.tableName + " set " + join("=?, ", columnNames) + "=? WHERE _id=?";
 		
 		columnNames.add("created");
-		SQL_INSERTWithoutId = "insert into " + config.tableName + " (" + String.join(", ", columnNames) + ") values (" + generateQuestionMarkList(config.columnNames.length+2)+ ")";
+		SQL_INSERTWithoutId = "insert into " + config.tableName + " (" + join(", ", columnNames) + ") values (" + generateQuestionMarkList(config.columnNames.length+2)+ ")";
 		
 		columnNames.add(0, "_id");
-		this.SQL_INSERTWithId = "insert into " + config.tableName + " (" + String.join(", ", columnNames) + ") values (" + generateQuestionMarkList(config.columnNames.length+3)+ ")";
+		this.SQL_INSERTWithId = "insert into " + config.tableName + " (" + join(", ", columnNames) + ") values (" + generateQuestionMarkList(config.columnNames.length+3)+ ")";
 
 		this.SQL_DELETE = "delete from " + config.tableName + " where _id=?";
 		
 		this.SQL_QUERY_ALL = "select * from " + config.tableName;
 		this.SQL_QUERY_BY_ID = SQL_QUERY_ALL + " where _id=?";
+		this.SQL_QUERY_CHANGED = SQL_QUERY_ALL + " where changed>?";
 		this.mapper = config.mapper;
 	}
 
@@ -108,7 +114,13 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 	public List<T> getByWhere(String where) {
 		return getJdbcTemplate().query(SQL_QUERY_ALL + " WHERE " + where, mapper);
 	}
-	
+
+	@Override
+	public List<T> getChangedSince(Date changed) {
+		Object[] args = {changed};
+		return getJdbcTemplate().query(SQL_QUERY_CHANGED, args, mapper);
+	}
+
 	public T insert(T obj) {
 		boolean withId = obj.getId() != null && obj.getId()>= 0;
 		ArrayList<Object> values = new ArrayList<Object>(mapper.mapObject(obj));
@@ -135,6 +147,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		Collection<Object> values = mapper.mapObject(obj);
 		values.add(obj.getChanged());
 		values.add(obj.getId());
+		logger.debug("sql=" + SQL_UPDATE + "; ValueSize=" + values.size() + "; Values=" + values);
 		int inserted = getJdbcTemplate().update(SQL_UPDATE, values);
 		return inserted == 1;
 	}
@@ -156,14 +169,4 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 	public List<T> getAll() {
 		return getJdbcTemplate().query(SQL_QUERY_ALL, mapper);
 	}
-//	
-//	protected abstract RowMapper<T> getRowMapper();
-//	protected abstract Object[] getInsertValues(T obj);
-//	
-//	protected final Object[] getUpdateValues(T obj) {
-//		return getUpdateValues(obj.getId(), obj);
-//	}
-//	
-//	protected abstract Object[] getUpdateValues(long id, T obj);
-
 }
