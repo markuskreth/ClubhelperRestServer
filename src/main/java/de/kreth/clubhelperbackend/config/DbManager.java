@@ -1,4 +1,4 @@
-package de.kreth.clubhelperbackend;
+package de.kreth.clubhelperbackend.config;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

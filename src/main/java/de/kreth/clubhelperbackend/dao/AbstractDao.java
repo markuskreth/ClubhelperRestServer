@@ -1,6 +1,7 @@
 package de.kreth.clubhelperbackend.dao;
 
 import static de.kreth.clubhelperbackend.string.String.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,11 +11,10 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
-import de.kreth.clubhelperbackend.SqlForDialect;
+import de.kreth.clubhelperbackend.config.SqlForDialect;
 import de.kreth.clubhelperbackend.pojo.Data;
 
 public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport implements Dao<T> {
@@ -32,7 +32,6 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 	public AbstractDao(DaoConfig<T> config) {
 		super();
 
-//		LoggerFactory.getLogger(getClass());
 		List<String> columnNames = new ArrayList<String>(Arrays.asList(config.columnNames));
 		columnNames.add("changed");
 		this.SQL_UPDATE = "update " + config.tableName + " set " + join("=?, ", columnNames) + "=? WHERE _id=?";

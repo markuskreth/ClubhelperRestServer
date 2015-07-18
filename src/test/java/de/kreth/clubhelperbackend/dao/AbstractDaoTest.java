@@ -1,7 +1,6 @@
 package de.kreth.clubhelperbackend.dao;
 
 import static de.kreth.clubhelperbackend.string.String.*;
-
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
@@ -17,8 +16,8 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.Matchers;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import de.kreth.clubhelperbackend.SqlForDialect;
-import de.kreth.clubhelperbackend.SqlForMysql;
+import de.kreth.clubhelperbackend.config.SqlForDialect;
+import de.kreth.clubhelperbackend.config.SqlForMysql;
 import de.kreth.clubhelperbackend.dao.AbstractDao;
 import de.kreth.clubhelperbackend.dao.ContactDao;
 import de.kreth.clubhelperbackend.dao.AbstractDao.DaoConfig;
