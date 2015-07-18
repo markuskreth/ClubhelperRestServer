@@ -20,9 +20,9 @@ import de.kreth.clubhelperbackend.pojo.Relative;
 @RequestMapping("/person")
 public class PersonController extends AbstractController<Person>{
 
-	private ContactController contactController;
-	private RelativeController relativeController;
-	private AdressController adressController;
+	private ClubController<Contact> contactController;
+	private ClubController<Relative> relativeController;
+	private ClubController<Adress> adressController;
 	
 	@Autowired
 	public PersonController(Dao<Person> personDao) {
@@ -30,17 +30,17 @@ public class PersonController extends AbstractController<Person>{
 	}
 
 	@Autowired
-	public void setContactController(ContactController contactController) {
+	public void setContactController(ClubController<Contact> contactController) {
 		this.contactController = contactController;
 	}
 
 	@Autowired
-	public void setRelativeController(RelativeController relativeController) {
+	public void setRelativeController(ClubController<Relative> relativeController) {
 		this.relativeController = relativeController;
 	}
 
 	@Autowired
-	public void setAdressController(AdressController adressController) {
+	public void setAdressController(ClubController<Adress> adressController) {
 		this.adressController = adressController;
 	}
 

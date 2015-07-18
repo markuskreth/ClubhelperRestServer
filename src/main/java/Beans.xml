@@ -28,21 +28,13 @@
 			<constructor-arg ref="dataSource" />
 		</bean>
 
-		<bean id="sqlForDialect" class="de.kreth.clubhelperbackend.SqlForMysql">
+		<bean id="sqlForDialect" class="de.kreth.clubhelperbackend.config.SqlForMysql">
 			<constructor-arg ref="jdbcTemplate" />
 		</bean>
 
-		<bean id="dbcheckAspect" class="de.kreth.clubhelperbackend.aspects.MysqlDbCheckAspect">
-			<constructor-arg ref="dataSource" />
-		</bean>
-
-		<!-- <bean id="logger" class="de.kreth.clubhelperbackend.aspects.LoggerAspect" 
-			/> -->
-		<bean id="daoLoggerAspect" class="de.kreth.clubhelperbackend.aspects.DaoLoggerAspect" />
-
 		<aop:aspectj-autoproxy>
-			<aop:include name="dbcheckAspect" />
-			<!-- <aop:include name="logger"/> -->
+			<aop:include name="mysqlDbCheckAspect" />
+<!-- 			<aop:include name="loggerAspect"/> -->
 			<aop:include name="daoLoggerAspect" />
 		</aop:aspectj-autoproxy>
 

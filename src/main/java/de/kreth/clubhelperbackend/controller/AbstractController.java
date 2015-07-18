@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +20,7 @@ import de.kreth.clubhelperbackend.pojo.Data;
 
 public abstract class AbstractController<T extends Data> implements ClubController<T> {
 
-	private final Logger logger;
+//	private final Logger logger;
 	protected Dao<T> dao;
 	private Class<T> elementClass;
 
@@ -30,7 +28,7 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 		super();
 		this.dao = dao;
 		this.elementClass = element;
-		logger = LoggerFactory.getLogger(getClass());
+//		logger = LoggerFactory.getLogger(getClass());
 	}
 
 	@Override
@@ -47,9 +45,9 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 				p.setCreated(now);
 			}
 			p = dao.insert(p);
-			logger.info("insert erfolgreich: " + toCreate);
+//			logger.info("insert erfolgreich: " + toCreate);
 		} catch (IOException e) {
-			logger.error("create Error: " + toCreate, e);
+//			logger.error("create Error: " + toCreate, e);
 			p=null;
 		}
     	
@@ -58,7 +56,7 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 			output = mapper.writeValueAsString(p);
 			m.addAttribute("output", output);
 		} catch (JsonProcessingException e) {
-			logger.error("create output Error: " + toCreate, e);
+//			logger.error("create output Error: " + toCreate, e);
 		}
     	return "output";
     }
@@ -83,7 +81,7 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 	@ResponseBody
 	public T getObject(@PathVariable("id") long id) {
 		T obj = dao.getById(id);
-		logger.debug("GET " + getClass().getSimpleName() + "." + id + ": " + obj);
+//		logger.debug("GET " + getClass().getSimpleName() + "." + id + ": " + obj);
 		return obj;
 	}
 
@@ -92,7 +90,7 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 	public void updateObject(@PathVariable("id") long id, @RequestBody T toUpdate, Model m) {
 		toUpdate.setChanged(new Date());
 		dao.update(id, toUpdate);
-		logger.debug("PUT " + getClass().getSimpleName() + "." + id + ": " + toUpdate);
+//		logger.debug("PUT " + getClass().getSimpleName() + "." + id + ": " + toUpdate);
 		m.addAttribute(toUpdate);
 	}
 
@@ -101,7 +99,7 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 	public T delete(@PathVariable("id") long id) {
 		T obj = getObject(id);
 		dao.delete(id);
-		logger.debug("DELETE " + getClass().getSimpleName() + "." + id + ": " + obj);
+//		logger.debug("DELETE " + getClass().getSimpleName() + "." + id + ": " + obj);
 		return obj;
 	}
 

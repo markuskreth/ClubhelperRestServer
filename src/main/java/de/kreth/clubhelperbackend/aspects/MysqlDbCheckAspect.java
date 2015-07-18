@@ -12,22 +12,26 @@ import javax.sql.DataSource;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.stereotype.Component;
 
-import de.kreth.clubhelperbackend.DatabaseConfiguration;
+import de.kreth.clubhelperbackend.config.DatabaseConfiguration;
 import de.kreth.dbmanager.Database;
 import de.kreth.dbmanager.DbValue;
 
+@Component
 @Aspect
 public class MysqlDbCheckAspect implements Database {
 
 	private Connection con;
 	private boolean isChecked = false;
 
-	public MysqlDbCheckAspect(DataSource source) {
+	@Autowired
+	public MysqlDbCheckAspect(DataSource dataSource) {
 		try {
-			con = source.getConnection();
+			con = dataSource.getConnection();
 		} catch (SQLException e) {
 			throw new InvalidDataAccessApiUsageException("Keine Connection aus DataSource erhalten", e);
 		}

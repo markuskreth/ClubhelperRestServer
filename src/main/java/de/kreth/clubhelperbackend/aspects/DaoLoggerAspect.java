@@ -8,7 +8,9 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 @Aspect
 public class DaoLoggerAspect extends AbstractLoggerAspect {
 
@@ -16,22 +18,22 @@ public class DaoLoggerAspect extends AbstractLoggerAspect {
 
 //	@Around("execution(public * de.kreth.clubhelperbackend.controller.PersonController.*(..))")
 
-	@Pointcut("execution (public * de.kreth.clubhelperbackend.dao.*.*(..))")
-//	@Pointcut("execution (public * de.kreth.clubhelperbackend.controller.PersonController.*(..))")
-	private void invocation(){}
-	
 //	@Pointcut("execution (public * org.springframework.jdbc.core.JdbcTemplate.*(..))")
 //	private void template() {}
-
-	@Before("invocation()")
-	public void logDao(JoinPoint joinPoint) throws Throwable {
-		logger.info(generateLogMessage(joinPoint).toString());
-	}
 
 //	@Before("template()")
 //	public void logTemplate(JoinPoint joinPoint) throws Throwable {
 //		logger.debug(generateLogMessage(joinPoint).toString());
 //	}
+
+	@Pointcut("execution (public * de.kreth.clubhelperbackend.dao.*.*(..))")
+//	@Pointcut("execution (public * de.kreth.clubhelperbackend.controller.PersonController.*(..))")
+	private void invocation(){}
+	
+	@Before("invocation()")
+	public void logDao(JoinPoint joinPoint) throws Throwable {
+		logger.info(generateLogMessage(joinPoint).toString());
+	}
 
 	@AfterThrowing(pointcut = "invocation()", throwing="ex")
 	public void logDao(JoinPoint joinPoint, Exception ex) throws Throwable {
