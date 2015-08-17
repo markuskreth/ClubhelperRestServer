@@ -51,7 +51,8 @@ public interface ClubController<T> {
 	 * @param m
 	 */
 	@RequestMapping(value="/{id}", method=RequestMethod.PUT)
-	void updateObject(@PathVariable("id") long id, T toUpdate, Model m);
+	@ResponseBody
+	T updateObject(@PathVariable("id") long id, T toUpdate);
 
 	/**
 	 * Rest: GET - return object

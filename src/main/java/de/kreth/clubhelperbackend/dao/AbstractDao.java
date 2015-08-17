@@ -1,6 +1,6 @@
 package de.kreth.clubhelperbackend.dao;
 
-import static de.kreth.clubhelperbackend.string.String.*;
+import static de.kreth.clubhelperbackend.string.String.join;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -130,7 +130,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		if(withId)
 			values.add(0, obj.getId());
 
-		int inserted = getJdbcTemplate().update(withId?SQL_INSERTWithId:SQL_INSERTWithoutId, values);
+		int inserted = getJdbcTemplate().update(withId?SQL_INSERTWithId:SQL_INSERTWithoutId, values.toArray());
 		
 		if (inserted == 1) {
 			if(!withId)
@@ -146,9 +146,10 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		Collection<Object> values = mapper.mapObject(obj);
 		values.add(obj.getChanged());
 		values.add(obj.getId());
+		
 		logger.debug("sql=" + SQL_UPDATE + "; ValueSize=" + values.size() + "; Values=" + values);
-		int inserted = getJdbcTemplate().update(SQL_UPDATE, values);
-		return inserted == 1;
+		int updateCount = getJdbcTemplate().update(SQL_UPDATE, values.toArray());
+		return updateCount == 1;
 	}
 
 	public boolean update(long id, T obj) {

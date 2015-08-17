@@ -87,11 +87,12 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 
 	@Override
 	@RequestMapping(value="/{id}", method=RequestMethod.PUT)
-	public void updateObject(@PathVariable("id") long id, @RequestBody T toUpdate, Model m) {
+	@ResponseBody
+	public T updateObject(@PathVariable("id") long id, @RequestBody T toUpdate) {
 		toUpdate.setChanged(new Date());
 		dao.update(id, toUpdate);
 //		logger.debug("PUT " + getClass().getSimpleName() + "." + id + ": " + toUpdate);
-		m.addAttribute(toUpdate);
+		return toUpdate;
 	}
 
 	@Override

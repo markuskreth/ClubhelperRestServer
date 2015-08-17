@@ -59,11 +59,8 @@ public class PersonControllerTest {
 	public void testUpdate() throws JsonParseException, JsonMappingException, IOException {
 		
 		Person p = new Person(2L, "Markus", "Kreth", "Trainer", birth, now, now);
-		controller.updateObject(2, p, model);
+		Person out = controller.updateObject(2, p);
 		assertEquals(1, dao.updated.size());
-
-		assertTrue("Model enthält kein Output!", model.containsKey("person"));
-		Person out = (Person) model.get("person");
 
 		assertEquals(2L, out.getId().longValue());
 		assertEquals("Markus", out.getPrename());
