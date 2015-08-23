@@ -34,7 +34,6 @@
 
 		<aop:aspectj-autoproxy>
 			<aop:include name="mysqlDbCheckAspect" />
-<!-- 			<aop:include name="loggerAspect"/> -->
 			<aop:include name="daoLoggerAspect" />
 		</aop:aspectj-autoproxy>
 
