@@ -21,7 +21,7 @@ public class RelativeControllerTest {
 
 	@Test
 	public void ensureGetForIdUsesCorrectColumns() {
-		controller.getForId(6);
+		controller.getByParentId(6);
 		assertEquals(1, dao.getByWhere.size());
 		String whereClause = dao.getByWhere.get(0).toLowerCase();
 		assertTrue(whereClause.contains("person1=6"));

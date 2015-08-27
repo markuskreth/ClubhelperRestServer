@@ -23,7 +23,7 @@ public class RelativeController extends AbstractController<Relative> {
 	@Override
 	@RequestMapping(value="/for/{id}", method=RequestMethod.GET)
 	@ResponseBody
-	public List<Relative> getForId(long id) {
+	public List<Relative> getByParentId(long id) {
 		StringBuilder whereClause = new StringBuilder("person1=");
 		whereClause.append(id).append(" OR person2=").append(id);
 		return dao.getByWhere(whereClause.toString());

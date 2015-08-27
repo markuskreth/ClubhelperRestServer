@@ -104,7 +104,8 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 	private void initialize() {
 		setDataSource(source);
 	}
-	
+
+	@Override
 	public T getById(long id) {
 		return getJdbcTemplate().queryForObject(SQL_QUERY_BY_ID, mapper, id);
 	}
@@ -120,6 +121,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		return getJdbcTemplate().query(SQL_QUERY_CHANGED, args, mapper);
 	}
 
+	@Override
 	public T insert(T obj) {
 		boolean withId = obj.getId() != null && obj.getId()>= 0;
 		ArrayList<Object> values = new ArrayList<Object>(mapper.mapObject(obj));
@@ -142,6 +144,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		return obj;
 	}
 
+	@Override
 	public boolean update(T obj) {
 		Collection<Object> values = mapper.mapObject(obj);
 		values.add(obj.getChanged());
@@ -152,20 +155,24 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		return updateCount == 1;
 	}
 
+	@Override
 	public boolean update(long id, T obj) {
 		obj.setId(id);
 		return update(obj);
 	}
 
+	@Override
 	public boolean delete(T obj) {
 		return delete(obj.getId());
 	}
 
+	@Override
 	public final boolean delete(long id) {
 		int inserted = getJdbcTemplate().update(SQL_DELETE, id);
 		return inserted == 1;
 	}
 
+	@Override
 	public List<T> getAll() {
 		return getJdbcTemplate().query(SQL_QUERY_ALL, mapper);
 	}

@@ -46,14 +46,14 @@ public class PersonController extends AbstractController<Person>{
 
 	@Override
 	@RequestMapping(value="/get/{id}", method=RequestMethod.GET)
-	public String get(@PathVariable("id") long id, Model m) {
-		List<Contact> contacts = contactController.getForId(id);
+	public String getAsView(@PathVariable("id") long id, Model m) {
+		List<Contact> contacts = contactController.getByParentId(id);
 		m.addAttribute(Contact.class.getSimpleName() + "List", contacts);
 		
-		List<Adress> adresses = adressController.getForId(id);
+		List<Adress> adresses = adressController.getByParentId(id);
 		m.addAttribute(Adress.class.getSimpleName() + "List", adresses);
 		
-		List<Relative> relatives = relativeController.getForId(id);
+		List<Relative> relatives = relativeController.getByParentId(id);
 		List<PersonRelative> rel = new ArrayList<PersonController.PersonRelative>();
 		for(Relative r: relatives) {
 			PersonRelative current = new PersonRelative(r);
@@ -70,16 +70,16 @@ public class PersonController extends AbstractController<Person>{
 		}
 		m.addAttribute(PersonRelative.class.getSimpleName() + "List", rel);
 		
-		return super.get(id, m);
+		return super.getAsView(id, m);
 	}
 
 	/**
 	 * Delivers list with one Person with id.
 	 */
 	@Override
-	public List<Person> getForId(long id) {
+	public List<Person> getByParentId(long id) {
 		List<Person> all = new ArrayList<Person>();
-		all.add(getObject(id));
+		all.add(getById(id));
 		return all;
 	}
 

@@ -59,7 +59,7 @@ public class PersonControllerTest {
 	public void testUpdate() throws JsonParseException, JsonMappingException, IOException {
 		
 		Person p = new Person(2L, "Markus", "Kreth", "Trainer", birth, now, now);
-		Person out = controller.updateObject(2, p);
+		Person out = controller.put(2, p);
 		assertEquals(1, dao.updated.size());
 
 		assertEquals(2L, out.getId().longValue());
