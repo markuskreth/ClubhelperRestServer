@@ -12,6 +12,7 @@ import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 import de.kreth.clubhelperbackend.config.SqlForDialect;
@@ -107,7 +108,11 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 
 	@Override
 	public T getById(long id) {
-		return getJdbcTemplate().queryForObject(SQL_QUERY_BY_ID, mapper, id);
+		try {
+			return getJdbcTemplate().queryForObject(SQL_QUERY_BY_ID, mapper, id);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 
 	@Override
