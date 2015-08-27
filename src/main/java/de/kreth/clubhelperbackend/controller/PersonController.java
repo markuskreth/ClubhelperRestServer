@@ -83,6 +83,11 @@ public class PersonController extends AbstractController<Person>{
 		return all;
 	}
 
+	/**
+	 * 
+	 * @author markus
+	 *
+	 */
 	public class PersonRelative extends Relative {
 		
 		private Person toPerson;
@@ -90,6 +95,8 @@ public class PersonController extends AbstractController<Person>{
 		
 		public PersonRelative(Relative r) {
 			super(r.getId(), r.getPerson1(), r.getPerson2(), r.getToPerson2Relation(), r.getToPerson1Relation(), r.getChanged(), r.getCreated());
+			toPerson = getById(r.getPerson1());
+			relation = r.getToPerson1Relation();
 		}
 
 		public Person getToPerson() {
