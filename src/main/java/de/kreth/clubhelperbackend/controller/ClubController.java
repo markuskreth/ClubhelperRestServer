@@ -29,15 +29,6 @@ public interface ClubController<T> {
 	 */
 	@RequestMapping(value = "/all", method = RequestMethod.GET)
 	public abstract String getAllAsView(Model m);
-	/**
-	 * Creates new Object in db.
-	 * <p>Mapping: /create
-	 * @param toCreate	json string representing the new Object.
-	 * @param m	Model to insert the created object into.
-	 * @return	Name of View
-	 */
-	@RequestMapping(value = "/create", method = RequestMethod.GET)
-	public abstract String create(String toCreate, Model m);
 	
 	/* *************
 	 * REST Methoden
@@ -54,6 +45,26 @@ public interface ClubController<T> {
 	@ResponseBody
 	T put(@PathVariable("id") long id, @RequestBody T toUpdate);
 
+	/**
+	 *  Rest: POST - Create Object without Id.
+	 * @param toCreate
+	 * @return
+	 */
+	@RequestMapping(value="/", method=RequestMethod.POST)
+	@ResponseBody
+	T post(@RequestBody T toCreate);
+
+	/**
+	 * Rest: POST - Create Object with or without Id.
+	 * 
+	 * @param id -1 for new Id
+	 * @param toCreate Object to create.
+	 * @return	created object with updated id and dates.
+	 */
+	@RequestMapping(value="/{id}", method=RequestMethod.POST)
+	@ResponseBody
+	T post(@PathVariable("id") long id, @RequestBody T toCreate);
+	
 	/**
 	 * Rest: GET - return object
 	 * <p>Mapping: /{id}

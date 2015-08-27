@@ -67,7 +67,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		 * Defines table structure for this dao
 		 * @param tableName	name of the database table
 		 * @param columnNames	column names without id and timestamps (added automatically)
-		 * @param mapper mapper that maps the object from ResultSet and do a value object.
+		 * @param mapper maps the object from ResultSet and do a value object.
 		 */
 		public DaoConfig(String tableName, String[] columnNames,
 				RowMapper<Y> mapper) {
@@ -83,7 +83,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		/**
 		 * Maps the given object to a value array.
 		 * @param obj	Object to map Values from
-		 * @return	values of the object.
+		 * @return	values of the object in correct order of the table columns.
 		 */
 		Collection<Object> mapObject(X obj);
 	}

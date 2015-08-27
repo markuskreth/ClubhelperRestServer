@@ -1,6 +1,7 @@
 package de.kreth.clubhelperbackend;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -13,7 +14,6 @@ import org.springframework.ui.ExtendedModelMap;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.kreth.clubhelperbackend.controller.PersonController;
 import de.kreth.clubhelperbackend.pojo.Person;
@@ -22,7 +22,7 @@ public class PersonControllerTest {
 
 	private final Date birth = new GregorianCalendar(2000, Calendar.JUNE, 19, 13, 40, 0).getTime();
 	private final Date now = new GregorianCalendar(2015, Calendar.JUNE, 19, 13, 40, 0).getTime();
-	private final ObjectMapper mapper = new ObjectMapper();
+	
 	private PersonController controller;
 	private StubDao<Person> dao;
 	private ExtendedModelMap model;
@@ -37,21 +37,20 @@ public class PersonControllerTest {
 	@Test
 	public void testInsert() throws JsonParseException, JsonMappingException, IOException {
 		
-		String input = "{\"prename\":\"Markus\",\"surname\":\"Kreth\",\"type\":\"Trainer\",\"birth\":" + birth.getTime() + "}";
-		String viewName = controller.create(input, model);
+		Person toCreate = new Person(-1L, "Markus", "Kreth", "Trainer", birth, null, null);
 		
-		assertEquals("output", viewName);
+		Person created = controller.post(toCreate);
+		
 		assertEquals(1, dao.inserted.size());
 		assertTrue("LastInsertId in Dao wasn't incremented!", dao.lastInsertId>0);
 		
 		assertTrue("Model enthält kein Output!", model.containsKey("output"));
-		String out = (String) model.get("output");
-		Person p = mapper.readValue(out, Person.class);
-		assertEquals("Markus", p.getPrename());
-		assertEquals("Kreth", p.getSurname());
-		assertEquals("Trainer", p.getType());
-		assertEquals(birth, p.getBirth());
-		assertEquals(dao.lastInsertId, p.getId());
+		
+		assertEquals("Markus", created.getPrename());
+		assertEquals("Kreth", created.getSurname());
+		assertEquals("Trainer", created.getType());
+		assertEquals(birth, created.getBirth());
+		assertEquals(dao.lastInsertId, created.getId());
 		
 	}
 
