@@ -10,11 +10,6 @@
            http://www.springframework.org/schema/aop
            http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
-		<bean class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
-			<property name="location" value="file:/var/lib/tomcat6/webapps/spallek.properties,file:/var/lib/tomcat7/webapps/debug.properties" />
-			<property name="ignoreResourceNotFound" value="true" />
-		</bean>
-		
 <!-- 		Properties will be overridden by PropertyOverrideConfigurer if file exists! -->
 		<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 			destroy-method="close">
@@ -24,6 +19,11 @@
 			<property name="password" value="0773" />
 		</bean>
 
+		<bean class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
+			<property name="location" value="file:/var/lib/tomcat6/webapps/spallek.properties" />
+			<property name="ignoreResourceNotFound" value="true" />
+		</bean>
+		
 		<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
 			<constructor-arg ref="dataSource" />
 		</bean>
