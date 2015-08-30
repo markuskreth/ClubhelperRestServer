@@ -4,9 +4,10 @@ package de.kreth.clubhelperbackend.pojo;
 /**
  * Entity mapped to table RELATIVE.
  */
-public class Relative implements Data {
+public class Relative implements Data, java.io.Serializable {
 
-    private Long id;
+	private static final long serialVersionUID = -8260891911558054631L;
+	private Long id;
     private long person1;
     private long person2;
     private String toPerson2Relation;

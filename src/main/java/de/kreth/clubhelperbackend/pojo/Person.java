@@ -1,16 +1,14 @@
 package de.kreth.clubhelperbackend.pojo;
 
-import java.util.Date;
-
 
 
 
 /**
  * Entity mapped to table PERSON.
  */
-public class Person implements java.io.Serializable, Data  {
+public class Person implements Data, java.io.Serializable {
 
-	private static final long serialVersionUID = -2810735258874241724L;
+	private static final long serialVersionUID = -7650782727510018817L;
 	private Long id;
     private String prename;
     private String surname;
@@ -20,6 +18,7 @@ public class Person implements java.io.Serializable, Data  {
     private java.util.Date changed;
     /** Not-null value. */
     private java.util.Date created;
+
 
     public Person() {
     }
@@ -93,9 +92,9 @@ public class Person implements java.io.Serializable, Data  {
         return created;
     }
 
-	@Override
-	public void setCreated(Date created) {
-		this.created = created;
-	}
+    /** Not-null value; ensure this value is available before it is saved to the database. */
+    public void setCreated(java.util.Date created) {
+        this.created = created;
+    }
 
 }

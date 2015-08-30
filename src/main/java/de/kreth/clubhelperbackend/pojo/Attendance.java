@@ -4,9 +4,10 @@ package de.kreth.clubhelperbackend.pojo;
 /**
  * Entity mapped to table ATTENDANCE.
  */
-public class Attendance implements Data {
+public class Attendance implements Data, java.io.Serializable {
 
-    private Long id;
+	private static final long serialVersionUID = 4629334052631457791L;
+	private Long id;
     private java.util.Date onDate;
     private long personId;
     /** Not-null value. */

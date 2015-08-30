@@ -4,9 +4,10 @@ package de.kreth.clubhelperbackend.pojo;
 /**
  * Entity mapped to table CONTACT.
  */
-public class Contact implements Data {
+public class Contact implements Data, java.io.Serializable {
 
-    private Long id;
+	private static final long serialVersionUID = 9210368716677650420L;
+	private Long id;
     private String type;
     private String value;
     private long personId;
