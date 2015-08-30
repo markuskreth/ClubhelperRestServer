@@ -31,8 +31,8 @@ public class RelativeDao extends AbstractDao<Relative> implements Dao<Relative> 
 					rs.getLong("person2"), 
 					rs.getString("TO_PERSON1_RELATION"), 
 					rs.getString("TO_PERSON2_RELATION"), 
-					rs.getDate("changed"), 
-					rs.getDate("created"));
+					rs.getTimestamp("changed"), 
+					rs.getTimestamp("created"));
 			return r;
 		}
 

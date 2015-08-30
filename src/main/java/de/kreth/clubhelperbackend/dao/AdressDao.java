@@ -26,7 +26,7 @@ public class AdressDao extends AbstractDao<Adress> {
  
 		@Override
 		public Adress mapRow(ResultSet rs, int rowNr) throws SQLException {
-			Adress a = new AdressWrapper(rs.getLong("_id"), rs.getString("adress1"), rs.getString("adress2"), rs.getString("plz"), rs.getString("city"), rs.getLong("person_id"), rs.getDate("changed"), rs.getDate("created"));
+			Adress a = new AdressWrapper(rs.getLong("_id"), rs.getString("adress1"), rs.getString("adress2"), rs.getString("plz"), rs.getString("city"), rs.getLong("person_id"), rs.getTimestamp("changed"), rs.getTimestamp("created"));
 			return a;
 		}
 

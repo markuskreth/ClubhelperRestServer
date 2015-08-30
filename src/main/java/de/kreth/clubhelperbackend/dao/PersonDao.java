@@ -26,7 +26,7 @@ public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 		
 		@Override
 		public Person mapRow(ResultSet rs, int rowNum) throws SQLException {
-			Person p = new PersonToString(rs.getLong("_id"), rs.getString("prename"), rs.getString("surname"), rs.getString("type"), rs.getDate("birth"), rs.getDate("changed"), rs.getDate("created"));
+			Person p = new PersonToString(rs.getLong("_id"), rs.getString("prename"), rs.getString("surname"), rs.getString("type"), rs.getTimestamp("birth"), rs.getTimestamp("changed"), rs.getTimestamp("created"));
 			return p;
 		}
 

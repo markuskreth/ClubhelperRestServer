@@ -26,7 +26,7 @@ public class ContactDao  extends AbstractDao<Contact> implements Dao<Contact> {
 
 		@Override
 		public Contact mapRow(ResultSet rs, int rowNo) throws SQLException {
-			Contact c = new ContactWrapper(rs.getLong("_id"), rs.getString("type"), rs.getString("value"), rs.getLong("person_id"), rs.getDate("changed"), rs.getDate("created"));
+			Contact c = new ContactWrapper(rs.getLong("_id"), rs.getString("type"), rs.getString("value"), rs.getLong("person_id"), rs.getTimestamp("changed"), rs.getTimestamp("created"));
 			return c;
 		}
 

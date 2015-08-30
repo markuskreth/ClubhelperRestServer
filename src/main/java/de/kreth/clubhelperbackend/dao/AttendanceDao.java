@@ -25,7 +25,7 @@ public class AttendanceDao extends AbstractDao<Attendance> implements Dao<Attend
 
 		@Override
 		public Attendance mapRow(ResultSet rs, int rowNr) throws SQLException {
-			Attendance a = new Attendance(rs.getLong("_id"), rs.getDate("on_date"), rs.getLong("person_id"), rs.getDate("changed"), rs.getDate("created"));
+			Attendance a = new Attendance(rs.getLong("_id"), rs.getTimestamp("on_date"), rs.getLong("person_id"), rs.getTimestamp("changed"), rs.getTimestamp("created"));
 			return a;
 		}
 
