@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import de.kreth.clubhelperbackend.dao.Dao;
 import de.kreth.clubhelperbackend.pojo.Adress;
@@ -18,12 +20,12 @@ import de.kreth.clubhelperbackend.pojo.Relative;
 
 @Controller
 @RequestMapping("/person")
-public class PersonController extends AbstractController<Person>{
+public class PersonController extends AbstractController<Person> {
 
 	private ClubController<Contact> contactController;
 	private ClubController<Relative> relativeController;
 	private ClubController<Adress> adressController;
-	
+
 	@Autowired
 	public PersonController(Dao<Person> personDao) {
 		super(personDao, Person.class);
@@ -35,7 +37,8 @@ public class PersonController extends AbstractController<Person>{
 	}
 
 	@Autowired
-	public void setRelativeController(ClubController<Relative> relativeController) {
+	public void setRelativeController(
+			ClubController<Relative> relativeController) {
 		this.relativeController = relativeController;
 	}
 
@@ -45,20 +48,24 @@ public class PersonController extends AbstractController<Person>{
 	}
 
 	@Override
-	@RequestMapping(value="/get/{id}", method=RequestMethod.GET)
-	public String getAsView(@PathVariable("id") long id, Model m) {
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	public String getAsView(
+			@PathVariable("id") long id,
+			@RequestParam(required = false) boolean ajax,
+			Model m,
+			@RequestHeader(value = "Accept", defaultValue = "Mozilla") String accept) {
 		List<Contact> contacts = contactController.getByParentId(id);
 		m.addAttribute(Contact.class.getSimpleName() + "List", contacts);
-		
+
 		List<Adress> adresses = adressController.getByParentId(id);
 		m.addAttribute(Adress.class.getSimpleName() + "List", adresses);
-		
+
 		List<Relative> relatives = relativeController.getByParentId(id);
 		List<PersonRelative> rel = new ArrayList<PersonController.PersonRelative>();
-		for(Relative r: relatives) {
+		for (Relative r : relatives) {
 			PersonRelative current = new PersonRelative(r);
 			long otherId;
-			if(r.getPerson1() == id) {
+			if (r.getPerson1() == id) {
 				current.relation = r.getToPerson2Relation();
 				otherId = r.getPerson2();
 			} else {
@@ -69,8 +76,8 @@ public class PersonController extends AbstractController<Person>{
 			rel.add(current);
 		}
 		m.addAttribute(PersonRelative.class.getSimpleName() + "List", rel);
-		
-		return super.getAsView(id, m);
+
+		return super.getAsView(id, ajax, m, accept);
 	}
 
 	/**
@@ -86,15 +93,18 @@ public class PersonController extends AbstractController<Person>{
 	/**
 	 * 
 	 * @author markus
-	 *
+	 * 
 	 */
 	public class PersonRelative extends Relative {
-		
+
+		private static final long serialVersionUID = 4828690343464403867L;
 		private Person toPerson;
 		private String relation;
-		
+
 		public PersonRelative(Relative r) {
-			super(r.getId(), r.getPerson1(), r.getPerson2(), r.getToPerson2Relation(), r.getToPerson1Relation(), r.getChanged(), r.getCreated());
+			super(r.getId(), r.getPerson1(), r.getPerson2(), r
+					.getToPerson2Relation(), r.getToPerson1Relation(), r
+					.getChanged(), r.getCreated());
 			toPerson = getById(r.getPerson1());
 			relation = r.getToPerson1Relation();
 		}
@@ -106,11 +116,13 @@ public class PersonController extends AbstractController<Person>{
 		public String getRelation() {
 			return relation;
 		}
-		
+
 		@Override
 		public String toString() {
 			StringBuilder bld = new StringBuilder();
-			bld.append(relation).append(" ").append(toPerson.getId()).append(": ").append(toPerson.getPrename()).append(" ").append(toPerson.getSurname());
+			bld.append(relation).append(" ").append(toPerson.getId())
+					.append(": ").append(toPerson.getPrename()).append(" ")
+					.append(toPerson.getSurname());
 			return bld.toString();
 		}
 	}

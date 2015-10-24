@@ -12,12 +12,13 @@ import org.springframework.stereotype.Repository;
 import de.kreth.clubhelperbackend.pojo.Contact;
 
 @Repository
-public class ContactDao  extends AbstractDao<Contact> implements Dao<Contact> {
+public class ContactDao extends AbstractDao<Contact> implements Dao<Contact> {
 
-	private static final String columnNames[] 		= {"type", "value", "person_id"};
+	private static final String columnNames[] = { "type", "value", "person_id" };
 
-	private static AbstractDao.DaoConfig<Contact> daoConfig = new DaoConfig<Contact>("contact", columnNames, new ContactRowMapper());
-	
+	private static AbstractDao.DaoConfig<Contact> daoConfig = new DaoConfig<Contact>(
+			"contact", columnNames, new ContactRowMapper());
+
 	public ContactDao() {
 		super(daoConfig);
 	}
@@ -26,7 +27,10 @@ public class ContactDao  extends AbstractDao<Contact> implements Dao<Contact> {
 
 		@Override
 		public Contact mapRow(ResultSet rs, int rowNo) throws SQLException {
-			Contact c = new ContactWrapper(rs.getLong("_id"), rs.getString("type"), rs.getString("value"), rs.getLong("person_id"), rs.getTimestamp("changed"), rs.getTimestamp("created"));
+			Contact c = new ContactWrapper(rs.getLong("_id"),
+					rs.getString("type"), rs.getString("value"),
+					rs.getLong("person_id"), rs.getTimestamp("changed"),
+					rs.getTimestamp("created"));
 			return c;
 		}
 
@@ -39,9 +43,11 @@ public class ContactDao  extends AbstractDao<Contact> implements Dao<Contact> {
 			return values;
 		}
 	};
-	
+
 	public static class ContactWrapper extends Contact {
-		
+
+		private static final long serialVersionUID = -8809447394542591592L;
+
 		@Override
 		public String toString() {
 			StringBuilder bld = new StringBuilder();

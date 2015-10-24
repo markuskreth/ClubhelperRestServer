@@ -7,6 +7,9 @@
 		<put-attribute name="top" value="/WEB-INF/views/tiles/header.jsp" />
 		<put-attribute name="side" value="/WEB-INF/views/tiles/menu.jsp" />
 	</definition>
+	<definition name="ajaxtemplate" template="/WEB-INF/views/ajax_template.jsp">
+		<put-attribute name="top" value="/WEB-INF/views/tiles/header.jsp" />
+	</definition>
 	<definition name="home" extends="template">
 		<put-attribute name="content" value="/WEB-INF/views/home.jsp" />
 	</definition>
@@ -17,6 +20,12 @@
 		<put-attribute name="content" value="/WEB-INF/views/personlist.jsp" />
 	</definition>
 	<definition name="Person.get" extends="template">
+		<put-attribute name="content" value="/WEB-INF/views/person.jsp" />
+	</definition>
+	<definition name="Person.all.ajax" template="ajaxtemplate">
+		<put-attribute name="content" value="/WEB-INF/views/personlist.jsp" />
+	</definition>
+	<definition name="Person.get.ajax" template="ajaxtemplate">
 		<put-attribute name="content" value="/WEB-INF/views/person.jsp" />
 	</definition>
 </tiles-definitions>

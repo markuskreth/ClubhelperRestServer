@@ -17,6 +17,7 @@ Changed:  <fmt:formatDate value="${Person.changed}" pattern="yyyy-MM-dd HH:mm:ss
 			${item.adress2}<br/>
 			${item.plz} ${item.city}<br/> <br/> 
 		</c:forEach>
+		
 <h4>Beziehungen:</h4>
 		<c:forEach var="item" items="${PersonRelativeList}">
 			<a href="<s:url value="/person/get/${item.toPerson.id}" />">${item.relation}: ${item.toPerson.prename} ${item.toPerson.surname}</a><br/>
