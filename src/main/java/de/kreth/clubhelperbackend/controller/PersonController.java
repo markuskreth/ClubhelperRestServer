@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,11 +48,8 @@ public class PersonController extends AbstractController<Person> {
 
 	@Override
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	public String getAsView(
-			@PathVariable("id") long id,
-			@RequestParam(required = false) boolean ajax,
-			Model m,
-			@RequestHeader(value = "Accept", defaultValue = "Mozilla") String accept) {
+	public String getAsView(@PathVariable("id") long id,
+			@RequestParam(required = false) boolean ajax, Model m) {
 		List<Contact> contacts = contactController.getByParentId(id);
 		m.addAttribute(Contact.class.getSimpleName() + "List", contacts);
 
@@ -77,7 +73,7 @@ public class PersonController extends AbstractController<Person> {
 		}
 		m.addAttribute(PersonRelative.class.getSimpleName() + "List", rel);
 
-		return super.getAsView(id, ajax, m, accept);
+		return super.getAsView(id, ajax, m);
 	}
 
 	/**

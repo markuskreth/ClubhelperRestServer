@@ -4,7 +4,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.kreth.dbmanager.*;
+import de.kreth.dbmanager.ColumnDefinition;
+import de.kreth.dbmanager.DataType;
+import de.kreth.dbmanager.Database;
+import de.kreth.dbmanager.TableDefinition;
 
 public class DbManager {
 

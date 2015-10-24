@@ -1,8 +1,12 @@
 package de.kreth.clubhelperbackend.dao;
 
-import static de.kreth.clubhelperbackend.string.String.*;
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
+import static de.kreth.clubhelperbackend.string.String.join;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -18,8 +22,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import de.kreth.clubhelperbackend.config.SqlForDialect;
 import de.kreth.clubhelperbackend.config.SqlForMysql;
-import de.kreth.clubhelperbackend.dao.AbstractDao;
-import de.kreth.clubhelperbackend.dao.ContactDao;
 import de.kreth.clubhelperbackend.dao.AbstractDao.DaoConfig;
 import de.kreth.clubhelperbackend.dao.AbstractDao.RowMapper;
 import de.kreth.clubhelperbackend.pojo.Contact;
