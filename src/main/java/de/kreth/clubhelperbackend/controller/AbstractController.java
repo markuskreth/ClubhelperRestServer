@@ -32,7 +32,7 @@ public abstract class AbstractController<T extends Data> implements
 			@RequestParam(required = false) boolean ajax, Model m) {
 		String mapping = elementClass.getSimpleName();
 		m.addAttribute(mapping, getById(id));
-		return mapping + ".get" + (ajax ? ".ajax" : "");
+		return mapping + "Get" + (ajax ? "Ajax" : "");
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public abstract class AbstractController<T extends Data> implements
 			Model m) {
 		String mapping = elementClass.getSimpleName();
 		m.addAttribute(mapping + "List", getAll());
-		return mapping + ".all" + (ajax ? ".ajax" : "");
+		return mapping + "All" + (ajax ? "Ajax" : "");
 	}
 
 	@Override

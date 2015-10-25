@@ -3,29 +3,29 @@
     "-//Apache Software Foundation//DTD Tiles Configuration 2.2//EN" 
     "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
 <tiles-definitions>
-	<definition name="template" template="/WEB-INF/views/main_template.jsp">
-		<put-attribute name="top" value="/WEB-INF/views/tiles/header.jsp" />
-		<put-attribute name="side" value="/WEB-INF/views/tiles/menu.jsp" />
+	<definition name="maintemplate" template="/WEB-INF/views/main_template.jsp">
+		<put-attribute name="top" value="/WEB-INF/views/header.jsp" />
+		<put-attribute name="side" value="/WEB-INF/views/menu.jsp" />
 	</definition>
 	<definition name="ajaxtemplate" template="/WEB-INF/views/ajax_template.jsp">
-		<put-attribute name="top" value="/WEB-INF/views/tiles/header.jsp" />
+		<put-attribute name="top" value="/WEB-INF/views/header.jsp" />
 	</definition>
-	<definition name="home" extends="template">
+	<definition name="home" extends="maintemplate">
 		<put-attribute name="content" value="/WEB-INF/views/home.jsp" />
 	</definition>
-	<definition name="output" extends="template">
+	<definition name="output" extends="maintemplate">
 		<put-attribute name="content" value="/WEB-INF/views/output.jsp" />
 	</definition>
-	<definition name="Person.all" extends="template">
+	<definition name="PersonAll" extends="maintemplate">
 		<put-attribute name="content" value="/WEB-INF/views/personlist.jsp" />
 	</definition>
-	<definition name="Person.get" extends="template">
+	<definition name="PersonGet" extends="maintemplate">
 		<put-attribute name="content" value="/WEB-INF/views/person.jsp" />
 	</definition>
-	<definition name="Person.all.ajax" template="ajaxtemplate">
+	<definition name="PersonAllAjax" template="ajaxtemplate">
 		<put-attribute name="content" value="/WEB-INF/views/personlist.jsp" />
 	</definition>
-	<definition name="Person.get.ajax" template="ajaxtemplate">
+	<definition name="PersonGetAjax" template="ajaxtemplate">
 		<put-attribute name="content" value="/WEB-INF/views/person.jsp" />
 	</definition>
 </tiles-definitions>

@@ -3,7 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 Name: ${Person.prename}  ${Person.surname}<br/>
 Typ:  ${Person.type}<br />
-Geburtstag:  ${Person.birth}<br />
+Geburtstag:  <fmt:formatDate value="${Person.birth}" pattern="dd.MM.yyyy" /><br />
 Created:  <fmt:formatDate value="${Person.created}" pattern="yyyy-MM-dd HH:mm:ss" /><br />
 Changed:  <fmt:formatDate value="${Person.changed}" pattern="yyyy-MM-dd HH:mm:ss" /><br />
 <h4>Kontakte:</h4>
@@ -20,5 +20,5 @@ Changed:  <fmt:formatDate value="${Person.changed}" pattern="yyyy-MM-dd HH:mm:ss
 		
 <h4>Beziehungen:</h4>
 		<c:forEach var="item" items="${PersonRelativeList}">
-			<a href="<s:url value="/person/get/${item.toPerson.id}" />">${item.relation}: ${item.toPerson.prename} ${item.toPerson.surname}</a><br/>
+			<a href="<s:url value="/person/${item.toPerson.id}" />">${item.relation}: ${item.toPerson.prename} ${item.toPerson.surname}</a><br/>
 		</c:forEach>
