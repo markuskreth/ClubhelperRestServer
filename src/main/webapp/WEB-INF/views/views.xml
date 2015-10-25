@@ -22,10 +22,10 @@
 	<definition name="PersonGet" extends="maintemplate">
 		<put-attribute name="content" value="/WEB-INF/views/person.jsp" />
 	</definition>
-	<definition name="PersonAllAjax" template="ajaxtemplate">
+	<definition name="PersonAllAjax" extends="ajaxtemplate">
 		<put-attribute name="content" value="/WEB-INF/views/personlist.jsp" />
 	</definition>
-	<definition name="PersonGetAjax" template="ajaxtemplate">
+	<definition name="PersonGetAjax" extends="ajaxtemplate">
 		<put-attribute name="content" value="/WEB-INF/views/person.jsp" />
 	</definition>
 </tiles-definitions>

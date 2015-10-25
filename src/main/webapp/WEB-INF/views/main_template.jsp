@@ -8,8 +8,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Club Helper Web</title>
-<script type="text/javascript"
-	src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 <script type="text/javascript">
 
 		$( document ).ready( function() {
@@ -42,7 +41,8 @@
 		}
 </script>
 
-<%!public Date theDate = new Date();
+<%!
+	public Date theDate = new Date();
 
 	public String calcToken(String userAgent) {
 		Encryptor enc = new Encryptor();
@@ -50,10 +50,11 @@
 		try {
 			token = enc.encrypt(theDate, userAgent);
 		} catch (Exception e) {
-
+			
 		}
 		return token;
-	}%>
+	}
+%>
 
 <script type="text/javascript">
 function sendPost(uri, data)
@@ -80,7 +81,6 @@ function sendPost(uri, data)
 
 }
 </script>
-
 <link
 	href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600"
 	rel="stylesheet" type="text/css" />
@@ -88,7 +88,6 @@ function sendPost(uri, data)
 	rel='stylesheet' type='text/css' />
 <link href="<c:url value="/resources/0906/css/style.css" />"
 	rel="stylesheet" type="text/css" media="screen" />
-
 </head>
 <body>
 	<div id="content">
@@ -109,7 +108,7 @@ function sendPost(uri, data)
 		</div>
 	</div>
 	<div id="footer">
-		<center><a href="http://www.dreamtemplate.com" title="Website Templates" target="_blank">Website templates</a></center>
+		<center>Design by <a href="http://www.dreamtemplate.com" title="Website Templates" target="_blank">Website templates</a></center>
 	</div>
 </body>
 </html>

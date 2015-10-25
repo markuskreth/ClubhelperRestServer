@@ -4,21 +4,29 @@
 Name: ${Person.prename}  ${Person.surname}<br/>
 Typ:  ${Person.type}<br />
 Geburtstag:  <fmt:formatDate value="${Person.birth}" pattern="dd.MM.yyyy" /><br />
-Created:  <fmt:formatDate value="${Person.created}" pattern="yyyy-MM-dd HH:mm:ss" /><br />
-Changed:  <fmt:formatDate value="${Person.changed}" pattern="yyyy-MM-dd HH:mm:ss" /><br />
+Created:  <fmt:formatDate value="${Person.created}" pattern="dd.MM.yyyy HH:mm:ss" /><br />
+Changed:  <fmt:formatDate value="${Person.changed}" pattern="dd.MM.yyyy HH:mm:ss" /><br />
+
 <h4>Kontakte:</h4>
-		<c:forEach var="item" items="${ContactList}">
-			${item.type}: ${item.value}<br/> 
-		</c:forEach>
-		
+<c:forEach var="item" items="${ContactList}">
+<c:choose>
+<c:when test="${item.type == 'Email'}">
+	${item.type}: <a href="mailto:${item.value}">${item.value}</a><br/>
+</c:when>
+<c:otherwise>
+	${item.type}: ${item.value}<br/>
+</c:otherwise>
+</c:choose>
+</c:forEach>
+
 <h4>Adresse:</h4>
-		<c:forEach var="item" items="${AdressList}">
-			${item.adress1}<br/>
-			${item.adress2}<br/>
-			${item.plz} ${item.city}<br/> <br/> 
-		</c:forEach>
-		
+<c:forEach var="item" items="${AdressList}">
+	${item.adress1}<br/>
+	${item.adress2}<br/>
+	${item.plz} ${item.city}<br/> <br/> 
+</c:forEach>
+
 <h4>Beziehungen:</h4>
-		<c:forEach var="item" items="${PersonRelativeList}">
-			<a href="<s:url value="/person/${item.toPerson.id}" />">${item.relation}: ${item.toPerson.prename} ${item.toPerson.surname}</a><br/>
-		</c:forEach>
+<c:forEach var="item" items="${PersonRelativeList}">
+	<a href="<s:url value="/person/${item.toPerson.id}" />">${item.relation}: ${item.toPerson.prename} ${item.toPerson.surname}</a><br/>
+</c:forEach>
