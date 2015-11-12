@@ -38,6 +38,7 @@
 	<aop:aspectj-autoproxy>
 		<aop:include name="mysqlDbCheckAspect" />
 		<aop:include name="daoLoggerAspect" />
+		<aop:include name="controllerSecurityAspect" />
 	</aop:aspectj-autoproxy>
 
 </beans>
