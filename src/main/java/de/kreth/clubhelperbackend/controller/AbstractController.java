@@ -77,7 +77,10 @@ public abstract class AbstractController<T extends Data> implements
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
 	public T put(@PathVariable("id") long id, @RequestBody T toUpdate) {
-		toUpdate.setChanged(new Date());
+
+		if (toUpdate.getChanged() == null || toUpdate.getChanged().equals(toUpdate.getCreated()))
+			toUpdate.setChanged(new Date());
+
 		dao.update(id, toUpdate);
 		return toUpdate;
 	}
@@ -104,11 +107,11 @@ public abstract class AbstractController<T extends Data> implements
 		toCreate.setId(id);
 		Date now = new Date();
 
-		if (toCreate.getChanged() == null) {
+		if (toCreate.getChanged() == null || toCreate.getChanged().getTime() == 0) {
 			toCreate.setChanged(now);
 		}
 
-		if (toCreate.getCreated() == null) {
+		if (toCreate.getCreated() == null || toCreate.getCreated().getTime() == 0) {
 			toCreate.setCreated(now);
 		}
 
