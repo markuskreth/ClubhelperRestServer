@@ -2,12 +2,11 @@ package de.kreth.clubhelperbackend.pojo;
 
 
 /**
- * Entity mapped to table ADRESS.
+ * Entity mapped to table "ADRESS".
  */
 public class Adress implements Data, java.io.Serializable {
 
-	private static final long serialVersionUID = 2456211837852984124L;
-	private Long id;
+    private Long id;
     private String adress1;
     private String adress2;
     private String plz;

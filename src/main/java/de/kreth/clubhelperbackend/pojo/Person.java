@@ -1,100 +1,108 @@
 package de.kreth.clubhelperbackend.pojo;
 
-
-
+import java.util.Date;
 
 /**
- * Entity mapped to table PERSON.
+ * Entity mapped to table "PERSON".
  */
 public class Person implements Data, java.io.Serializable {
 
 	private static final long serialVersionUID = -7650782727510018817L;
 	private Long id;
-    private String prename;
-    private String surname;
-    private String type;
-    private java.util.Date birth;
-    /** Not-null value. */
-    private java.util.Date changed;
-    /** Not-null value. */
-    private java.util.Date created;
+	private String prename;
+	private String surname;
+	private String type;
+	private Date birth;
+	/** Not-null value. */
+	private Date changed;
+	/** Not-null value. */
+	private Date created;
 
+	/** Used to resolve relations */
 
-    public Person() {
-    }
+	/** Used for active entity operations. */
 
-    public Person(Long id) {
-        this.id = id;
-    }
+	public Person() {
+	}
 
-    public Person(Long id, String prename, String surname, String type, java.util.Date birth, java.util.Date changed, java.util.Date created) {
-        this.id = id;
-        this.prename = prename;
-        this.surname = surname;
-        this.type = type;
-        this.birth = birth;
-        this.changed = changed;
-        this.created = created;
-    }
+	public Person(Long id) {
+		this.id = id;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Person(Long id, String prename, String surname, String type, Date birth, Date changed, Date created) {
+		this.id = id;
+		this.prename = prename;
+		this.surname = surname;
+		this.type = type;
+		this.birth = birth;
+		this.changed = changed;
+		this.created = created;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getPrename() {
-        return prename;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setPrename(String prename) {
-        this.prename = prename;
-    }
+	public String getPrename() {
+		return prename;
+	}
 
-    public String getSurname() {
-        return surname;
-    }
+	public void setPrename(String prename) {
+		this.prename = prename;
+	}
 
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
+	public String getSurname() {
+		return surname;
+	}
 
-    public String getType() {
-        return type;
-    }
+	public void setSurname(String surname) {
+		this.surname = surname;
+	}
 
-    public void setType(String type) {
-        this.type = type;
-    }
+	public String getType() {
+		return type;
+	}
 
-    public java.util.Date getBirth() {
-        return birth;
-    }
+	public void setType(String type) {
+		this.type = type;
+	}
 
-    public void setBirth(java.util.Date birth) {
-        this.birth = birth;
-    }
+	public Date getBirth() {
+		return birth;
+	}
 
-    /** Not-null value. */
-    public java.util.Date getChanged() {
-        return changed;
-    }
+	public void setBirth(Date birth) {
+		this.birth = birth;
+	}
 
-    /** Not-null value; ensure this value is available before it is saved to the database. */
-    public void setChanged(java.util.Date changed) {
-        this.changed = changed;
-    }
+	/** Not-null value. */
+	public Date getChanged() {
+		return changed;
+	}
 
-    /** Not-null value. */
-    public java.util.Date getCreated() {
-        return created;
-    }
+	/**
+	 * Not-null value; ensure this value is available before it is saved to the
+	 * database.
+	 */
+	public void setChanged(Date changed) {
+		this.changed = changed;
+	}
 
-    /** Not-null value; ensure this value is available before it is saved to the database. */
-    public void setCreated(java.util.Date created) {
-        this.created = created;
-    }
+	/** Not-null value. */
+	public Date getCreated() {
+		return created;
+	}
+
+	/**
+	 * Not-null value; ensure this value is available before it is saved to the
+	 * database.
+	 */
+	public void setCreated(Date created) {
+		this.created = created;
+	}
 
 }

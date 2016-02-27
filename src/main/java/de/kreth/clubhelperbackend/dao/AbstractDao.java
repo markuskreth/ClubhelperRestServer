@@ -35,17 +35,19 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 
 		List<String> columnNames = new ArrayList<String>(Arrays.asList(config.columnNames));
 		columnNames.add("changed");
-		this.SQL_UPDATE = "update " + config.tableName + " set " + join("=?, ", columnNames) + "=? WHERE _id=?";
-		
-		columnNames.add("created");
-		SQL_INSERTWithoutId = "insert into " + config.tableName + " (" + join(", ", columnNames) + ") values (" + generateQuestionMarkList(config.columnNames.length+2)+ ")";
-		
-		columnNames.add(0, "_id");
-		this.SQL_INSERTWithId = "insert into " + config.tableName + " (" + join(", ", columnNames) + ") values (" + generateQuestionMarkList(config.columnNames.length+3)+ ")";
+		this.SQL_UPDATE = "update `" + config.tableName + "` set " + join("=?, ", columnNames) + "=? WHERE _id=?";
 
-		this.SQL_DELETE = "delete from " + config.tableName + " where _id=?";
-		
-		this.SQL_QUERY_ALL = "select * from " + config.tableName;
+		columnNames.add("created");
+		SQL_INSERTWithoutId = "insert into `" + config.tableName + "` (" + join(", ", columnNames) + ") values ("
+				+ generateQuestionMarkList(config.columnNames.length + 2) + ")";
+
+		columnNames.add(0, "_id");
+		this.SQL_INSERTWithId = "insert into `" + config.tableName + "` (" + join(", ", columnNames) + ") values ("
+				+ generateQuestionMarkList(config.columnNames.length + 3) + ")";
+
+		this.SQL_DELETE = "delete from `" + config.tableName + "` where _id=?";
+
+		this.SQL_QUERY_ALL = "select * from `" + config.tableName + "`";
 		this.SQL_QUERY_BY_ID = SQL_QUERY_ALL + " where _id=?";
 		this.SQL_QUERY_CHANGED = SQL_QUERY_ALL + " where changed>?";
 		this.mapper = config.mapper;
