@@ -18,6 +18,13 @@ import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import de.kreth.clubhelperbackend.config.SqlForDialect;
 import de.kreth.clubhelperbackend.pojo.Data;
 
+/**
+ * Default implementation for database access with all common query methods.
+ * 
+ * @author markus
+ *
+ * @param <T>
+ */
 public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport implements Dao<T> {
 
 	private SqlForDialect sqlDialect;
@@ -30,6 +37,11 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 	private String SQL_INSERTWithId;
 	private RowMapper<T> mapper;
 
+	/**
+	 * Constructs this {@link Dao} implemetation.
+	 * 
+	 * @param config
+	 */
 	public AbstractDao(DaoConfig<T> config) {
 		super();
 
@@ -60,16 +72,28 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		return length > 0 ? bld.toString() : "";
 	}
 
+	/**
+	 * Configuration Class to construct a {@link Dao} implementation.
+	 * 
+	 * @author markus
+	 *
+	 * @param <Y>
+	 */
 	public static class DaoConfig<Y extends Data> {
 		private String tableName;
 		private String[] columnNames;
 		private RowMapper<Y> mapper;
-		
+
 		/**
 		 * Defines table structure for this dao
-		 * @param tableName	name of the database table
-		 * @param columnNames	column names without id and timestamps (added automatically)
-		 * @param mapper maps the object from ResultSet and do a value object.
+		 * 
+		 * @param tableName
+		 *            name of the database table
+		 * @param columnNames
+		 *            column names without id and timestamps (added
+		 *            automatically)
+		 * @param mapper
+		 *            maps the object from ResultSet and do a value object.
 		 */
 		public DaoConfig(String tableName, String[] columnNames, RowMapper<Y> mapper) {
 			super();
@@ -77,14 +101,23 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 			this.columnNames = columnNames;
 			this.mapper = mapper;
 		}
-		
+
 	}
 
-	public interface RowMapper<X  extends Data> extends org.springframework.jdbc.core.RowMapper<X>{
+	/**
+	 * Class to map an Object to a value Collection.
+	 * 
+	 * @author markus
+	 * @param <X>
+	 */
+	public interface RowMapper<X extends Data> extends org.springframework.jdbc.core.RowMapper<X> {
+
 		/**
 		 * Maps the given object to a value array.
-		 * @param obj	Object to map Values from
-		 * @return	values of the object in correct order of the table columns.
+		 * 
+		 * @param obj
+		 *            Object to map Values from
+		 * @return values of the object in correct order of the table columns.
 		 */
 		Collection<Object> mapObject(X obj);
 	}

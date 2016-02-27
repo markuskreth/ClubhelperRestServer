@@ -14,8 +14,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import de.kreth.clubhelperbackend.dao.Dao;
 import de.kreth.clubhelperbackend.pojo.Data;
 
-public abstract class AbstractController<T extends Data> implements
-		ClubController<T> {
+/**
+ * Default Controller implementing all functionality for all {@link Data} types.
+ * 
+ * @param <T>
+ */
+public abstract class AbstractController<T extends Data> implements ClubController<T> {
 
 	protected Dao<T> dao;
 	private Class<T> elementClass;
