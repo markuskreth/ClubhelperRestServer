@@ -53,12 +53,11 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		this.mapper = config.mapper;
 	}
 
-
 	private String generateQuestionMarkList(int length) {
 		StringBuilder bld = new StringBuilder("?");
-		for (int i=1; i<length; i++)
+		for (int i = 1; i < length; i++)
 			bld.append(",?");
-		return length>0?bld.toString():"";
+		return length > 0 ? bld.toString() : "";
 	}
 
 	public static class DaoConfig<Y extends Data> {
@@ -72,8 +71,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		 * @param columnNames	column names without id and timestamps (added automatically)
 		 * @param mapper maps the object from ResultSet and do a value object.
 		 */
-		public DaoConfig(String tableName, String[] columnNames,
-				RowMapper<Y> mapper) {
+		public DaoConfig(String tableName, String[] columnNames, RowMapper<Y> mapper) {
 			super();
 			this.tableName = tableName;
 			this.columnNames = columnNames;
@@ -90,7 +88,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		 */
 		Collection<Object> mapObject(X obj);
 	}
-	
+
 	public SqlForDialect getSqlDialect() {
 		return sqlDialect;
 	}
@@ -102,7 +100,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 
 	@Autowired
 	private DataSource source;
-	
+
 	@PostConstruct
 	private void initialize() {
 		setDataSource(source);
@@ -124,28 +122,30 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 
 	@Override
 	public List<T> getChangedSince(Date changed) {
-		Object[] args = {changed};
+		Object[] args = { changed };
 		return getJdbcTemplate().query(SQL_QUERY_CHANGED, args, mapper);
 	}
 
 	@Override
 	public T insert(T obj) {
-		boolean withId = obj.getId() != null && obj.getId()>= 0;
+		boolean withId = obj.getId() != null && obj.getId() >= 0;
 		ArrayList<Object> values = new ArrayList<Object>(mapper.mapObject(obj));
-		
+
 		values.add(obj.getChanged());
 		values.add(obj.getCreated());
-		
-		if(withId)
+
+		if (withId)
 			values.add(0, obj.getId());
 
-		int inserted = getJdbcTemplate().update(withId?SQL_INSERTWithId:SQL_INSERTWithoutId, values.toArray());
-		
+		String sql = withId ? SQL_INSERTWithId : SQL_INSERTWithoutId;
+		Object[] valueArr = values.toArray();
+
+		int inserted = getJdbcTemplate().update(sql, valueArr);
+
 		if (inserted == 1) {
-			if(!withId)
+			if (!withId)
 				obj.setId(sqlDialect.queryForIdentity());
-		} 
-		else
+		} else
 			throw new IllegalStateException("insert could not successfully create the database entity");
 
 		return obj;
@@ -156,7 +156,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		Collection<Object> values = mapper.mapObject(obj);
 		values.add(obj.getChanged());
 		values.add(obj.getId());
-		
+
 		logger.debug("sql=" + SQL_UPDATE + "; ValueSize=" + values.size() + "; Values=" + values);
 		int updateCount = getJdbcTemplate().update(SQL_UPDATE, values.toArray());
 		return updateCount == 1;

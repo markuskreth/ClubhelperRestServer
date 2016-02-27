@@ -28,8 +28,7 @@ public abstract class AbstractController<T extends Data> implements
 
 	@Override
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	public String getAsView(@PathVariable("id") long id,
-			@RequestParam(required = false) boolean ajax, Model m) {
+	public String getAsView(@PathVariable("id") long id, @RequestParam(required = false) boolean ajax, Model m) {
 		String mapping = elementClass.getSimpleName();
 		m.addAttribute(mapping, getById(id));
 		return mapping + "Get" + (ajax ? "Ajax" : "");
@@ -37,8 +36,7 @@ public abstract class AbstractController<T extends Data> implements
 
 	@Override
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET)
-	public String getAllAsView(@RequestParam(required = false) boolean ajax,
-			Model m) {
+	public String getAllAsView(@RequestParam(required = false) boolean ajax, Model m) {
 		String mapping = elementClass.getSimpleName();
 		m.addAttribute(mapping + "List", getAll());
 		return mapping + "All" + (ajax ? "Ajax" : "");

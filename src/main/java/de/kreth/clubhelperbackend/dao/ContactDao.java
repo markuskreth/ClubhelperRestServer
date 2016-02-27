@@ -16,8 +16,8 @@ public class ContactDao extends AbstractDao<Contact> implements Dao<Contact> {
 
 	private static final String columnNames[] = { "type", "value", "person_id" };
 
-	private static AbstractDao.DaoConfig<Contact> daoConfig = new DaoConfig<Contact>(
-			"contact", columnNames, new ContactRowMapper());
+	private static AbstractDao.DaoConfig<Contact> daoConfig = new DaoConfig<Contact>("contact", columnNames,
+			new ContactRowMapper());
 
 	public ContactDao() {
 		super(daoConfig);
@@ -27,10 +27,8 @@ public class ContactDao extends AbstractDao<Contact> implements Dao<Contact> {
 
 		@Override
 		public Contact mapRow(ResultSet rs, int rowNo) throws SQLException {
-			Contact c = new ContactWrapper(rs.getLong("_id"),
-					rs.getString("type"), rs.getString("value"),
-					rs.getLong("person_id"), rs.getTimestamp("changed"),
-					rs.getTimestamp("created"));
+			Contact c = new ContactWrapper(rs.getLong("_id"), rs.getString("type"), rs.getString("value"),
+					rs.getLong("person_id"), rs.getTimestamp("changed"), rs.getTimestamp("created"));
 			return c;
 		}
 
@@ -55,8 +53,7 @@ public class ContactDao extends AbstractDao<Contact> implements Dao<Contact> {
 			return bld.toString();
 		}
 
-		public ContactWrapper(Long id, String type, String value,
-				long personId, Date changed, Date created) {
+		public ContactWrapper(Long id, String type, String value, long personId, Date changed, Date created) {
 			super(id, type, value, personId, changed, created);
 		}
 	}

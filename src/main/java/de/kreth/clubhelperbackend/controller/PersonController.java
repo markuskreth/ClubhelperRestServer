@@ -36,8 +36,7 @@ public class PersonController extends AbstractController<Person> {
 	}
 
 	@Autowired
-	public void setRelativeController(
-			ClubController<Relative> relativeController) {
+	public void setRelativeController(ClubController<Relative> relativeController) {
 		this.relativeController = relativeController;
 	}
 
@@ -48,8 +47,7 @@ public class PersonController extends AbstractController<Person> {
 
 	@Override
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	public String getAsView(@PathVariable("id") long id,
-			@RequestParam(required = false) boolean ajax, Model m) {
+	public String getAsView(@PathVariable("id") long id, @RequestParam(required = false) boolean ajax, Model m) {
 		List<Contact> contacts = contactController.getByParentId(id);
 		m.addAttribute(Contact.class.getSimpleName() + "List", contacts);
 
@@ -89,7 +87,7 @@ public class PersonController extends AbstractController<Person> {
 	/**
 	 * 
 	 * @author markus
-	 * 
+	 *
 	 */
 	public class PersonRelative extends Relative {
 
@@ -98,9 +96,8 @@ public class PersonController extends AbstractController<Person> {
 		private String relation;
 
 		public PersonRelative(Relative r) {
-			super(r.getId(), r.getPerson1(), r.getPerson2(), r
-					.getToPerson2Relation(), r.getToPerson1Relation(), r
-					.getChanged(), r.getCreated());
+			super(r.getId(), r.getPerson1(), r.getPerson2(), r.getToPerson2Relation(), r.getToPerson1Relation(),
+					r.getChanged(), r.getCreated());
 			toPerson = getById(r.getPerson1());
 			relation = r.getToPerson1Relation();
 		}
@@ -116,9 +113,8 @@ public class PersonController extends AbstractController<Person> {
 		@Override
 		public String toString() {
 			StringBuilder bld = new StringBuilder();
-			bld.append(relation).append(" ").append(toPerson.getId())
-					.append(": ").append(toPerson.getPrename()).append(" ")
-					.append(toPerson.getSurname());
+			bld.append(relation).append(" ").append(toPerson.getId()).append(": ").append(toPerson.getPrename())
+					.append(" ").append(toPerson.getSurname());
 			return bld.toString();
 		}
 	}
