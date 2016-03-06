@@ -1,14 +1,14 @@
 package de.kreth.clubhelperbackend.pojo;
 
 /**
- * Entity mapped to table "GROUP".
+ * Entity mapped to table "PERSON_GROUP".
  */
-public class Group implements Data, java.io.Serializable {
+public class PersonGroup implements Data, java.io.Serializable {
 
-	private static final long serialVersionUID = 6274828594078300002L;
+	private static final long serialVersionUID = 5404113637638434939L;
 	private Long id;
-	/** Not-null value. */
-	private String name;
+	private long personId;
+	private long groupId;
 	/** Not-null value. */
 	private java.util.Date changed;
 	/** Not-null value. */
@@ -18,16 +18,17 @@ public class Group implements Data, java.io.Serializable {
 
 	/** Used for active entity operations. */
 
-	public Group() {
+	public PersonGroup() {
 	}
 
-	public Group(Long id) {
+	public PersonGroup(Long id) {
 		this.id = id;
 	}
 
-	public Group(Long id, String name, java.util.Date changed, java.util.Date created) {
+	public PersonGroup(Long id, long personId, long groupId, java.util.Date changed, java.util.Date created) {
 		this.id = id;
-		this.name = name;
+		this.personId = personId;
+		this.groupId = groupId;
 		this.changed = changed;
 		this.created = created;
 	}
@@ -40,17 +41,20 @@ public class Group implements Data, java.io.Serializable {
 		this.id = id;
 	}
 
-	/** Not-null value. */
-	public String getName() {
-		return name;
+	public long getPersonId() {
+		return personId;
 	}
 
-	/**
-	 * Not-null value; ensure this value is available before it is saved to the
-	 * database.
-	 */
-	public void setName(String name) {
-		this.name = name;
+	public void setPersonId(long personId) {
+		this.personId = personId;
+	}
+
+	public long getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(long groupId) {
+		this.groupId = groupId;
 	}
 
 	/** Not-null value. */

@@ -1,7 +1,5 @@
 package de.kreth.clubhelperbackend.pojo;
 
-import java.util.Date;
-
 /**
  * Entity mapped to table "PERSON".
  */
@@ -12,11 +10,11 @@ public class Person implements Data, java.io.Serializable {
 	private String prename;
 	private String surname;
 	private String type;
-	private Date birth;
+	private java.util.Date birth;
 	/** Not-null value. */
-	private Date changed;
+	private java.util.Date changed;
 	/** Not-null value. */
-	private Date created;
+	private java.util.Date created;
 
 	/** Used to resolve relations */
 
@@ -29,7 +27,8 @@ public class Person implements Data, java.io.Serializable {
 		this.id = id;
 	}
 
-	public Person(Long id, String prename, String surname, String type, Date birth, Date changed, Date created) {
+	public Person(Long id, String prename, String surname, String type, java.util.Date birth, java.util.Date changed,
+			java.util.Date created) {
 		this.id = id;
 		this.prename = prename;
 		this.surname = surname;
@@ -71,16 +70,16 @@ public class Person implements Data, java.io.Serializable {
 		this.type = type;
 	}
 
-	public Date getBirth() {
+	public java.util.Date getBirth() {
 		return birth;
 	}
 
-	public void setBirth(Date birth) {
+	public void setBirth(java.util.Date birth) {
 		this.birth = birth;
 	}
 
 	/** Not-null value. */
-	public Date getChanged() {
+	public java.util.Date getChanged() {
 		return changed;
 	}
 
@@ -88,12 +87,12 @@ public class Person implements Data, java.io.Serializable {
 	 * Not-null value; ensure this value is available before it is saved to the
 	 * database.
 	 */
-	public void setChanged(Date changed) {
+	public void setChanged(java.util.Date changed) {
 		this.changed = changed;
 	}
 
 	/** Not-null value. */
-	public Date getCreated() {
+	public java.util.Date getCreated() {
 		return created;
 	}
 
@@ -101,7 +100,7 @@ public class Person implements Data, java.io.Serializable {
 	 * Not-null value; ensure this value is available before it is saved to the
 	 * database.
 	 */
-	public void setCreated(Date created) {
+	public void setCreated(java.util.Date created) {
 		this.created = created;
 	}
 
