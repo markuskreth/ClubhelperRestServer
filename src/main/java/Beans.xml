@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:context="http://www.springframework.org/schema/context"
@@ -19,7 +18,7 @@
 		<property name="username" value="markus" />
 		<property name="password" value="0773" />
 	</bean>
-
+	<!-- Overriding Properties File, if exists (on server) -->
 	<bean
 		class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
 		<property name="location"

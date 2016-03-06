@@ -31,8 +31,8 @@ public class ControllerSecurityAspect {
 			encryptor = new Encryptor();
 		}
 
-		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
-				.getRequestAttributes()).getRequest();
+		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+				.getRequest();
 
 		String time = request.getHeader("localtime");
 		String userAgent = request.getHeader("user-agent");
