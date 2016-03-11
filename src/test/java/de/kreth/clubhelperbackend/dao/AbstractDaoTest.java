@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Matchers;
+import org.mockito.internal.matchers.VarargMatcher;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import de.kreth.clubhelperbackend.config.SqlForDialect;
@@ -48,7 +49,7 @@ public class AbstractDaoTest {
 	public void testGetById() {
 
 		long id = 1;
-		String regex = "(?iu)select\\s+\\*\\s+from\\s+tablename\\s+where\\s+_id\\s*=\\s*\\?";
+		String regex = "(?iu)select\\s+\\*\\s+from\\s+`tablename`\\s+where\\s+_id\\s*=\\s*\\?";
 
 		dao.getById(id);
 
@@ -59,7 +60,7 @@ public class AbstractDaoTest {
 	@Test
 	public void testGetAll() {
 
-		String regex = "(?iu)select\\s+\\*\\s+from\\s+tablename\\s*";
+		String regex = "(?iu)select\\s+\\*\\s+from\\s+`tablename`\\s*";
 
 		dao.getAll();
 		verify(jdbcTemplate).query(Matchers.matches(regex), Matchers.<RowMapper<Contact>> any());
@@ -68,7 +69,7 @@ public class AbstractDaoTest {
 	@Test
 	public void testDeleteObject() {
 
-		String regex = "(?iu)delete\\s+from\\s+tablename\\s+where\\s+_id\\s*=\\s*\\?";
+		String regex = "(?iu)delete\\s+from\\s+`tablename`\\s+where\\s+_id\\s*=\\s*\\?";
 
 		long id = 1;
 		Contact c = new Contact(id);
@@ -81,7 +82,7 @@ public class AbstractDaoTest {
 	@Test
 	public void testDeleteById() {
 
-		String regex = "(?iu)delete\\s+from\\s+tablename\\s+where\\s+_id\\s*=\\s*\\?";
+		String regex = "(?iu)delete\\s+from\\s+`tablename`\\s+where\\s+_id\\s*=\\s*\\?";
 		long id = 1;
 
 		dao.delete(id);
@@ -94,7 +95,7 @@ public class AbstractDaoTest {
 
 		String where = "person_id = 1";
 
-		String regex = "(?iu)select\\s+\\*\\s+from\\s+tablename\\s+where\\s+" + where;
+		String regex = "(?iu)select\\s+\\*\\s+from\\s+`tablename`\\s+where\\s+" + where;
 
 		dao.getByWhere(where);
 
@@ -121,7 +122,7 @@ public class AbstractDaoTest {
 		long personId = 1L;
 		Contact obj = new Contact(512L, type, value, personId, now, now);
 
-		String regex = "(?iu)insert\\s+into\\s+tablename\\s*\\(\\s*_id\\s*,\\s*" + join("\\s*,\\s*", columnNames)
+		String regex = "(?iu)insert\\s+into\\s+`tablename`\\s*\\(\\s*_id\\s*,\\s*" + join("\\s*,\\s*", columnNames)
 				+ "\\s*,\\s*changed\\s*,\\s*created\\s*\\)\\s*values\\s*\\(\\s*"
 				+ countToQuestionmarkList(columnNames.length + 3) + "\\s*\\)";
 
@@ -135,7 +136,8 @@ public class AbstractDaoTest {
 		list.add(now);
 		final Object[] values = list.toArray();
 
-		when(jdbcTemplate.update(Matchers.any(String.class), Matchers.any(Object[].class))).thenReturn(1);
+		when(jdbcTemplate.update(Matchers.any(String.class), Matchers.argThat(new ObjectArrayMatcher(null))))
+				.thenReturn(1);
 
 		Contact insert = dao.insert(obj);
 
@@ -143,18 +145,29 @@ public class AbstractDaoTest {
 		assertEquals(512L, insert.getId().longValue());
 	}
 
-	private class ObjectArrayMatcher extends ArgumentMatcher<Object[]> {
+	private class ObjectArrayMatcher extends ArgumentMatcher<Object[]> implements VarargMatcher {
 
-		private Object[] values;
+		private static final long serialVersionUID = -4022372867173708517L;
+		private Object[] values = null;
 
-		@SuppressWarnings("unchecked")
+		public ObjectArrayMatcher(Object[] values) {
+			super();
+			this.values = values;
+		}
+
 		@Override
 		public boolean matches(Object argument) {
-			List<Object> argValues = (List<Object>) argument;
+			if (values == null) {
+				if (argument instanceof List<?> || argument instanceof Object[]) {
+					return true;
+				}
+			}
+
+			Object[] argValues = (Object[]) argument;
 			assertEquals("Expected=" + objArrayToString(values) + "; actual=" + argValues, values.length,
-					argValues.size());
+					argValues.length);
 			for (int i = 0; i < values.length; i++) {
-				if (!values[i].equals(argValues.get(i)))
+				if (!values[i].equals(argValues[i]))
 					return false;
 			}
 			return true;
@@ -171,10 +184,6 @@ public class AbstractDaoTest {
 			return bld.toString();
 		}
 
-		public ObjectArrayMatcher(Object[] values) {
-			super();
-			this.values = values;
-		}
 	}
 
 	@Test
@@ -190,7 +199,7 @@ public class AbstractDaoTest {
 		long personId = 1L;
 		Contact obj = new Contact(null, type, value, personId, now, now);
 
-		String regex = "(?iu)insert\\s+into\\s+tablename\\s*\\(\\s*" + join("\\s*,\\s*", columnNames)
+		String regex = "(?iu)insert\\s+into\\s+`tablename`\\s*\\(\\s*" + join("\\s*,\\s*", columnNames)
 				+ "\\s*,\\s*changed\\s*,\\s*created\\s*\\)\\s*values\\s*\\(\\s*"
 				+ countToQuestionmarkList(columnNames.length + 2) + "\\s*\\)";
 
@@ -204,7 +213,7 @@ public class AbstractDaoTest {
 		list.add(now);
 		Object[] values = list.toArray();
 
-		when(jdbcTemplate.update(Matchers.anyString(), Matchers.any(Object[].class))).thenReturn(1);
+		when(jdbcTemplate.update(Matchers.anyString(), Matchers.argThat(new ObjectArrayMatcher(null)))).thenReturn(1);
 
 		Contact insert = dao.insert(obj);
 
@@ -225,10 +234,10 @@ public class AbstractDaoTest {
 		long personId = 1L;
 		Contact obj = new Contact(personId, type, value, personId, now, calendar.getTime());
 
-		String regex = "(?iu)update\\s+tablename\\s+set\\s+" + join("\\s*=\\s*\\?\\s*,\\s*", columnNames)
+		String regex = "(?iu)update\\s+`tablename`\\s+set\\s+" + join("\\s*=\\s*\\?\\s*,\\s*", columnNames)
 				+ "\\s*=\\s*\\?\\s*,\\s*changed\\s*=\\s*\\?\\s+where\\s+_id\\s*=\\s*\\?\\s*";
 
-		when(jdbcTemplate.update(Matchers.anyString(), Matchers.any(Object[].class))).thenReturn(1);
+		when(jdbcTemplate.update(Matchers.anyString(), Matchers.argThat(new ObjectArrayMatcher(null)))).thenReturn(1);
 
 		List<Object> list = new ArrayList<Object>();
 
