@@ -12,11 +12,11 @@ import org.springframework.stereotype.Repository;
 import de.kreth.clubhelperbackend.pojo.Person;
 
 @Repository
-public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
+public class PersonDao extends AbstractDao<Person>implements Dao<Person> {
 
 	private final static String columnNames[] = { "prename", "surname", "type", "birth" };
 
-	private final static DaoConfig<Person> config = new DaoConfig<>("person", columnNames, new PersonRowMapper());
+	private final static DaoConfig<Person> config = new DaoConfig<Person>("person", columnNames, new PersonRowMapper());
 
 	public PersonDao() {
 		super(config);

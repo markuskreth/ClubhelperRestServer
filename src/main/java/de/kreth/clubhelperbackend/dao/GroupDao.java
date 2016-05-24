@@ -11,11 +11,11 @@ import org.springframework.stereotype.Repository;
 import de.kreth.clubhelperbackend.pojo.Group;
 
 @Repository
-public class GroupDao extends AbstractDao<Group> implements Dao<Group> {
+public class GroupDao extends AbstractDao<Group>implements Dao<Group> {
 
 	private static final String tableName = "group";
 	private static final String[] columnNames = { "name" };
-	private static final DaoConfig<Group> config = new DaoConfig<>(tableName, columnNames, new GroupRowMapper());
+	private static final DaoConfig<Group> config = new DaoConfig<Group>(tableName, columnNames, new GroupRowMapper());
 
 	public GroupDao() {
 		super(config);
