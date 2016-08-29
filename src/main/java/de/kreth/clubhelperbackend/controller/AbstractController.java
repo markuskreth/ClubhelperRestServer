@@ -3,6 +3,8 @@ package de.kreth.clubhelperbackend.controller;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.DateTime;
+import org.joda.time.Minutes;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -80,7 +82,14 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 	@ResponseBody
 	public T put(@PathVariable("id") long id, @RequestBody T toUpdate) {
 
-		if (toUpdate.getChanged() == null || toUpdate.getChanged().equals(toUpdate.getCreated()))
+		DateTime created = new DateTime(toUpdate.getCreated().getTime());
+		DateTime changed = null;
+
+		if (toUpdate.getChanged() != null) {
+			changed = new DateTime(toUpdate.getChanged().getTime());
+		}
+
+		if (changed == null || Minutes.minutesBetween(created, changed).getMinutes() < 1)
 			toUpdate.setChanged(new Date());
 
 		dao.update(id, toUpdate);
@@ -109,9 +118,7 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 		toCreate.setId(id);
 		Date now = new Date();
 
-		if (toCreate.getChanged() == null || toCreate.getChanged().getTime() == 0) {
-			toCreate.setChanged(now);
-		}
+		toCreate.setChanged(now);
 
 		if (toCreate.getCreated() == null || toCreate.getCreated().getTime() == 0) {
 			toCreate.setCreated(now);
