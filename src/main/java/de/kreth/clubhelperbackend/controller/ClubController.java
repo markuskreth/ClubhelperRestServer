@@ -22,8 +22,7 @@ public interface ClubController<T> {
 	 * @return Name of View
 	 */
 	// @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	public abstract String getAsView(@PathVariable("id") long id,
-			@RequestParam boolean ajax, Model m);
+	public abstract String getAsView(@PathVariable("id") long id, @RequestParam boolean ajax, Model m);
 
 	/**
 	 * View: Returns the name of View and inserts the resulting list into the
@@ -38,8 +37,8 @@ public interface ClubController<T> {
 	// @RequestMapping(value = { "/", "" }, method = RequestMethod.GET)
 	public abstract String getAllAsView(@RequestParam boolean ajax, Model m);
 
-	/* *************
-	 * REST Methoden ************
+	/*
+	 * ************* REST Methoden ************
 	 */
 
 	/**
