@@ -1,20 +1,23 @@
 package de.kreth.clubhelperbackend.pojo;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public interface Data {
+/**
+ * Created by markus on 30.08.15.
+ */
+public interface Data extends Serializable, Cloneable {
 
-    public Long getId() ;
+    Long getId() ;
 
-    public void setId(Long id);
+    void setId(Long id);
 
-    public Date getChanged();
+    Date getChanged();
 
-    public void setChanged(Date changed);
+    void setChanged(Date changed);
 
-    public Date getCreated();
+    Date getCreated();
 
-    public void setCreated(Date created);
-
+    void setCreated(Date created);
 
 }

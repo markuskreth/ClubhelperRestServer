@@ -3,18 +3,17 @@ package de.kreth.clubhelperbackend.pojo;
 /**
  * Entity mapped to table "ADRESS".
  */
-public class Adress implements Data, java.io.Serializable {
+public class Adress implements Data {
 
 	private static final long serialVersionUID = 2456211837852984124L;
+
 	private Long id;
 	private String adress1;
 	private String adress2;
 	private String plz;
 	private String city;
 	private long personId;
-	/** Not-null value. */
 	private java.util.Date changed;
-	/** Not-null value. */
 	private java.util.Date created;
 
 	public Adress() {
@@ -84,30 +83,86 @@ public class Adress implements Data, java.io.Serializable {
 		this.personId = personId;
 	}
 
-	/** Not-null value. */
 	public java.util.Date getChanged() {
 		return changed;
 	}
 
-	/**
-	 * Not-null value; ensure this value is available before it is saved to the
-	 * database.
-	 */
 	public void setChanged(java.util.Date changed) {
 		this.changed = changed;
 	}
 
-	/** Not-null value. */
 	public java.util.Date getCreated() {
 		return created;
 	}
 
-	/**
-	 * Not-null value; ensure this value is available before it is saved to the
-	 * database.
-	 */
 	public void setCreated(java.util.Date created) {
 		this.created = created;
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder bld = new StringBuilder();
+		if (adress1 != null)
+			bld.append(adress1);
+		if (adress2 != null && adress2.trim().length() > 0) {
+			if (bld.length() > 0)
+				bld.append("\n");
+			bld.append(adress2);
+		}
+
+		if (plz != null && plz.length() > 0 && city != null && city.length() > 0) {
+
+			if (bld.length() > 0)
+				bld.append("\n");
+			bld.append(plz).append(" ").append(city);
+		}
+
+		return bld.toString();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+
+		Adress adress = (Adress) o;
+
+		if (personId != adress.personId)
+			return false;
+		if (id != null ? !id.equals(adress.id) : adress.id != null)
+			return false;
+		if (adress1 != null ? !adress1.equals(adress.adress1) : adress.adress1 != null)
+			return false;
+		if (adress2 != null ? !adress2.equals(adress.adress2) : adress.adress2 != null)
+			return false;
+		if (plz != null ? !plz.equals(adress.plz) : adress.plz != null)
+			return false;
+		if (city != null ? !city.equals(adress.city) : adress.city != null)
+			return false;
+		if (changed != null ? !changed.equals(adress.changed) : adress.changed != null)
+			return false;
+		return !(created != null ? !created.equals(adress.created) : adress.created != null);
+
+	}
+
+	@Override
+	public int hashCode() {
+		int result = id != null ? id.hashCode() : 0;
+		result = 31 * result + (adress1 != null ? adress1.hashCode() : 0);
+		result = 31 * result + (adress2 != null ? adress2.hashCode() : 0);
+		result = 31 * result + (plz != null ? plz.hashCode() : 0);
+		result = 31 * result + (city != null ? city.hashCode() : 0);
+		result = 31 * result + (int) (personId ^ (personId >>> 32));
+		result = 31 * result + (changed != null ? changed.hashCode() : 0);
+		result = 31 * result + (created != null ? created.hashCode() : 0);
+		return result;
 	}
 
 }
