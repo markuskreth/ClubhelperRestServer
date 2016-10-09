@@ -9,6 +9,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
+import de.kreth.clubhelperbackend.dao.abstr.AbstractDao;
+import de.kreth.clubhelperbackend.dao.abstr.Dao;
 import de.kreth.clubhelperbackend.pojo.Contact;
 
 @Repository

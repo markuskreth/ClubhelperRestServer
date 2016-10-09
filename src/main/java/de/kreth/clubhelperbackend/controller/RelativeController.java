@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import de.kreth.clubhelperbackend.dao.Dao;
+import de.kreth.clubhelperbackend.controller.abstr.AbstractController;
+import de.kreth.clubhelperbackend.dao.abstr.Dao;
 import de.kreth.clubhelperbackend.pojo.Relative;
 
 @Controller

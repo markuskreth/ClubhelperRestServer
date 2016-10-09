@@ -68,4 +68,13 @@ public class DeletedEntries implements Data {
 		this.created = created;
 	}
 
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
+	@Override
+	public String toString() {
+		return tablename + ": " + entryId;
+	}
 }

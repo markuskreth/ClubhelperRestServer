@@ -23,8 +23,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import de.kreth.clubhelperbackend.config.SqlForDialect;
 import de.kreth.clubhelperbackend.config.SqlForMysql;
-import de.kreth.clubhelperbackend.dao.AbstractDao.DaoConfig;
-import de.kreth.clubhelperbackend.dao.AbstractDao.RowMapper;
+import de.kreth.clubhelperbackend.dao.abstr.AbstractDao;
+import de.kreth.clubhelperbackend.dao.abstr.AbstractDao.DaoConfig;
+import de.kreth.clubhelperbackend.dao.abstr.AbstractDao.RowMapper;
 import de.kreth.clubhelperbackend.pojo.Contact;
 
 public class AbstractDaoTest {

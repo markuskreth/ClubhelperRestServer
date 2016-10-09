@@ -12,11 +12,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Aspect
-public class DaoLoggerAspect extends AbstractLoggerAspect {
+public class ControllerLoggerAspect extends AbstractLoggerAspect {
 
-	private Logger logger = LoggerFactory.getLogger(DaoLoggerAspect.class);
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
-	@Pointcut("execution (public * de.kreth.clubhelperbackend.dao..*(..))")
+	@Pointcut("execution (public * de.kreth.clubhelperbackend.controller..*(..))")
 	private void invocation() {
 	}
 
@@ -32,7 +32,6 @@ public class DaoLoggerAspect extends AbstractLoggerAspect {
 
 	@AfterReturning(pointcut = "invocation()", returning = "result")
 	public void logDao(JoinPoint joinPoint, Object result) throws Throwable {
-		logger.warn(generateLogMessage(joinPoint).append(" ==> ")
-				.append(result).toString());
+		logger.warn(generateLogMessage(joinPoint).append(" ==> ").append(result).toString());
 	}
 }

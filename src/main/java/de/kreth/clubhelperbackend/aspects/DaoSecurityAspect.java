@@ -16,7 +16,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Aspect
 @Component
-public class ControllerSecurityAspect {
+public class DaoSecurityAspect {
 
 	private Encryptor encryptor = null;
 
@@ -38,9 +38,15 @@ public class ControllerSecurityAspect {
 		String userAgent = request.getHeader("user-agent");
 		String token = request.getHeader("token");
 
-		if (time == null || userAgent == null || token == null)
+		if (time == null || userAgent == null || token == null) {
+			if (time != null && userAgent != null) {
+				Date remoteTime = new Date(Long.parseLong(time));
+				System.out.println("time=" + time + "; userAgent=" + userAgent + " - Token="
+						+ encryptor.encrypt(remoteTime, userAgent));
+			}
 			throw new HttpClientErrorException(HttpStatus.EXPECTATION_FAILED,
 					"Header expected: Some Header Values are missing.");
+		}
 
 		Date remoteTime = new Date(Long.parseLong(time));
 		String encrypted = encryptor.encrypt(remoteTime, userAgent);

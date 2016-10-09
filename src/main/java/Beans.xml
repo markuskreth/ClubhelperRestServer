@@ -34,10 +34,11 @@
 		<constructor-arg ref="jdbcTemplate" />
 	</bean>
 
-	<aop:aspectj-autoproxy>
+	<aop:aspectj-autoproxy proxy-target-class="true">
 		<aop:include name="mysqlDbCheckAspect" />
-		<aop:include name="daoLoggerAspect" />
-		<aop:include name="controllerSecurityAspect" />
+		<aop:include name="controllerLoggerAspect" />
+		<aop:include name="SecurityAspect" />
+		<aop:include name="deletedStorageAspect" />
 	</aop:aspectj-autoproxy>
 
 </beans>

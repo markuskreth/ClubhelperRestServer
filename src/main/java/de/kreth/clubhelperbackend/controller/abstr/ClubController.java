@@ -1,4 +1,4 @@
-package de.kreth.clubhelperbackend.controller;
+package de.kreth.clubhelperbackend.controller.abstr;
 
 import java.util.List;
 

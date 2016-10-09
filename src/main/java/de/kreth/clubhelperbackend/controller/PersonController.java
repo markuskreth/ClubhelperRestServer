@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import de.kreth.clubhelperbackend.dao.Dao;
+import de.kreth.clubhelperbackend.controller.abstr.AbstractController;
+import de.kreth.clubhelperbackend.controller.abstr.ClubController;
+import de.kreth.clubhelperbackend.dao.abstr.Dao;
 import de.kreth.clubhelperbackend.pojo.Adress;
 import de.kreth.clubhelperbackend.pojo.Contact;
 import de.kreth.clubhelperbackend.pojo.Person;

@@ -1,4 +1,4 @@
-package de.kreth.clubhelperbackend.dao;
+package de.kreth.clubhelperbackend.dao.abstr;
 
 import java.util.Date;
 import java.util.List;

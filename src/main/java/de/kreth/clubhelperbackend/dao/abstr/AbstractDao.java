@@ -1,4 +1,4 @@
-package de.kreth.clubhelperbackend.dao;
+package de.kreth.clubhelperbackend.dao.abstr;
 
 import static de.kreth.clubhelperbackend.string.String.join;
 

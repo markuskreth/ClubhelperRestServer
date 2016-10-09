@@ -1,4 +1,4 @@
-package de.kreth.clubhelperbackend.controller;
+package de.kreth.clubhelperbackend.controller.abstr;
 
 import java.util.Date;
 import java.util.List;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import de.kreth.clubhelperbackend.dao.Dao;
+import de.kreth.clubhelperbackend.dao.abstr.Dao;
 import de.kreth.clubhelperbackend.pojo.Data;
 
 /**
@@ -100,7 +100,7 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json")
 	public T delete(@PathVariable("id") long id) {
 		T obj = getById(id);
-		dao.delete(id);
+		// dao.delete(id);
 		return obj;
 	}
 

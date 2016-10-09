@@ -4,7 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import de.kreth.clubhelperbackend.dao.Dao;
+import de.kreth.clubhelperbackend.controller.abstr.AbstractController;
+import de.kreth.clubhelperbackend.dao.abstr.Dao;
 import de.kreth.clubhelperbackend.pojo.Contact;
 
 @Controller

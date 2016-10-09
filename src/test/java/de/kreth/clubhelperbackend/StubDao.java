@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.kreth.clubhelperbackend.dao.Dao;
+import de.kreth.clubhelperbackend.dao.abstr.Dao;
 import de.kreth.clubhelperbackend.pojo.Data;
 
 public class StubDao<T extends Data> implements Dao<T> {
