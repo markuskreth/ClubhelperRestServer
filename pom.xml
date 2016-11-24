@@ -7,14 +7,16 @@
 	<name>ClubHelperBackend</name>
 	<packaging>war</packaging>
 	<version>1.0.0-BUILD-SNAPSHOT</version>
+
 	<properties>
-		<java-version>1.8</java-version>
+		<java-version>1.6</java-version>
 		<org.springframework-version>4.1.6.RELEASE</org.springframework-version>
 		<com.fasterxml.jackson-version>2.5.4</com.fasterxml.jackson-version>
 		<org.aspectj-version>1.6.10</org.aspectj-version>
 		<org.apache.tiles-version>2.2.2</org.apache.tiles-version>
 		<org.slf4j-version>1.6.6</org.slf4j-version>
 	</properties>
+
 	<dependencies>
 		<!-- Spring -->
 		<dependency>
@@ -22,7 +24,7 @@
 			<artifactId>spring-context</artifactId>
 			<version>${org.springframework-version}</version>
 			<exclusions>
-<!-- 				Exclude Commons Logging in favor of SLF4j -->
+				<!-- Exclude Commons Logging in favor of SLF4j -->
 				<exclusion>
 					<groupId>commons-logging</groupId>
 					<artifactId>commons-logging</artifactId>
@@ -202,6 +204,17 @@
 			<artifactId>joda-time</artifactId>
 			<version>2.9.4</version>
 		</dependency>
+		<dependency>
+			<groupId>de.kreth</groupId>
+			<artifactId>databasedefinition</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<version>1.8.0.10</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -229,6 +242,21 @@
 					<compilerArgument>-Xlint:all</compilerArgument>
 					<showWarnings>true</showWarnings>
 					<showDeprecation>true</showDeprecation>
+				</configuration>
+			</plugin>
+			<!-- <plugin> -->
+			<!-- <groupId>org.apache.maven.plugins</groupId> -->
+			<!-- <artifactId>maven-war-plugin</artifactId> -->
+			<!-- <version>3.0.0</version> -->
+			<!-- </plugin> -->
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<url>http://spallek.com:8080/manager/text</url>
+					<server>SpellakTomcat</server>
+					<path>/ClubHelperBackend</path>
 				</configuration>
 			</plugin>
 			<plugin>

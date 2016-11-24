@@ -18,7 +18,8 @@ public class DeletedEntriesDao extends AbstractDao<DeletedEntries> {
 
 	private static final DeletedEntriesRowMapper mapper = new DeletedEntriesRowMapper();
 
-	private static final DaoConfig<DeletedEntries> config = new DaoConfig<>("deleted_entries", columnNames, mapper);
+	private static final DaoConfig<DeletedEntries> config = new DaoConfig<DeletedEntries>("deleted_entries",
+			columnNames, mapper);
 
 	public DeletedEntriesDao() {
 		super(config);

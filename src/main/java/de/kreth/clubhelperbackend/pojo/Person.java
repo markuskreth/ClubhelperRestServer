@@ -102,7 +102,7 @@ public class Person implements Data {
 				this.setType(PersonType.ACTIVE.name());
 				return PersonType.ACTIVE;
 			} else
-				throw e;
+				throw new RuntimeException(e);
 		}
 	}
 

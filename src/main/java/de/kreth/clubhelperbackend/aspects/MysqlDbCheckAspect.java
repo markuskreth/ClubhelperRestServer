@@ -36,18 +36,22 @@ public class MysqlDbCheckAspect implements Database {
 			throw new InvalidDataAccessApiUsageException("Keine Connection aus DataSource erhalten", e);
 		}
 	}
-	
+
 	@Before("execution (* de.kreth.clubhelperbackend.dao.*.*(..))")
 	public synchronized void checkDb() {
-		if(isChecked)
+		if (isChecked)
 			return;
 		isChecked = true;
 		try {
-			if(getVersion() == 0) {
+			int currentDbVersion = getVersion();
+			switch (currentDbVersion) {
+			case 0:
+
 				beginTransaction();
 				DatabaseConfiguration manager = new DatabaseConfiguration();
 				manager.executeOn(this);
 				setTransactionSuccessful();
+				break;
 			}
 		} catch (SQLException e) {
 			try {
@@ -58,7 +62,7 @@ public class MysqlDbCheckAspect implements Database {
 			throw new DataAccessResourceFailureException("Konnte Datenbanktabellen nicht erstellen1", e);
 		}
 	}
-	
+
 	@Override
 	public void beginTransaction() throws SQLException {
 		con.setAutoCommit(false);
@@ -66,14 +70,14 @@ public class MysqlDbCheckAspect implements Database {
 
 	@Override
 	public void setTransactionSuccessful() throws SQLException {
-		if(!con.getAutoCommit())
+		if (!con.getAutoCommit())
 			con.commit();
 		con.setAutoCommit(true);
 	}
 
 	@Override
 	public void endTransaction() throws SQLException {
-		if(!con.getAutoCommit())
+		if (!con.getAutoCommit())
 			con.rollback();
 		con.setAutoCommit(true);
 	}
@@ -94,28 +98,27 @@ public class MysqlDbCheckAspect implements Database {
 		Statement stm = null;
 		ResultSet rs = null;
 		try {
-	    	stm = con.createStatement();
-	    	rs = stm.executeQuery("SELECT version FROM version");
-	    	if(rs.next()) 
-	    		version = rs.getInt("version");
-			
+			stm = con.createStatement();
+			rs = stm.executeQuery("SELECT version FROM version");
+			if (rs.next())
+				version = rs.getInt("version");
+
 		} catch (SQLException e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 		} finally {
-			if(stm != null)
+			if (stm != null)
 				try {
 					stm.close();
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
 		}
-		
+
 		return version;
 	}
 
 	@Override
-	public long insert(String table, List<DbValue> values)
-			throws SQLException {
+	public long insert(String table, List<DbValue> values) throws SQLException {
 		return 0;
 	}
 
@@ -125,8 +128,7 @@ public class MysqlDbCheckAspect implements Database {
 	}
 
 	@Override
-	public Iterator<Collection<DbValue>> query(String table,
-			String[] columns) throws SQLException {
+	public Iterator<Collection<DbValue>> query(String table, String[] columns) throws SQLException {
 		return null;
 	}
 
@@ -134,12 +136,12 @@ public class MysqlDbCheckAspect implements Database {
 	public void setVersion(int version) {
 		Statement stm = null;
 		boolean autoCommit = true;
-    	try {
-    		autoCommit = con.getAutoCommit();
-    		con.setAutoCommit(false);
-    		stm = con.createStatement();
+		try {
+			autoCommit = con.getAutoCommit();
+			con.setAutoCommit(false);
+			stm = con.createStatement();
 			int rows = stm.executeUpdate("UPDATE version SET version = " + version);
-			if(rows==1)
+			if (rows == 1)
 				con.commit();
 			else
 				con.rollback();
@@ -158,13 +160,12 @@ public class MysqlDbCheckAspect implements Database {
 				e.printStackTrace();
 			}
 		}
-		
+
 	}
 
 	@Override
-	public int delete(String table, String whereClause, String[] whereArgs)
-			throws SQLException {
+	public int delete(String table, String whereClause, String[] whereArgs) throws SQLException {
 		return 0;
 	}
-	
+
 }
