@@ -2,7 +2,13 @@ package de.kreth.clubhelperbackend.config;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.kreth.dbmanager.ColumnDefinition;
 import de.kreth.dbmanager.DataType;
@@ -11,32 +17,94 @@ import de.kreth.dbmanager.TableDefinition;
 
 public class DatabaseConfiguration {
 
+	private static final int LATEST_VERSION = 3;
+
+	private final Logger logger;
+
 	private TableDefinition person;
 	private TableDefinition contact;
 	private TableDefinition relative;
 	private TableDefinition adress;
 	private TableDefinition attendance;
 	private TableDefinition version;
+	private TableDefinition deletedEntries;
+	private TableDefinition group;
+	private TableDefinition persongroup;
 
-	public DatabaseConfiguration() {
+	private List<TableDefinition> tablesToCreate;
+	private Map<TableDefinition, List<ColumnDefinition>> tablesToAddColumns = null;
+
+	private int fromVersion;
+
+	public DatabaseConfiguration(int fromVersion) {
+		this.fromVersion = fromVersion;
+
+		logger = LoggerFactory.getLogger(getClass());
+
+		switch (fromVersion) {
+		case 0:
+			createAll();
+			createWith(person, contact, relative, adress, attendance, version, deletedEntries, group, persongroup);
+			break;
+		case 1:
+			createAll();
+			createWith(deletedEntries, group, persongroup);
+			addDeletedColumn(person, contact, relative, adress, attendance, version);
+			break;
+		case 2:
+			createAll();
+			createWith();
+			addDeletedColumn(person, contact, relative, adress, attendance, version, deletedEntries, group,
+					persongroup);
+			break;
+		}
+	}
+
+	private void addDeletedColumn(TableDefinition... defs) {
+		if (tablesToAddColumns == null) {
+			tablesToAddColumns = new HashMap<>();
+		}
+
+		List<ColumnDefinition> columns;
+
+		for (TableDefinition t : defs) {
+			columns = new ArrayList<>();
+			addDeleteColumn(columns);
+			tablesToAddColumns.put(t, columns);
+		}
+	}
+
+	private void createWith(TableDefinition... defs) {
+		tablesToCreate = new ArrayList<TableDefinition>();
+		for (TableDefinition d : defs) {
+			tablesToCreate.add(d);
+		}
+	}
+
+	private void createAll() {
 
 		List<ColumnDefinition> columns = createPersonColumns();
+		addCreateChangeColumn(columns);
 		addDeleteColumn(columns);
 		person = new TableDefinition("person", columns);
 
 		columns = createContactColumns();
+		addCreateChangeColumn(columns);
 		addDeleteColumn(columns);
 		contact = new TableDefinition("contact", columns);
 
 		columns = createRelativeColumns();
+		addCreateChangeColumn(columns);
 		addDeleteColumn(columns);
 		relative = new TableDefinition("relative", columns);
 
 		columns = createAdressColumns();
+		addCreateChangeColumn(columns);
 		addDeleteColumn(columns);
 		adress = new TableDefinition("adress", columns);
 
 		columns = createAttendanceColumns();
+		addCreateChangeColumn(columns);
 		addDeleteColumn(columns);
 		attendance = new TableDefinition("ATTENDANCE".toLowerCase(), columns);
 
@@ -45,6 +113,49 @@ public class DatabaseConfiguration {
 		columns.add(colVersion);
 		version = new TableDefinition("version", columns);
 
+		columns = createDeletedEntriesColumns();
+		addCreateChangeColumn(columns);
+		addDeleteColumn(columns);
+		deletedEntries = new TableDefinition("deleted_entries", columns);
+
+		columns = createGroupColumns();
+		addCreateChangeColumn(columns);
+		addDeleteColumn(columns);
+		group = new TableDefinition("groupDef", columns);
+
+		columns = createPersonGroupColumns();
+		addCreateChangeColumn(columns);
+		addDeleteColumn(columns);
+		persongroup = new TableDefinition("persongroup", columns);
+
+	}
+
+	private List<ColumnDefinition> createGroupColumns() {
+		ColumnDefinition colTableName = new ColumnDefinition(DataType.VARCHAR255, "name", "NOT NULL");
+
+		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
+		columns.add(colTableName);
+		return columns;
+	}
+
+	private List<ColumnDefinition> createPersonGroupColumns() {
+		ColumnDefinition colPersonId = new ColumnDefinition(DataType.INTEGER, "personId", "NOT NULL");
+		ColumnDefinition colGroupId = new ColumnDefinition(DataType.INTEGER, "groupId", "NOT NULL");
+
+		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
+		columns.add(colPersonId);
+		columns.add(colGroupId);
+		return columns;
+	}
+
+	private List<ColumnDefinition> createDeletedEntriesColumns() {
+		ColumnDefinition colTableName = new ColumnDefinition(DataType.VARCHAR25, "tablename", "NOT NULL");
+		ColumnDefinition colEntryId = new ColumnDefinition(DataType.INTEGER, "entryId", "NOT NULL");
+
+		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
+		columns.add(colTableName);
+		columns.add(colEntryId);
+		return columns;
 	}
 
 	private List<ColumnDefinition> createAttendanceColumns() {
@@ -114,29 +225,40 @@ public class DatabaseConfiguration {
 	}
 
 	private void addDeleteColumn(List<ColumnDefinition> columns) {
-
-		ColumnDefinition colchanged = new ColumnDefinition(DataType.DATETIME, "changed");
-		ColumnDefinition colcreated = new ColumnDefinition(DataType.DATETIME, "created");
 		ColumnDefinition coldeleted = new ColumnDefinition(DataType.DATETIME, "deleted", " DEFAULT null");
-		columns.add(colchanged);
-		columns.add(colcreated);
 		columns.add(coldeleted);
 	}
 
-	public void executeOn(Database db) throws SQLException {
-		List<TableDefinition> tables = new ArrayList<TableDefinition>();
-		tables.add(person);
-		tables.add(contact);
-		tables.add(relative);
-		tables.add(adress);
-		tables.add(attendance);
-		tables.add(version);
+	private void addCreateChangeColumn(List<ColumnDefinition> columns) {
 
-		for (TableDefinition def : tables) {
+		ColumnDefinition colchanged = new ColumnDefinition(DataType.DATETIME, "changed");
+		ColumnDefinition colcreated = new ColumnDefinition(DataType.DATETIME, "created");
+		columns.add(colchanged);
+		columns.add(colcreated);
+	}
+
+	public void executeOn(Database db) throws SQLException {
+
+		for (TableDefinition def : tablesToCreate) {
 			String sql = de.kreth.dbmanager.DbManager.createSqlStatement(def);
+			logger.debug(sql);
 			db.execSQL(sql);
 		}
-		String sql = "INSERT INTO version(version) VALUES (1)";
+
+		for (Entry<TableDefinition, List<ColumnDefinition>> e : this.tablesToAddColumns.entrySet()) {
+			String sql = de.kreth.dbmanager.DbManager.createSqlAddColumns(e.getKey(), e.getValue());
+			logger.debug(sql);
+			db.execSQL(sql);
+		}
+
+		String sql;
+		if (fromVersion == 0) {
+			sql = "INSERT INTO version(version) VALUES (" + LATEST_VERSION + ")";
+		} else {
+			sql = "UPDATE version SET version=" + LATEST_VERSION;
+		}
+
+		logger.debug(sql);
 		db.execSQL(sql);
 	}
 

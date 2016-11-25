@@ -27,13 +27,16 @@ import de.kreth.dbmanager.DbValue;
 @Aspect
 public class MysqlDbCheckAspect implements Database {
 
-	private static final Logger logger = LoggerFactory.getLogger(MysqlDbCheckAspect.class);
-	
+	private final Logger logger;
+
 	private Connection con;
 	private boolean isChecked = false;
 
 	@Autowired
 	public MysqlDbCheckAspect(DataSource dataSource) {
+
+		logger = LoggerFactory.getLogger(MysqlDbCheckAspect.class);
+
 		logger.debug("init with " + dataSource);
 		try {
 			con = dataSource.getConnection();
@@ -53,22 +56,22 @@ public class MysqlDbCheckAspect implements Database {
 		logger.debug("Initalizing Database");
 		try {
 			int currentDbVersion = getVersion();
-			
-			switch (currentDbVersion) {
-			case 0:
-
-				beginTransaction();
-				DatabaseConfiguration manager = new DatabaseConfiguration();
-				manager.executeOn(this);
-				setTransactionSuccessful();
-				break;
-			}
+			logger.info("Database Version " + currentDbVersion);
+			beginTransaction();
+			DatabaseConfiguration manager = new DatabaseConfiguration(currentDbVersion);
+			manager.executeOn(this);
+			setTransactionSuccessful();
+			logger.info("Installed Tables successfully.");
 		} catch (SQLException e) {
+
+			logger.info("Failed to update. Rolling back.", e);
+
 			try {
 				endTransaction();
 			} catch (SQLException e1) {
-				e1.printStackTrace();
+				logger.warn("rollback failed", e1);
 			}
+
 			throw new DataAccessResourceFailureException("Konnte Datenbanktabellen nicht erstellen1", e);
 		}
 	}
