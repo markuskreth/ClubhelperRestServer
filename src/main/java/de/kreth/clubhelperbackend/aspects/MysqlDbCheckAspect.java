@@ -12,6 +12,8 @@ import javax.sql.DataSource;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -25,13 +27,18 @@ import de.kreth.dbmanager.DbValue;
 @Aspect
 public class MysqlDbCheckAspect implements Database {
 
+	private static final Logger logger = LoggerFactory.getLogger(MysqlDbCheckAspect.class);
+	
 	private Connection con;
 	private boolean isChecked = false;
 
 	@Autowired
 	public MysqlDbCheckAspect(DataSource dataSource) {
+		logger.debug("init with " + dataSource);
 		try {
 			con = dataSource.getConnection();
+			logger.debug("finished init, got con: " + con);
+			checkDb();
 		} catch (SQLException e) {
 			throw new InvalidDataAccessApiUsageException("Keine Connection aus DataSource erhalten", e);
 		}
@@ -39,11 +46,14 @@ public class MysqlDbCheckAspect implements Database {
 
 	@Before("execution (* de.kreth.clubhelperbackend.dao.*.*(..))")
 	public synchronized void checkDb() {
+		logger.trace("Checking Database...");
 		if (isChecked)
 			return;
 		isChecked = true;
+		logger.debug("Initalizing Database");
 		try {
 			int currentDbVersion = getVersion();
+			
 			switch (currentDbVersion) {
 			case 0:
 

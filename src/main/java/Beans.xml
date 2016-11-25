@@ -11,12 +11,8 @@
 
 	<!-- Properties will be overridden by PropertyOverrideConfigurer if file 
 		exists! -->
-	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
-		destroy-method="close">
-		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://localhost/clubhelperbackend" />
-		<property name="username" value="markus" />
-		<property name="password" value="0773" />
+	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/jdbc/clubhelperbackend" />
 	</bean>
 	<!-- Overriding Properties File, if exists (on server) -->
 	<bean
