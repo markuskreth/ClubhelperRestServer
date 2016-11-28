@@ -62,13 +62,13 @@ public class DatabaseConfiguration {
 
 	private void addDeletedColumn(TableDefinition... defs) {
 		if (tablesToAddColumns == null) {
-			tablesToAddColumns = new HashMap<>();
+			tablesToAddColumns = new HashMap<TableDefinition, List<ColumnDefinition>>();
 		}
 
 		List<ColumnDefinition> columns;
 
 		for (TableDefinition t : defs) {
-			columns = new ArrayList<>();
+			columns = new ArrayList<ColumnDefinition>();
 			addDeleteColumn(columns);
 			tablesToAddColumns.put(t, columns);
 		}
@@ -139,8 +139,8 @@ public class DatabaseConfiguration {
 	}
 
 	private List<ColumnDefinition> createPersonGroupColumns() {
-		ColumnDefinition colPersonId = new ColumnDefinition(DataType.INTEGER, "personId", "NOT NULL");
-		ColumnDefinition colGroupId = new ColumnDefinition(DataType.INTEGER, "groupId", "NOT NULL");
+		ColumnDefinition colPersonId = new ColumnDefinition(DataType.INTEGER, "person_id", "NOT NULL");
+		ColumnDefinition colGroupId = new ColumnDefinition(DataType.INTEGER, "group_id", "NOT NULL");
 
 		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
 		columns.add(colPersonId);
@@ -239,16 +239,23 @@ public class DatabaseConfiguration {
 
 	public void executeOn(Database db) throws SQLException {
 
-		for (TableDefinition def : tablesToCreate) {
-			String sql = de.kreth.dbmanager.DbManager.createSqlStatement(def);
-			logger.debug(sql);
-			db.execSQL(sql);
+		if (tablesToCreate != null) {
+
+			for (TableDefinition def : tablesToCreate) {
+				String sql = de.kreth.dbmanager.DbManager.createSqlStatement(def);
+				logger.debug(sql);
+				db.execSQL(sql);
+			}
+
 		}
 
-		for (Entry<TableDefinition, List<ColumnDefinition>> e : this.tablesToAddColumns.entrySet()) {
-			String sql = de.kreth.dbmanager.DbManager.createSqlAddColumns(e.getKey(), e.getValue());
-			logger.debug(sql);
-			db.execSQL(sql);
+		if (tablesToAddColumns != null) {
+
+			for (Entry<TableDefinition, List<ColumnDefinition>> e : tablesToAddColumns.entrySet()) {
+				String sql = de.kreth.dbmanager.DbManager.createSqlAddColumns(e.getKey(), e.getValue());
+				logger.debug(sql);
+				db.execSQL(sql);
+			}
 		}
 
 		String sql;
@@ -258,8 +265,12 @@ public class DatabaseConfiguration {
 			sql = "UPDATE version SET version=" + LATEST_VERSION;
 		}
 
-		logger.debug(sql);
-		db.execSQL(sql);
+		if (fromVersion != LATEST_VERSION) {
+			logger.debug(sql);
+			db.execSQL(sql);
+		} else {
+			logger.info("Database was up to date.");
+		}
 	}
 
 }
