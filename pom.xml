@@ -2,22 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>de.kreth</groupId>
 	<artifactId>clubhelperbackend</artifactId>
 	<name>ClubHelperBackend</name>
 	<packaging>war</packaging>
-	<version>1.0.1-BUILD-SNAPSHOT</version>
-
-	<properties>
-		<java-version>1.8</java-version>
-		<org.springframework-version>4.1.6.RELEASE</org.springframework-version>
-		<com.fasterxml.jackson-version>2.5.4</com.fasterxml.jackson-version>
-		<org.aspectj-version>1.6.10</org.aspectj-version>
-		<org.apache.tiles-version>2.2.2</org.apache.tiles-version>
-		<org.slf4j-version>1.6.6</org.slf4j-version>
-	</properties>
 
 	<dependencies>
+
 		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -55,11 +45,6 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>${com.fasterxml.jackson-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.34</version>
 		</dependency>
 
 		<!-- Apache Tiles -->
@@ -179,7 +164,7 @@
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
 		</dependency>
-
+		
 		<!-- Test -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -195,11 +180,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>1.6</version>
-		</dependency>
-		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
 			<version>2.9.4</version>
@@ -213,6 +193,17 @@
 			<groupId>hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<version>1.8.0.10</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.kreth</groupId>
+			<artifactId>clubhelperdata</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.34</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -233,23 +224,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.5.1</version>
-				<configuration>
-					<source>${java-version}</source>
-					<target>${java-version}</target>
-					<compilerArgument>-Xlint:all</compilerArgument>
-					<showWarnings>true</showWarnings>
-					<showDeprecation>true</showDeprecation>
-				</configuration>
-			</plugin>
-			<!-- <plugin> -->
-			<!-- <groupId>org.apache.maven.plugins</groupId> -->
-			<!-- <artifactId>maven-war-plugin</artifactId> -->
-			<!-- <version>3.0.0</version> -->
-			<!-- </plugin> -->
-			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.2</version>
@@ -269,4 +243,9 @@
 			</plugin>
 		</plugins>
 	</build>
+	<parent>
+		<groupId>de.kreth</groupId>
+		<version>1.0.1-SNAPSHOT</version>
+		<artifactId>clubhelper-parent</artifactId>
+	</parent>
 </project>

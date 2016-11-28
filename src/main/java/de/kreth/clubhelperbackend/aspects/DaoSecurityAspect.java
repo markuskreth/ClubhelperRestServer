@@ -14,6 +14,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import de.kreth.encryption.Encryptor;
+
 @Aspect
 @Component
 public class DaoSecurityAspect {

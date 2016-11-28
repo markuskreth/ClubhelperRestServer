@@ -54,6 +54,7 @@ public class MysqlDbCheckAspect implements Database {
 			return;
 		isChecked = true;
 		logger.debug("Initalizing Database");
+
 		try {
 			int currentDbVersion = getVersion();
 			logger.info("Database Version " + currentDbVersion);
