@@ -6,8 +6,21 @@
 	<name>ClubHelperBackend</name>
 	<packaging>war</packaging>
 
+	<description></description>
+
 	<dependencies>
 
+		<dependency>
+			<groupId>de.kreth</groupId>
+			<artifactId>databasedefinition</artifactId>
+			<version>0.0.2-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>de.kreth</groupId>
+			<artifactId>clubhelperdata</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
 		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -110,9 +123,9 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.15</version>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>${org.log4j-version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>javax.mail</groupId>
@@ -185,20 +198,10 @@
 			<version>2.9.4</version>
 		</dependency>
 		<dependency>
-			<groupId>de.kreth</groupId>
-			<artifactId>databasedefinition</artifactId>
-			<version>0.0.2-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<version>1.8.0.10</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>de.kreth</groupId>
-			<artifactId>clubhelperdata</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
@@ -228,19 +231,14 @@
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.2</version>
 				<configuration>
-					<url>http://spallek.com:8080/manager/text</url>
-					<server>SpellakTomcat</server>
+					<url>http://localhost:8080/manager/text</url>
+					<server>localhost</server>
 					<path>/ClubHelperBackend</path>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.2.1</version>
-				<configuration>
-					<mainClass>org.test.int1.Main</mainClass>
-				</configuration>
-			</plugin>
+			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>exec-maven-plugin</artifactId> 
+				<version>1.2.1</version> <configuration> <mainClass>org.test.int1.Main</mainClass> 
+				</configuration> </plugin> -->
 		</plugins>
 	</build>
 	<parent>

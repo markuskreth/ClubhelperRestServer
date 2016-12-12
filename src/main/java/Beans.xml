@@ -14,13 +14,6 @@
 	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
 		<property name="jndiName" value="java:comp/env/jdbc/clubhelperbackend" />
 	</bean>
-	<!-- Overriding Properties File, if exists (on server) -->
-	<bean
-		class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
-		<property name="location"
-			value="file:/var/lib/tomcat6/webapps/spallek.properties" />
-		<property name="ignoreResourceNotFound" value="true" />
-	</bean>
 
 	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
 		<constructor-arg ref="dataSource" />
