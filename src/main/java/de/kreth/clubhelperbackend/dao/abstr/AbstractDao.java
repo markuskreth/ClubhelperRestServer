@@ -13,7 +13,13 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.Assert;
 
 import de.kreth.clubhelperbackend.config.SqlForDialect;
 import de.kreth.clubhelperbackend.pojo.Data;
@@ -36,6 +42,8 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 	private String SQL_INSERTWithoutId;
 	private String SQL_INSERTWithId;
 	private RowMapper<T> mapper;
+	private String tableName;
+	private TransactionTemplate transactionTemplate;
 
 	/**
 	 * Constructs this {@link Dao} implemetation.
@@ -63,6 +71,14 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		this.SQL_QUERY_BY_ID = SQL_QUERY_ALL + " where _id=?";
 		this.SQL_QUERY_CHANGED = SQL_QUERY_ALL + " where changed>?";
 		this.mapper = config.mapper;
+		this.tableName = config.tableName;
+	}
+
+	@Autowired
+	public void setPlatformTransactionManager(PlatformTransactionManager transMan) {
+		Assert.notNull(transMan, "The 'transactionManager' argument must not be null.");
+		this.transactionTemplate = new TransactionTemplate(transMan);
+	}
 	}
 
 	private String generateQuestionMarkList(int length) {
@@ -161,7 +177,10 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 
 	@Override
 	public T insert(T obj) {
+		Assert.notNull(transactionTemplate);
+
 		boolean withId = obj.getId() != null && obj.getId() >= 0;
+
 		ArrayList<Object> values = new ArrayList<Object>(mapper.mapObject(obj));
 
 		values.add(obj.getChanged());
@@ -170,17 +189,32 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		if (withId)
 			values.add(0, obj.getId());
 
-		String sql = withId ? SQL_INSERTWithId : SQL_INSERTWithoutId;
 		Object[] valueArr = values.toArray();
 
-		int inserted = getJdbcTemplate().update(sql, valueArr);
+		transactionTemplate.execute(new TransactionCallback<T>() {
 
-		if (inserted == 1) {
-			if (!withId)
-				obj.setId(sqlDialect.queryForIdentity());
-		} else
-			throw new IllegalStateException("insert could not successfully create the database entity");
+			@Override
+			public T doInTransaction(TransactionStatus status) {
+				JdbcTemplate jdbcTemplate = getJdbcTemplate();
 
+				String sql = withId ? SQL_INSERTWithId : SQL_INSERTWithoutId;
+
+				int inserted = jdbcTemplate.update(sql, valueArr);
+
+				if (inserted == 1) {
+					if (!withId) {
+						sql = sqlDialect.queryForIdentity(tableName);
+						Long id = jdbcTemplate.queryForObject(sql, null, Long.class);
+						obj.setId(id);
+					}
+				} else {
+					status.setRollbackOnly();
+					throw new IllegalStateException("insert could not successfully create the database entity");
+				}
+
+				return obj;
+			}
+		});
 		return obj;
 	}
 
@@ -192,6 +226,9 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 
 		logger.debug("sql=" + SQL_UPDATE + "; ValueSize=" + values.size() + "; Values=" + values);
 		int updateCount = getJdbcTemplate().update(SQL_UPDATE, values.toArray());
+		if (updateCount != 1) {
+			logger.warn("UpdateCount for " + obj + " was " + updateCount + ". Created: " + obj.getCreated());
+		}
 		return updateCount == 1;
 	}
 

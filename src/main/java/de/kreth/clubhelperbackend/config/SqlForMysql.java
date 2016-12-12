@@ -9,15 +9,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 public class SqlForMysql implements SqlForDialect {
 
 	private JdbcTemplate dataSource;
-	
+
 	public SqlForMysql(JdbcTemplate dataSource) {
 		super();
 		this.dataSource = dataSource;
 	}
 
 	@Override
-	public long queryForIdentity() {
-		return dataSource.queryForObject("SELECT LAST_INSERT_ID()", Long.class);
+	public String queryForIdentity(String tableName) {
+		return "SELECT last_insert_id() from `" + tableName + "` LIMIT 1";
 	}
 
 	@Override
@@ -32,11 +32,11 @@ public class SqlForMysql implements SqlForDialect {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			if(rs != null) {
+			if (rs != null) {
 				try {
 					rs.close();
-				if(stm != null)
-					stm.close();
+					if (stm != null)
+						stm.close();
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -45,5 +45,4 @@ public class SqlForMysql implements SqlForDialect {
 		return exists;
 	}
 
-	
 }

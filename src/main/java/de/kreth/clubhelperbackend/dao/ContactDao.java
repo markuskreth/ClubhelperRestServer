@@ -16,9 +16,11 @@ import de.kreth.clubhelperbackend.pojo.Contact;
 @Repository
 public class ContactDao extends AbstractDao<Contact> implements Dao<Contact> {
 
+	public static final String tableName = "contact";
+
 	private static final String columnNames[] = { "type", "value", "person_id" };
 
-	private static AbstractDao.DaoConfig<Contact> daoConfig = new DaoConfig<Contact>("contact", columnNames,
+	private static AbstractDao.DaoConfig<Contact> daoConfig = new DaoConfig<Contact>(tableName, columnNames,
 			new ContactRowMapper());
 
 	public ContactDao() {

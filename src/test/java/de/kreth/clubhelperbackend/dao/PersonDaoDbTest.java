@@ -23,6 +23,7 @@ import de.kreth.clubhelperbackend.pojo.Adress;
 import de.kreth.clubhelperbackend.pojo.Attendance;
 import de.kreth.clubhelperbackend.pojo.Contact;
 import de.kreth.clubhelperbackend.pojo.Person;
+import de.kreth.clubhelperbackend.pojo.PersonGroup;
 import de.kreth.clubhelperbackend.pojo.Relative;
 
 public class PersonDaoDbTest {
@@ -98,16 +99,16 @@ public class PersonDaoDbTest {
 
 		rs.close();
 
-		assertEquals(6, tables.size());
+		assertEquals(9, tables.size());
+
 		assertTrue("Person Table not found!", tables.contains(Person.class.getSimpleName().toLowerCase()));
 		assertTrue("Adress Table not found!", tables.contains(Adress.class.getSimpleName().toLowerCase()));
 		assertTrue("Contact Table not found!", tables.contains(Contact.class.getSimpleName().toLowerCase()));
 		assertTrue("Relative Table not found!", tables.contains(Relative.class.getSimpleName().toLowerCase()));
 		assertTrue("Attendance Table not found!", tables.contains(Attendance.class.getSimpleName().toLowerCase()));
-		// assertTrue("Group Table not found!",
-		// tables.contains(Group.class.getSimpleName().toLowerCase()));
-		// assertTrue("PersonGroup Table not found!",
-		// tables.contains(PersonGroup.class.getSimpleName().toLowerCase()));
+		assertTrue("Group Table not found!", tables.contains(GroupDao.TABLE_NAME));
+		assertTrue("PersonGroup Table not found!", tables.contains(PersonGroup.class.getSimpleName().toLowerCase()));
+		assertTrue("DeletedEntries Table not found!", tables.contains(DeletedEntriesDao.TABLE_NAME));
 		assertTrue("version Table not found!", tables.contains("version"));
 
 	}

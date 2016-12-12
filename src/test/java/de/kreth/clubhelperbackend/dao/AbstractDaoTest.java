@@ -37,13 +37,27 @@ public class AbstractDaoTest {
 	private String[] columnNames = { "column1", "column2" };
 
 	private AbstractDao<Contact> dao;
+	private PlatformTransactionManager transMan;
+	private DeletedEntriesDao deletedEnriesDao;
 
 	@Before
 	public void setUp() throws Exception {
 		jdbcTemplate = mock(JdbcTemplate.class);
 		mapper = new ContactDao.ContactRowMapper();
+		transMan = mock(PlatformTransactionManager.class);
+		deletedEnriesDao = mock(DeletedEntriesDao.class);
 
 		dao = configureDao(columnNames);
+	}
+
+	private AbstractDao<Contact> configureDao(String[] columnNames2) {
+
+		DaoConfig<Contact> config = new DaoConfig<Contact>(tableName, columnNames, mapper);
+		AbstractDao<Contact> dao = new AbstractDao<Contact>(config) {
+		};
+		dao.setJdbcTemplate(jdbcTemplate);
+		dao.setPlatformTransactionManager(transMan);
+		return dao;
 	}
 
 	@Test
@@ -102,15 +116,6 @@ public class AbstractDaoTest {
 
 		verify(jdbcTemplate).query(Matchers.matches(regex), Matchers.<RowMapper<Contact>> any());
 
-	}
-
-	private AbstractDao<Contact> configureDao(String[] columnNames2) {
-
-		DaoConfig<Contact> config = new DaoConfig<Contact>(tableName, columnNames, mapper);
-		AbstractDao<Contact> dao = new AbstractDao<Contact>(config) {
-		};
-		dao.setJdbcTemplate(jdbcTemplate);
-		return dao;
 	}
 
 	@Test
@@ -190,7 +195,9 @@ public class AbstractDaoTest {
 	@Test
 	public void testInsertWithoutId() {
 		SqlForDialect sqlDialect = mock(SqlForMysql.class);
-		when(sqlDialect.queryForIdentity()).thenReturn(512L);
+		when(sqlDialect.queryForIdentity(Matchers.any(String.class))).thenReturn("SQLcode for queriing id");
+		when(jdbcTemplate.queryForObject(Matchers.same("SQLcode for queriing id"), Matchers.any(),
+				Matchers.same(Long.class))).thenReturn(512L);
 
 		dao.setSqlDialect(sqlDialect);
 		Date now = new GregorianCalendar(2015, Calendar.AUGUST, 21, 8, 21, 0).getTime();
@@ -219,7 +226,8 @@ public class AbstractDaoTest {
 		Contact insert = dao.insert(obj);
 
 		verify(jdbcTemplate).update(Matchers.matches(regex), Matchers.argThat(new ObjectArrayMatcher(values)));
-		verify(sqlDialect).queryForIdentity();
+		verify(sqlDialect).queryForIdentity(tableName);
+		verify(jdbcTemplate).queryForObject("SQLcode for queriing id", null, Long.class);
 		assertEquals(512L, insert.getId().longValue());
 	}
 
