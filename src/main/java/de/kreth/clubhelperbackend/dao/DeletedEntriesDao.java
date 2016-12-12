@@ -14,12 +14,14 @@ import de.kreth.clubhelperbackend.pojo.DeletedEntries;
 @Repository
 public class DeletedEntriesDao extends AbstractDao<DeletedEntries> {
 
+	public static final String TABLE_NAME = "deleted_entries";
+
 	private static final String[] columnNames = { "tablename", "entryId" };
 
 	private static final DeletedEntriesRowMapper mapper = new DeletedEntriesRowMapper();
 
-	private static final DaoConfig<DeletedEntries> config = new DaoConfig<DeletedEntries>("deleted_entries",
-			columnNames, mapper);
+	private static final DaoConfig<DeletedEntries> config = new DaoConfig<DeletedEntries>(TABLE_NAME, columnNames,
+			mapper);
 
 	public DeletedEntriesDao() {
 		super(config);

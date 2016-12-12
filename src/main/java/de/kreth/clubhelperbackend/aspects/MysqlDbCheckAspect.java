@@ -65,7 +65,7 @@ public class MysqlDbCheckAspect implements Database {
 			logger.info("Installed Tables successfully.");
 		} catch (SQLException e) {
 
-			logger.info("Failed to update. Rolling back.", e);
+			logger.error("Failed to update. Rolling back.", e);
 
 			try {
 				endTransaction();

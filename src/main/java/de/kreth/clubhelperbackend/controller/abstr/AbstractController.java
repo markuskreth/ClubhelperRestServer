@@ -100,7 +100,7 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json")
 	public T delete(@PathVariable("id") long id) {
 		T obj = getById(id);
-		// dao.delete(id);
+		dao.delete(id);
 		return obj;
 	}
 

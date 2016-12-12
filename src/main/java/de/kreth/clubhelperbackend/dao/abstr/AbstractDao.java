@@ -22,7 +22,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 import de.kreth.clubhelperbackend.config.SqlForDialect;
+import de.kreth.clubhelperbackend.dao.DeletedEntriesDao;
 import de.kreth.clubhelperbackend.pojo.Data;
+import de.kreth.clubhelperbackend.pojo.DeletedEntries;
 
 /**
  * Default implementation for database access with all common query methods.
@@ -43,6 +45,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 	private String SQL_INSERTWithId;
 	private RowMapper<T> mapper;
 	private String tableName;
+	private DeletedEntriesDao deletedEntriesDao;
 	private TransactionTemplate transactionTemplate;
 
 	/**
@@ -65,11 +68,11 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		this.SQL_INSERTWithId = "insert into `" + config.tableName + "` (" + join(", ", columnNames) + ") values ("
 				+ generateQuestionMarkList(config.columnNames.length + 3) + ")";
 
-		this.SQL_DELETE = "delete from `" + config.tableName + "` where _id=?";
+		this.SQL_DELETE = "update `" + config.tableName + "` set deleted=? where _id=?";
 
-		this.SQL_QUERY_ALL = "select * from `" + config.tableName + "`";
-		this.SQL_QUERY_BY_ID = SQL_QUERY_ALL + " where _id=?";
-		this.SQL_QUERY_CHANGED = SQL_QUERY_ALL + " where changed>?";
+		this.SQL_QUERY_ALL = "select * from `" + config.tableName + "` WHERE deleted is null";
+		this.SQL_QUERY_BY_ID = SQL_QUERY_ALL + " AND _id=?";
+		this.SQL_QUERY_CHANGED = SQL_QUERY_ALL + " AND changed>?";
 		this.mapper = config.mapper;
 		this.tableName = config.tableName;
 	}
@@ -79,6 +82,10 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		Assert.notNull(transMan, "The 'transactionManager' argument must not be null.");
 		this.transactionTemplate = new TransactionTemplate(transMan);
 	}
+
+	@Autowired
+	public void setDeletedEntriesDao(DeletedEntriesDao deletedEntriesDao) {
+		this.deletedEntriesDao = deletedEntriesDao;
 	}
 
 	private String generateQuestionMarkList(int length) {
@@ -166,7 +173,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 
 	@Override
 	public List<T> getByWhere(String where) {
-		return getJdbcTemplate().query(SQL_QUERY_ALL + " WHERE " + where, mapper);
+		return getJdbcTemplate().query(SQL_QUERY_ALL + " AND " + where, mapper);
 	}
 
 	@Override
@@ -245,8 +252,17 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 
 	@Override
 	public final boolean delete(long id) {
-		int inserted = getJdbcTemplate().update(SQL_DELETE, id);
-		return inserted == 1;
+
+		Assert.notNull(deletedEntriesDao);
+
+		Date date = new Date();
+		int inserted = getJdbcTemplate().update(SQL_DELETE, date, id);
+		if (inserted == 1) {
+			DeletedEntries deleted = deletedEntriesDao.insert(new DeletedEntries(-1L, tableName, id, date, date));
+			return deleted.getId() >= 0;
+		} else {
+			return false;
+		}
 	}
 
 	@Override

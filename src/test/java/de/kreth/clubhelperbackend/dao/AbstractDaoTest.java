@@ -20,6 +20,7 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.Matchers;
 import org.mockito.internal.matchers.VarargMatcher;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import de.kreth.clubhelperbackend.config.SqlForDialect;
 import de.kreth.clubhelperbackend.config.SqlForMysql;
@@ -57,6 +58,7 @@ public class AbstractDaoTest {
 		};
 		dao.setJdbcTemplate(jdbcTemplate);
 		dao.setPlatformTransactionManager(transMan);
+		dao.setDeletedEntriesDao(deletedEnriesDao);
 		return dao;
 	}
 
@@ -64,57 +66,57 @@ public class AbstractDaoTest {
 	public void testGetById() {
 
 		long id = 1;
-		String regex = "(?iu)select\\s+\\*\\s+from\\s+`tablename`\\s+where\\s+_id\\s*=\\s*\\?";
+		String regex = "(?iu)select\\s+\\*\\s+from\\s+`tablename`\\s+WHERE deleted is null\\s+and\\s+_id\\s*=\\s*\\?";
 
 		dao.getById(id);
 
-		verify(jdbcTemplate).queryForObject(Matchers.matches(regex), Matchers.<RowMapper<Contact>> any(),
+		verify(jdbcTemplate).queryForObject(Matchers.matches(regex), Matchers.<RowMapper<Contact>>any(),
 				Matchers.eq(id));
 	}
 
 	@Test
 	public void testGetAll() {
 
-		String regex = "(?iu)select\\s+\\*\\s+from\\s+`tablename`\\s*";
+		String regex = "(?iu)select\\s+\\*\\s+from\\s+`tablename`\\s+where\\s+deleted\\s+is\\s+null\\s*";
 
 		dao.getAll();
-		verify(jdbcTemplate).query(Matchers.matches(regex), Matchers.<RowMapper<Contact>> any());
+		verify(jdbcTemplate).query(Matchers.matches(regex), Matchers.<RowMapper<Contact>>any());
 	}
 
 	@Test
 	public void testDeleteObject() {
 
-		String regex = "(?iu)delete\\s+from\\s+`tablename`\\s+where\\s+_id\\s*=\\s*\\?";
+		String regex = "(?iu)update\\s+`tableName`\\s+set\\s+deleted=\\?\\s+where\\s+_id=\\?";
 
 		long id = 1;
 		Contact c = new Contact(id);
 
 		dao.delete(c);
-		verify(jdbcTemplate).update(Matchers.matches(regex), Matchers.eq(id));
+		verify(jdbcTemplate).update(Matchers.matches(regex), Matchers.any(Date.class), Matchers.eq(id));
 
 	}
 
 	@Test
 	public void testDeleteById() {
 
-		String regex = "(?iu)delete\\s+from\\s+`tablename`\\s+where\\s+_id\\s*=\\s*\\?";
+		String regex = "(?iu)update\\s+`tableName`\\s+set\\s+deleted=\\?\\s+where\\s+_id=\\?";
 		long id = 1;
 
 		dao.delete(id);
-		verify(jdbcTemplate).update(Matchers.matches(regex), Matchers.eq(id));
+		verify(jdbcTemplate).update(Matchers.matches(regex), Matchers.any(Date.class), Matchers.eq(id));
 
 	}
 
 	@Test
 	public void testGetByWhere() {
 
-		String where = "person_id = 1";
+		String where = "person_id=1";
 
-		String regex = "(?iu)select\\s+\\*\\s+from\\s+`tablename`\\s+where\\s+" + where;
+		String regex = "(?iu)select\\s+\\*\\s+from\\s+`tablename`\\s+where\\s+deleted\\s+is\\s+null\\s+and\\s+person_id=1";
 
 		dao.getByWhere(where);
 
-		verify(jdbcTemplate).query(Matchers.matches(regex), Matchers.<RowMapper<Contact>> any());
+		verify(jdbcTemplate).query(Matchers.matches(regex), Matchers.<RowMapper<Contact>>any());
 
 	}
 

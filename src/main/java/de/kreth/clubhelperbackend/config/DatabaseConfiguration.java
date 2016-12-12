@@ -254,7 +254,11 @@ public class DatabaseConfiguration {
 			for (Entry<TableDefinition, List<ColumnDefinition>> e : tablesToAddColumns.entrySet()) {
 				String sql = de.kreth.dbmanager.DbManager.createSqlAddColumns(e.getKey(), e.getValue());
 				logger.debug(sql);
-				db.execSQL(sql);
+				try {
+					db.execSQL(sql);
+				} catch (SQLException ex) {
+					throw new SQLException("Error on: " + sql, ex);
+				}
 			}
 		}
 
