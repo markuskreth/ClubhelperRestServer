@@ -131,5 +131,10 @@ public class DeleteTest {
 		List<Contact> all = contactDao.getAll();
 		assertEquals(1, all.size());
 
+		Contact actual = all.get(0);
+		assertEquals(c2.getId(), actual.getId());
+		assertEquals(c2.getPersonId(), actual.getPersonId());
+		assertEquals(c2.getType(), actual.getType());
+		assertEquals(c2.getValue(), actual.getValue());
 	}
 }

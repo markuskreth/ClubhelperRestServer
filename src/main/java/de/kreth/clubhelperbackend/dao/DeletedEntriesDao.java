@@ -44,4 +44,9 @@ public class DeletedEntriesDao extends AbstractDao<DeletedEntries> {
 		}
 
 	}
+
+	@Override
+	public void setDeletedEntriesDao(DeletedEntriesDao deletedEntriesDao) {
+		super.setDeletedEntriesDao(this);
+	}
 }
