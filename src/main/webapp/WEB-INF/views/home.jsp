@@ -11,6 +11,9 @@
 <P>  The time on the server is ${serverTime}. </P>
 <P>  Path to current server directory: ${directory}. </P>
 <p>
-<a href="person/">Alle Personen</a><br />
-<a target="_blank" href="javascript:deployJava.launchWebStartApplication('WEB-INF/webstart/ClubHelperClient.jnlp');">Programm starten</a>
+
+<!-- <a href="person/">Alle Personen</a><br /> -->
+
+<a target="_blank" href="downloadJnlp" type="application/x-java-jnlp-file" download="ClubHelperClient.jnlp">Programm starten</a><br /><br />
+
 </p>
