@@ -16,7 +16,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
+import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
 
 import de.kreth.clubhelperbackend.aspects.MysqlDbCheckAspect;
 import de.kreth.clubhelperbackend.pojo.Adress;
