@@ -220,6 +220,14 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>3.0.0</version>
+				<configuration>
+					<webXml>${project.basedir}\src\main\webapp\WEB-INF\web.xml</webXml>
+				</configuration>
+			</plugin>
+			<plugin>
 				<artifactId>maven-eclipse-plugin</artifactId>
 				<version>2.9</version>
 				<configuration>
@@ -233,20 +241,26 @@
 					<downloadJavadocs>true</downloadJavadocs>
 				</configuration>
 			</plugin>
-			<!-- <plugin> <groupId>org.apache.tomcat.maven</groupId> <artifactId>tomcat7-maven-plugin</artifactId> 
-				<version>2.2</version> <configuration> <url>http://spallek.com:8080/manager/html</url> 
-				<server>SpellakTomcat</server> <path>/ClubHelperBackend</path> </configuration> 
-				</plugin> -->
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.2</version>
 				<configuration>
-					<url>http://localhost:8080/manager/text</url>
-					<server>localhost</server>
+					<url>http://spallek.com:8080/manager/text</url>
+					<server>SpellakTomcat</server>
 					<path>/ClubHelperBackend</path>
 				</configuration>
 			</plugin>
+			<!-- <plugin> -->
+			<!-- <groupId>org.apache.tomcat.maven</groupId> -->
+			<!-- <artifactId>tomcat7-maven-plugin</artifactId> -->
+			<!-- <version>2.2</version> -->
+			<!-- <configuration> -->
+			<!-- <url>http://localhost:8080/manager/text</url> -->
+			<!-- <server>localhost</server> -->
+			<!-- <path>/ClubHelperBackend</path> -->
+			<!-- </configuration> -->
+			<!-- </plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
