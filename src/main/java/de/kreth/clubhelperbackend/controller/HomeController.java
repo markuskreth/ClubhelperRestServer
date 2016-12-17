@@ -72,14 +72,17 @@ public class HomeController {
 					+ "    </information>\n" + "    \n" + "    <resources>\n"
 					+ "        <j2se href=\"http://java.sun.com/products/autodl/j2se\" version=\"1.8+\"/>\n"
 					+ "        <jar href=\"resources/ClubHelperClient.jar\" main=\"true\" />\n" + "    </resources>\n"
-					+ "    \n" + "    <application-desc\n" + "         name=\"Clubhelper Web Client\">\n"
+					+ "    \n" + "    <application-desc\n" 
+					+ "         name=\"Clubhelper Web Client\"\n" 
+					+ "         main-class=\"de.kreth.clubhelperclient.Main\">\n"
+					+ "         <argument>"  + requestUrl + "</argument>\n"
 					+ "     </application-desc>\n" + "     \n" + "     <update check=\"background\"/>\n" + "    \n"
 					+ "    <security><all-permissions/></security>\n" + "</jnlp>";
 			PrintWriter out = new PrintWriter(Files.newBufferedWriter(jnlpFile.toPath()));
 			out.write(fileContent);
 			out.flush();
 			out.close();
-
+			
 			response.setHeader("Content-Length", String.valueOf(jnlpFile.length()));
 			a = new FileInputStream(jnlpFile);
 
