@@ -2,6 +2,7 @@ package de.kreth.clubhelperbackend.controller.abstr;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -131,10 +132,7 @@ public interface ClubController<T> {
 	 *            Id of the object to delete.
 	 * @return deleted object.
 	 */
-	// @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces
-	// = "application/json")
-	// @ResponseBody
-	T delete(@PathVariable("id") long id);
+	ResponseEntity<T> delete(@PathVariable("id") long id);
 
 	/**
 	 * 

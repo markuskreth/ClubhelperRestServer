@@ -29,9 +29,9 @@ import de.kreth.clubhelperbackend.pojo.Contact;
 // @ContextConfiguration(locations = { "/services-test-config.xml" })
 public class DeleteTest {
 
-	private MysqlConnectionPoolDataSource dataSource;
 	private ContactDao contactDao;
 	private DeletedEntriesDao deletedEnriesDao;
+	private MysqlConnectionPoolDataSource dataSource;
 
 	@Before
 	public void setUp() throws Exception {
@@ -42,6 +42,7 @@ public class DeleteTest {
 		dataSource.setServerName("localhost");
 		dataSource.setPort(3306);
 		dataSource.setDatabaseName("testdb");
+
 		PlatformTransactionManager man = new DataSourceTransactionManager(dataSource);
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 

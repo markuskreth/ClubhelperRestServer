@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -98,10 +99,10 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 
 	@Override
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json")
-	public T delete(@PathVariable("id") long id) {
-		T obj = getById(id);
+	public ResponseEntity<T> delete(@PathVariable("id") long id) {
+		T byId = getById(id);
 		dao.delete(id);
-		return obj;
+		return ResponseEntity.ok(byId);
 	}
 
 	@Override

@@ -10,6 +10,7 @@ import java.util.GregorianCalendar;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ExtendedModelMap;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -73,7 +74,8 @@ public class PersonControllerTest {
 
 		Person p = new Person(2L, "Markus", "Kreth", "Trainer", birth, now, now);
 		dao.byId.put(2L, p);
-		Person out = controller.delete(2L);
+		ResponseEntity<Person> deleted = controller.delete(2L);
+		Person out = deleted.getBody();
 
 		// assertEquals(0, dao.deleted.size());
 		// assertEquals(1, dao.updated.size());

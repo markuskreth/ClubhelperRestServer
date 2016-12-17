@@ -40,7 +40,7 @@ public class MysqlDbCheckAspect implements Database {
 		logger.debug("init with " + dataSource);
 		try {
 			con = dataSource.getConnection();
-			logger.debug("finished init, got con: " + con);
+			logger.info("finished init, got con: " + con);
 			checkDb();
 		} catch (SQLException e) {
 			throw new InvalidDataAccessApiUsageException("Keine Connection aus DataSource erhalten", e);
