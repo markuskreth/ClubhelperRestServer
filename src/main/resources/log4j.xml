@@ -26,7 +26,7 @@
 	
 	<!-- 3rdparty Loggers -->
 	<logger name="org.springframework.core">
-		<level value="warn" />
+		<level value="debug" />
 	</logger>
 	
 	<logger name="org.springframework.spring-aop">
@@ -38,7 +38,7 @@
 	</logger>
 	
 	<logger name="org.springframework.context">
-		<level value="info" />
+		<level value="debug" />
 	</logger>
 
 	<logger name="org.springframework.web">
@@ -46,7 +46,7 @@
 	</logger>
 
 	<logger name="org.springframework.web.servlet.mvc">
-		<level value="info" />
+		<level value="debug" />
 	</logger>
 
 	<!-- Root Logger -->
