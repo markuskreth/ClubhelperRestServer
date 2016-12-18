@@ -69,4 +69,11 @@ public interface Dao<T extends Data> {
 	 * @return	true, wenn löschen erfolgreich.
 	 */
 	public abstract boolean delete(long id);
+	
+	/**
+	 * Macht einen gelöschten Datensatz wieder aktiv.
+	 * @param id
+	 * @return
+	 */
+	public abstract boolean undelete(long id);
 }

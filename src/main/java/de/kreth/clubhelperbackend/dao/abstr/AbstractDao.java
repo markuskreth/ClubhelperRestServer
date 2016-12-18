@@ -266,6 +266,25 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 	}
 
 	@Override
+	public boolean undelete(long id) {
+
+		Assert.notNull(deletedEntriesDao);
+		int updated = getJdbcTemplate().update(SQL_DELETE, null, id);
+
+		if (updated == 1) {
+			List<DeletedEntries> deleted = deletedEntriesDao.getByWhere("");
+			if(deleted.size() == 1) {
+				deletedEntriesDao.delete(deleted.get(0));
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+	
+	@Override
 	public List<T> getAll() {
 		return getJdbcTemplate().query(SQL_QUERY_ALL, mapper);
 	}

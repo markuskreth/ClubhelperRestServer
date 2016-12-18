@@ -49,4 +49,15 @@ public class DeletedEntriesDao extends AbstractDao<DeletedEntries> {
 	public void setDeletedEntriesDao(DeletedEntriesDao deletedEntriesDao) {
 		super.setDeletedEntriesDao(this);
 	}
+	
+	@Override
+	public boolean delete(DeletedEntries obj) {
+		getJdbcTemplate().execute("DELETE FROM " + TABLE_NAME + " WHERE _id=" + obj.getId());
+		return true;
+	}
+	
+	@Override
+	public boolean undelete(long id) {
+		throw new UnsupportedOperationException("Delete Entry cannot be undeleted!");
+	}
 }

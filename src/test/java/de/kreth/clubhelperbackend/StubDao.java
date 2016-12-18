@@ -59,6 +59,12 @@ public class StubDao<T extends Data> implements Dao<T> {
 	}
 
 	@Override
+	public boolean undelete(long id) {
+		deleted.remove(id);
+		return true;
+	}
+	
+	@Override
 	public boolean update(long id, T obj) {
 		updated.add(obj);
 		return true;
