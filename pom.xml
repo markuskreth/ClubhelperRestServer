@@ -278,6 +278,7 @@
 									<groupId>de.kreth</groupId>
 									<artifactId>clubhelper-client</artifactId>
 									<version>${project.version}</version>
+									<classifier>jar-with-dependencies</classifier>
 									<type>jar</type>
 									<overWrite>true</overWrite>
 									<outputDirectory>${basedir}/src/main/webapp/resources</outputDirectory>

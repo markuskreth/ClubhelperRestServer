@@ -11,6 +11,8 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -47,6 +49,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 	private String tableName;
 	private DeletedEntriesDao deletedEntriesDao;
 	private TransactionTemplate transactionTemplate;
+	private Logger log;
 
 	/**
 	 * Constructs this {@link Dao} implemetation.
@@ -55,6 +58,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 	 */
 	public AbstractDao(DaoConfig<T> config) {
 		super();
+		log = LoggerFactory.getLogger(getClass());
 
 		List<String> columnNames = new ArrayList<String>(Arrays.asList(config.columnNames));
 		columnNames.add("changed");
@@ -227,15 +231,19 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 
 	@Override
 	public boolean update(T obj) {
+		
 		Collection<Object> values = mapper.mapObject(obj);
+		
 		values.add(obj.getChanged());
 		values.add(obj.getId());
 
-		logger.debug("sql=" + SQL_UPDATE + "; ValueSize=" + values.size() + "; Values=" + values);
+		log.debug("sql=" + SQL_UPDATE + "; ValueSize=" + values.size() + "; Values=" + values);
+		
 		int updateCount = getJdbcTemplate().update(SQL_UPDATE, values.toArray());
 		if (updateCount != 1) {
-			logger.warn("UpdateCount for " + obj + " was " + updateCount + ". Created: " + obj.getCreated());
+			log.warn("UpdateCount for " + obj + " was " + updateCount + ". Created: " + obj.getCreated());
 		}
+		
 		return updateCount == 1;
 	}
 
