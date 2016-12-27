@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,6 +55,7 @@ public class HomeController {
 
 	@RequestMapping(value = "/downloadJnlp/**", method = RequestMethod.GET)
 	@ResponseBody
+	@PreAuthorize("hasRole('ROLE_USER')")
 	public void downloadJnlp(HttpServletRequest request, HttpServletResponse response) {
 		File jnlpFile = new File(System.getProperty("java.io.tmpdir"), "ClubHelperClient.jnlp");
 
