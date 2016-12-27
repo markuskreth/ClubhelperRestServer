@@ -3,6 +3,7 @@ package de.kreth.clubhelperbackend.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Handles requests for the application home page.
@@ -50,8 +52,9 @@ public class HomeController {
 		return "home";
 	}
 
-	@RequestMapping(value = "/downloadJnlp", method = RequestMethod.GET)
-	public String downloadJnlp(HttpServletRequest request, HttpServletResponse response) {
+	@RequestMapping(value = "/downloadJnlp/**", method = RequestMethod.GET)
+	@ResponseBody
+	public void downloadJnlp(HttpServletRequest request, HttpServletResponse response) {
 		File jnlpFile = new File(System.getProperty("java.io.tmpdir"), "ClubHelperClient.jnlp");
 
 		String requestUrl = request.getRequestURL().toString();
@@ -62,6 +65,7 @@ public class HomeController {
 		response.setContentType("application/x-java-jnlp-file");
 		response.setHeader("Content-Disposition", "attachment; filename=\"ClubHelperClient.jnlp\"");
 		FileInputStream a = null;
+		OutputStream writer = null;
 
 		try {
 			logger.debug("Downloadfile: " + jnlpFile.getAbsolutePath());
@@ -72,42 +76,55 @@ public class HomeController {
 					+ "    </information>\n" + "    \n" + "    <resources>\n"
 					+ "        <j2se href=\"http://java.sun.com/products/autodl/j2se\" version=\"1.8+\"/>\n"
 					+ "        <jar href=\"resources/ClubHelperClient.jar\" main=\"true\" />\n" + "    </resources>\n"
-					+ "    \n" + "    <application-desc\n" 
-					+ "         name=\"Clubhelper Web Client\"\n" 
-					+ "         main-class=\"de.kreth.clubhelperclient.Main\">\n"
-					+ "         <argument>"  + requestUrl + "</argument>\n"
-					+ "     </application-desc>\n" + "     \n" + "     <update check=\"background\"/>\n" + "    \n"
+					+ "    \n" + "    <application-desc\n" + "         name=\"Clubhelper Web Client\"\n"
+					+ "         main-class=\"de.kreth.clubhelperclient.Main\">\n" + "         <argument>" + requestUrl
+					+ "</argument>\n" + "     </application-desc>\n" + "     \n"
+					+ "     <update check=\"background\"/>\n" + "    \n"
 					+ "    <security><all-permissions/></security>\n" + "</jnlp>";
 			PrintWriter out = new PrintWriter(Files.newBufferedWriter(jnlpFile.toPath()));
 			out.write(fileContent);
 			out.flush();
 			out.close();
-			
-			response.setHeader("Content-Length", String.valueOf(jnlpFile.length()));
-			a = new FileInputStream(jnlpFile);
 
-			while (a.available() > 0)
-				response.getWriter().append((char) a.read());
+			response.setHeader("Content-Length", String.valueOf(jnlpFile.length()));
+
+			a = new FileInputStream(jnlpFile);
+			writer = response.getOutputStream();
+
+			org.apache.commons.io.IOUtils.copy(a, writer);
 
 		} catch (IOException e) {
-			PrintStream s;
+			logger.error("Error generating download file.", e);
+			PrintStream s = null;
 			try {
 				s = new PrintStream(response.getOutputStream());
 				e.printStackTrace(s);
 			} catch (IOException e1) {
-				e1.printStackTrace();
+				logger.debug("Error printing error to response.", e1);
+			} finally {
+				if (s != null) {
+					s.close();
+				}
 			}
 		} finally {
+
 			if (a != null) {
 				try {
 					a.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					logger.warn("error closing input stream", e);
+				}
+			}
+
+			if (writer != null) {
+				try {
+					writer.close();
+				} catch (Exception e) {
+					logger.warn("error closing input stream", e);
 				}
 			}
 		}
 
-		return "home";
 	}
 
 }

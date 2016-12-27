@@ -125,12 +125,12 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 			toCreate.setCreated(now);
 		}
 
-		if(toCreate.getId()<0) {
+		if (toCreate.getId() < 0) {
 			return dao.insert(toCreate);
 		} else {
 			if (getById(toCreate.getId()) != null) {
-			dao.undelete(toCreate.getId());
-			return toCreate;
+				dao.undelete(toCreate.getId());
+				return toCreate;
 			} else {
 				return dao.insert(toCreate);
 			}

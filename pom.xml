@@ -5,9 +5,14 @@
 	<artifactId>clubhelperbackend</artifactId>
 	<name>ClubHelperBackend</name>
 	<packaging>war</packaging>
-	<!-- <url>http://spallek.com:8080/ClubHelperBackend</url> -->
 
-	<description></description>
+	<parent>
+		<groupId>de.kreth</groupId>
+		<version>1.0.1-SNAPSHOT</version>
+		<artifactId>clubhelper-parent</artifactId>
+	</parent>
+	
+	<description>Clubhelper Rest Service</description>
 
 	<dependencies>
 
@@ -49,6 +54,11 @@
 			<groupId>commons-dbcp</groupId>
 			<artifactId>commons-dbcp</artifactId>
 			<version>1.2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.5</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -227,20 +237,20 @@
 					<webXml>${project.basedir}\src\main\webapp\WEB-INF\web.xml</webXml>
 				</configuration>
 			</plugin>
-			<plugin>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>2.9</version>
-				<configuration>
-					<additionalProjectnatures>
-						<projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
-					</additionalProjectnatures>
-					<additionalBuildcommands>
-						<buildcommand>org.springframework.ide.eclipse.core.springbuilder</buildcommand>
-					</additionalBuildcommands>
-					<downloadSources>false</downloadSources>
-					<downloadJavadocs>true</downloadJavadocs>
-				</configuration>
-			</plugin>
+<!-- 			<plugin> -->
+<!-- 				<artifactId>maven-eclipse-plugin</artifactId> -->
+<!-- 				<version>2.9</version> -->
+<!-- 				<configuration> -->
+<!-- 					<additionalProjectnatures> -->
+<!-- 						<projectnature>org.springframework.ide.eclipse.core.springnature</projectnature> -->
+<!-- 					</additionalProjectnatures> -->
+<!-- 					<additionalBuildcommands> -->
+<!-- 						<buildcommand>org.springframework.ide.eclipse.core.springbuilder</buildcommand> -->
+<!-- 					</additionalBuildcommands> -->
+<!-- 					<downloadSources>false</downloadSources> -->
+<!-- 					<downloadJavadocs>true</downloadJavadocs> -->
+<!-- 				</configuration> -->
+<!-- 			</plugin> -->
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
 				<artifactId>tomcat7-maven-plugin</artifactId>
@@ -291,9 +301,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<parent>
-		<groupId>de.kreth</groupId>
-		<version>1.0.1-SNAPSHOT</version>
-		<artifactId>clubhelper-parent</artifactId>
-	</parent>
 </project>
