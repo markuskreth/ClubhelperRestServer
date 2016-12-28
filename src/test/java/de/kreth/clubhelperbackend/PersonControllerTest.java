@@ -11,7 +11,6 @@ import java.util.GregorianCalendar;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.ExtendedModelMap;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -26,13 +25,11 @@ public class PersonControllerTest {
 
 	private PersonController controller;
 	private StubDao<Person> dao;
-	private ExtendedModelMap model;
 
 	@Before
 	public void setUp() {
 		dao = new StubDao<Person>();
 		controller = new PersonController(dao);
-		model = new ExtendedModelMap();
 	}
 
 	@Test

@@ -32,6 +32,6 @@ public class ControllerLoggerAspect extends AbstractLoggerAspect {
 
 	@AfterReturning(pointcut = "invocation()", returning = "result")
 	public void logDao(JoinPoint joinPoint, Object result) throws Throwable {
-		logger.warn(generateLogMessage(joinPoint).append(" ==> ").append(result).toString());
+		logger.debug(generateLogMessage(joinPoint).append(" ==> ").append(result).toString());
 	}
 }
