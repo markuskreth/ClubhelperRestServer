@@ -33,6 +33,7 @@ public class DatabaseConfiguration {
 
 	private List<TableDefinition> tablesToCreate;
 	private Map<TableDefinition, List<ColumnDefinition>> tablesToAddColumns = null;
+	private List<String> insertSql = new ArrayList<>();
 
 	private int fromVersion;
 
@@ -60,6 +61,8 @@ public class DatabaseConfiguration {
 		case 3:
 			createAll();
 			addAuthColumns(person);
+			insertSql.add(
+					"INSERT INTO `groupDef`(`name`,`changed`,`created`)VALUES('ADMIN',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)");
 			break;
 		}
 	}
@@ -278,6 +281,15 @@ public class DatabaseConfiguration {
 				} catch (SQLException ex) {
 					throw new SQLException("Error on: " + sql, ex);
 				}
+			}
+		}
+
+		for (String sql : insertSql) {
+			logger.debug(sql);
+			try {
+				db.execSQL(sql);
+			} catch (SQLException ex) {
+				throw new SQLException("Error on: " + sql, ex);
 			}
 		}
 

@@ -32,13 +32,13 @@ public class ClubhelperAuthenticationProvider implements AuthenticationProvider,
 		stmGroups = dataSource.getConnection()
 				.prepareStatement("select groupDef.name groupname from person \n"
 						+ "	left join persongroup on persongroup.person_id = person._id\n"
-						+ "    left join groupDef on persongroup.group_id = groupDef._id\n"
-						+ "where person.username = ? and person.password = ?");
+						+ " left join groupDef on persongroup.group_id = groupDef._id\n"
+						+ " where person.username = ? and person.password = ?");
 		stmUser = dataSource.getConnection()
 				.prepareStatement("select person.password password, groupDef.name groupname from person \n"
 						+ "	left join persongroup on persongroup.person_id = person._id\n"
-						+ "    left join groupDef on persongroup.group_id = groupDef._id\n"
-						+ "where person.username = ?");
+						+ " left join groupDef on persongroup.group_id = groupDef._id\n"
+						+ " where person.username = ?");
 	}
 
 	@Override
@@ -48,21 +48,20 @@ public class ClubhelperAuthenticationProvider implements AuthenticationProvider,
 
 		log.debug("Searching Login for name=\"" + name + "\"");
 
-		List<GrantedAuthority> grantedAuths;
-
 		try {
-			grantedAuths = getRoles(name, password);
+			List<GrantedAuthority> grantedAuths = getRoles(name, password);
+
+			if (grantedAuths.isEmpty()) {
+				log.info("No valid login group found for \"" + name + "\"");
+				return null;
+			} else {
+				Authentication auth = new UsernamePasswordAuthenticationToken(name, password, grantedAuths);
+				log.info("Login groups found for \"" + name + "\": " + grantedAuths);
+				return auth;
+			}
+
 		} catch (SQLException e) {
 			throw new AuthenticationCredentialsNotFoundException("Sql error on authentication", e);
-		}
-
-		if (grantedAuths.isEmpty()) {
-			log.info("No valid login group found for \"" + name + "\"");
-			return null;
-		} else {
-			Authentication auth = new UsernamePasswordAuthenticationToken(name, password, grantedAuths);
-			log.info("Login groups found for \"" + name + "\": " + grantedAuths);
-			return auth;
 		}
 	}
 
@@ -74,10 +73,14 @@ public class ClubhelperAuthenticationProvider implements AuthenticationProvider,
 
 		List<GrantedAuthority> grantedAuths = new ArrayList<>();
 		while (rs.next()) {
-			grantedAuths.add(new SimpleGrantedAuthority(rs.getString("groupname")));
+			grantedAuths.add(createAuthority(rs.getString("groupname")));
 		}
 
 		return grantedAuths;
+	}
+
+	private GrantedAuthority createAuthority(String roleName) {
+		return new SimpleGrantedAuthority("ROLE_" + roleName.toUpperCase());
 	}
 
 	@Override
@@ -96,7 +99,7 @@ public class ClubhelperAuthenticationProvider implements AuthenticationProvider,
 			List<GrantedAuthority> grantedAuths = new ArrayList<>();
 			String password = null;
 			while (rs.next()) {
-				grantedAuths.add(new SimpleGrantedAuthority(rs.getString("groupname")));
+				grantedAuths.add(createAuthority(rs.getString("groupname")));
 				password = rs.getString("password");
 			}
 

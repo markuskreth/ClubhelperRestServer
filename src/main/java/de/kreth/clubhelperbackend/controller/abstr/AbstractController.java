@@ -36,7 +36,7 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 
 	@Override
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('Admin')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public String getAsView(@PathVariable("id") long id, @RequestParam(required = false) boolean ajax, Model m) {
 		String mapping = elementClass.getSimpleName();
 		m.addAttribute(mapping, getById(id));
@@ -45,7 +45,7 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 
 	@Override
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET)
-	@PreAuthorize("hasRole('Admin')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public String getAllAsView(@RequestParam(required = false) boolean ajax, Model m) {
 		String mapping = elementClass.getSimpleName();
 		m.addAttribute(mapping + "List", getAll());

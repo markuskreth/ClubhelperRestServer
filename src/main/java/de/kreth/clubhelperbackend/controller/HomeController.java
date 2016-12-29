@@ -61,7 +61,7 @@ public class HomeController {
 
 	@RequestMapping(value = "/downloadJnlp/**", method = RequestMethod.GET)
 	@ResponseBody
-	@PreAuthorize("hasRole('Admin')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STAFF')")
 	public void downloadJnlp(HttpServletRequest request, HttpServletResponse response) {
 		File jnlpFile = new File(System.getProperty("java.io.tmpdir"), "ClubHelperClient.jnlp");
 
