@@ -17,7 +17,7 @@ import de.kreth.dbmanager.TableDefinition;
 
 public class DatabaseConfiguration {
 
-	private static final int LATEST_VERSION = 3;
+	private static final int LATEST_VERSION = 4;
 
 	private final Logger logger;
 
@@ -57,6 +57,26 @@ public class DatabaseConfiguration {
 			addDeletedColumn(person, contact, relative, adress, attendance, version, deletedEntries, group,
 					persongroup);
 			break;
+		case 3:
+			createAll();
+			addAuthColumns(person);
+			break;
+		}
+	}
+
+	private void addAuthColumns(TableDefinition... defs) {
+
+		if (tablesToAddColumns == null) {
+			tablesToAddColumns = new HashMap<TableDefinition, List<ColumnDefinition>>();
+		}
+
+		List<ColumnDefinition> columns;
+
+		for (TableDefinition t : defs) {
+			columns = new ArrayList<ColumnDefinition>();
+			columns.add(new ColumnDefinition(DataType.TEXT, "username", "DEFAULT NULL"));
+			columns.add(new ColumnDefinition(DataType.TEXT, "password", "DEFAULT NULL"));
+			tablesToAddColumns.put(t, columns);
 		}
 	}
 
@@ -211,16 +231,15 @@ public class DatabaseConfiguration {
 	}
 
 	private List<ColumnDefinition> createPersonColumns() {
-		ColumnDefinition colPreName = new ColumnDefinition(DataType.TEXT, "prename", "NOT NULL");
-		ColumnDefinition colSurName = new ColumnDefinition(DataType.TEXT, "surname");
-		ColumnDefinition colType = new ColumnDefinition(DataType.TEXT, "type", "NOT NULL");
-		ColumnDefinition colBirth = new ColumnDefinition(DataType.DATETIME, "birth");
 
 		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
-		columns.add(colPreName);
-		columns.add(colSurName);
-		columns.add(colType);
-		columns.add(colBirth);
+		columns.add(new ColumnDefinition(DataType.TEXT, "prename", "NOT NULL"));
+		columns.add(new ColumnDefinition(DataType.TEXT, "surname"));
+		columns.add(new ColumnDefinition(DataType.TEXT, "type", "NOT NULL"));
+		columns.add(new ColumnDefinition(DataType.DATETIME, "birth"));
+		columns.add(new ColumnDefinition(DataType.TEXT, "username", "DEFAULT NULL"));
+		columns.add(new ColumnDefinition(DataType.TEXT, "password", "DEFAULT NULL"));
+
 		return columns;
 	}
 
