@@ -18,8 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,9 +45,6 @@ public class HomeController {
 	public String home(HttpServletRequest request, Locale locale, Model model) {
 
 		logger.info("Welcome home! The client locale is {}.", locale);
-		PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken("markus", "0773");
-		Authentication authenticate = clubhelperAuthenticationProvider.authenticate(authentication);
-		logger.debug("Authentificated: " + authenticate);
 
 		Date date = new Date();
 		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
@@ -66,7 +61,7 @@ public class HomeController {
 
 	@RequestMapping(value = "/downloadJnlp/**", method = RequestMethod.GET)
 	@ResponseBody
-	@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('Admin')")
 	public void downloadJnlp(HttpServletRequest request, HttpServletResponse response) {
 		File jnlpFile = new File(System.getProperty("java.io.tmpdir"), "ClubHelperClient.jnlp");
 
