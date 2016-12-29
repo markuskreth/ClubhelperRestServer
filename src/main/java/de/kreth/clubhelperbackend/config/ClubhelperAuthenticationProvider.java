@@ -17,11 +17,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-public class ClubhelperAuthenticationProvider implements AuthenticationProvider {
+public class ClubhelperAuthenticationProvider implements AuthenticationProvider, UserDetailsService {
 
 	private Logger log = LoggerFactory.getLogger(ClubhelperAuthenticationProvider.class);
 	private PreparedStatement stmGroups;
+	private PreparedStatement stmUser;
 
 	public ClubhelperAuthenticationProvider(DataSource dataSource) throws SQLException {
 		stmGroups = dataSource.getConnection()
@@ -29,6 +34,11 @@ public class ClubhelperAuthenticationProvider implements AuthenticationProvider 
 						+ "	left join persongroup on persongroup.person_id = person._id\n"
 						+ "    left join groupDef on persongroup.group_id = groupDef._id\n"
 						+ "where person.username = ? and person.password = ?");
+		stmUser = dataSource.getConnection()
+				.prepareStatement("select person.password password, groupDef.name groupname from person \n"
+						+ "	left join persongroup on persongroup.person_id = person._id\n"
+						+ "    left join groupDef on persongroup.group_id = groupDef._id\n"
+						+ "where person.username = ?");
 	}
 
 	@Override
@@ -73,6 +83,32 @@ public class ClubhelperAuthenticationProvider implements AuthenticationProvider 
 	@Override
 	public boolean supports(Class<?> authentication) {
 		return authentication.equals(UsernamePasswordAuthenticationToken.class);
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		log.debug("getting Userdetails for username " + username);
+
+		try {
+			stmUser.setString(1, username);
+			ResultSet rs = stmUser.executeQuery();
+
+			List<GrantedAuthority> grantedAuths = new ArrayList<>();
+			String password = null;
+			while (rs.next()) {
+				grantedAuths.add(new SimpleGrantedAuthority(rs.getString("groupname")));
+				password = rs.getString("password");
+			}
+
+			if (password == null) {
+				throw new UsernameNotFoundException("No user found matching " + username);
+			} else {
+				return new User(username, password, grantedAuths);
+			}
+
+		} catch (SQLException e) {
+			throw new UsernameNotFoundException("error executing " + stmUser, e);
+		}
 	}
 
 }
