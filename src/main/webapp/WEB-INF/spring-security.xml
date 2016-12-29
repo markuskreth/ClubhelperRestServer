@@ -11,11 +11,12 @@
     <global-method-security secured-annotations="enabled" pre-post-annotations="enabled"/>
     
 	<authentication-manager>
-	  <authentication-provider>
-	    <user-service>
-		<user name="markus" password="0773" authorities="ROLE_USER" />
-	    </user-service>
-	  </authentication-provider>
+		<authentication-provider ref="clubhelperAuthenticationProvider"/>
+<!-- 	  <authentication-provider> -->
+<!-- 	    <user-service> -->
+<!-- 		<user name="markus" password="0773" authorities="Admin" /> -->
+<!-- 	    </user-service> -->
+<!-- 	  </authentication-provider> -->
 	</authentication-manager>
 
 </beans:beans>
