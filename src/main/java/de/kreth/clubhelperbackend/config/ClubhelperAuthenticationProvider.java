@@ -10,7 +10,6 @@ import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,17 +17,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.stereotype.Component;
 
-@Component
 public class ClubhelperAuthenticationProvider implements AuthenticationProvider {
 
 	private Logger log = LoggerFactory.getLogger(ClubhelperAuthenticationProvider.class);
 	private PreparedStatement stmGroups;
 
-	@Autowired
-	public void setDataSource(DataSource source) throws SQLException {
-		stmGroups = source.getConnection()
+	public ClubhelperAuthenticationProvider(DataSource dataSource) throws SQLException {
+		stmGroups = dataSource.getConnection()
 				.prepareStatement("select groupDef.name groupname from person \n"
 						+ "	left join persongroup on persongroup.person_id = person._id\n"
 						+ "    left join groupDef on persongroup.group_id = groupDef._id\n"
@@ -62,11 +58,11 @@ public class ClubhelperAuthenticationProvider implements AuthenticationProvider 
 
 	private List<GrantedAuthority> getRoles(String name, String password) throws SQLException {
 
-		List<GrantedAuthority> grantedAuths = new ArrayList<>();
 		stmGroups.setString(1, name);
 		stmGroups.setString(2, password);
 		ResultSet rs = stmGroups.executeQuery();
 
+		List<GrantedAuthority> grantedAuths = new ArrayList<>();
 		while (rs.next()) {
 			grantedAuths.add(new SimpleGrantedAuthority(rs.getString("groupname")));
 		}
