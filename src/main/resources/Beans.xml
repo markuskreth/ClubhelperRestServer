@@ -9,28 +9,9 @@
            http://www.springframework.org/schema/aop
            http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
-	<!-- Properties will be overridden by PropertyOverrideConfigurer if file 
-		exists! -->
-	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
-		<property name="jndiName" value="java:comp/env/jdbc/clubhelperbackend" />
-	</bean>
-
-	<bean id="transMan" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<constructor-arg ref="dataSource" />
-	</bean>
-
-	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-		<constructor-arg ref="dataSource" />
-	</bean>
-
-	<bean id="sqlForDialect" class="de.kreth.clubhelperbackend.config.SqlForMysql">
-		<constructor-arg ref="jdbcTemplate" />
-	</bean>
-
 	<aop:aspectj-autoproxy proxy-target-class="true">
 		<aop:include name="mysqlDbCheckAspect" />
 		<aop:include name="controllerLoggerAspect" />
-		<aop:include name="SecurityAspect" />
 		<aop:include name="deletedStorageAspect" />
 	</aop:aspectj-autoproxy>
 
