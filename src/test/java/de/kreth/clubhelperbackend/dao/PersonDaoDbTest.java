@@ -7,6 +7,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -67,19 +68,38 @@ public class PersonDaoDbTest {
 
 	private void deleteTables(Connection conn) throws SQLException {
 
-		ResultSet rs = conn.getMetaData().getTables(null, null, "%", null);
+		String[] types = { "TABLE", "VIEW" };
+		DatabaseMetaData metaData = conn.getMetaData();
+		String catalog = conn.getCatalog();
+
+		ResultSet rs = metaData.getTables(catalog, null, "%", types);
 		List<String> allSql = new ArrayList<String>();
 
+		ResultSetMetaData metaData2 = rs.getMetaData();
+		int columnCount = metaData2.getColumnCount();
+
 		while (rs.next()) {
-			String tableName = rs.getString("TABLE_NAME");
+			StringBuilder txt = new StringBuilder();
+			for (int i = 1; i <= columnCount; i++) {
+				txt.append(metaData2.getColumnName(i)).append("=").append(rs.getString(i)).append("\n");
+			}
+			System.out.println(txt);
 			String type = rs.getString("TABLE_TYPE");
-			String sql = String.format("DROP %s %s", type, tableName);
-			allSql.add(sql);
+
+			if (type != null && type.startsWith("SYSTEM") == false) {
+				String tableName = rs.getString("TABLE_NAME");
+				String sql = String.format("DROP %s %s", type, tableName);
+				allSql.add(sql);
+			}
 		}
 		rs.close();
 		Statement stm = conn.createStatement();
 		for (String sql : allSql) {
-			stm.execute(sql);
+			try {
+				stm.execute(sql);
+			} catch (SQLException e) {
+				throw new SQLException("SQL: " + sql, e);
+			}
 		}
 	}
 
@@ -88,7 +108,7 @@ public class PersonDaoDbTest {
 		dbCheck.checkDb();
 
 		Connection conn = dataSource.getConnection();
-		ResultSet rs = conn.getMetaData().getTables(null, null, "%", null);
+		ResultSet rs = conn.getMetaData().getTables(conn.getCatalog(), null, "%", null);
 
 		List<String> tables = new ArrayList<String>();
 
@@ -120,14 +140,14 @@ public class PersonDaoDbTest {
 
 		Connection conn = dataSource.getConnection();
 		DatabaseMetaData metaData = conn.getMetaData();
-		ResultSet rs = metaData.getColumns(null, null, "person", "%");
+		ResultSet rs = metaData.getColumns(conn.getCatalog(), null, "person", "%");
 
 		List<String> cols = new ArrayList<String>();
 		while (rs.next()) {
 			cols.add(rs.getString("COLUMN_NAME"));
 		}
 
-		assertEquals(8, cols.size());
+		assertEquals(10, cols.size());
 	}
 
 }

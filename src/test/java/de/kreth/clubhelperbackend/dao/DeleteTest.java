@@ -75,7 +75,7 @@ public class DeleteTest {
 
 	private void deleteTables(Connection conn) throws SQLException {
 
-		ResultSet rs = conn.getMetaData().getTables(null, null, "%", null);
+		ResultSet rs = conn.getMetaData().getTables(conn.getCatalog(), null, "%", null);
 		List<String> allSql = new ArrayList<String>();
 
 		while (rs.next()) {
