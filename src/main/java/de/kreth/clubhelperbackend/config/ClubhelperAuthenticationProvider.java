@@ -52,7 +52,7 @@ public class ClubhelperAuthenticationProvider implements AuthenticationProvider,
 			List<GrantedAuthority> grantedAuths = getRoles(name, password);
 
 			if (grantedAuths.isEmpty()) {
-				log.info("No valid login group found for \"" + name + "\"");
+				log.warn("No valid login group found for \"" + name + "\"");
 				return null;
 			} else {
 				Authentication auth = new UsernamePasswordAuthenticationToken(name, password, grantedAuths);

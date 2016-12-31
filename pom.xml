@@ -8,7 +8,7 @@
 
 	<parent>
 		<groupId>de.kreth</groupId>
-		<version>1.0.1-SNAPSHOT</version>
+		<version>1.0.2-SNAPSHOT</version>
 		<artifactId>clubhelper-parent</artifactId>
 	</parent>
 	
@@ -239,6 +239,11 @@
 			<artifactId>spring-test</artifactId>
 			<version>${org.springframework-version}</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.9</version>
 		</dependency>
 	</dependencies>
 	<build>
