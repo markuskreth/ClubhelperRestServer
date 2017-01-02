@@ -259,7 +259,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 	}
 
 	@Override
-	public final boolean delete(long id) {
+	public boolean delete(long id) {
 
 		Assert.notNull(deletedEntriesDao);
 
