@@ -17,7 +17,7 @@ import de.kreth.dbmanager.TableDefinition;
 
 public class DatabaseConfiguration {
 
-	private static final int LATEST_VERSION = 4;
+	private static final int LATEST_VERSION = 5;
 
 	private final Logger logger;
 
@@ -51,20 +51,46 @@ public class DatabaseConfiguration {
 			createAll();
 			createWith(deletedEntries, group, persongroup);
 			addDeletedColumn(person, contact, relative, adress, attendance, version);
+			addAuthColumns(person);
+			insertSql.add(
+					"INSERT INTO `groupDef`(`name`,`changed`,`created`)VALUES('ADMIN',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)");
+			addUniquePersonGroup();
 			break;
 		case 2:
 			createAll();
 			createWith();
 			addDeletedColumn(person, contact, relative, adress, attendance, version, deletedEntries, group,
 					persongroup);
+			addAuthColumns(person);
+			insertSql.add(
+					"INSERT INTO `groupDef`(`name`,`changed`,`created`)VALUES('ADMIN',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)");
+			addUniqueGroupName();
+			addUniquePersonGroup();
 			break;
 		case 3:
 			createAll();
 			addAuthColumns(person);
 			insertSql.add(
 					"INSERT INTO `groupDef`(`name`,`changed`,`created`)VALUES('ADMIN',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)");
+			addUniqueGroupName();
+			addUniquePersonGroup();
 			break;
+		case 4:
+			addUniqueGroupName();
+			addUniquePersonGroup();
 		}
+	}
+
+	private void addUniqueGroupName() {
+		insertSql.add("delete n1 from groupDef n1, groupDef n2 WHERE n1._id >n2._id AND n1.name = n2.name");
+		insertSql.add("ALTER TABLE `groupDef` \n" + "ADD UNIQUE INDEX `groupname_UNIQUE` (`name` ASC);");
+	}
+
+	private void addUniquePersonGroup() {
+		insertSql.add(
+				"delete n1 from persongroup n1, persongroup n2 WHERE n1._id >n2._id AND n1.person_id = n2.person_id AND n1.group_id = n2.group_id;");
+		insertSql.add("ALTER TABLE `persongroup` \n"
+				+ "ADD UNIQUE INDEX `unique_person_group` (`person_id` ASC, `group_id` ASC);");
 	}
 
 	private void addAuthColumns(TableDefinition... defs) {
@@ -154,7 +180,7 @@ public class DatabaseConfiguration {
 	}
 
 	private List<ColumnDefinition> createGroupColumns() {
-		ColumnDefinition colTableName = new ColumnDefinition(DataType.VARCHAR255, "name", "NOT NULL");
+		ColumnDefinition colTableName = new ColumnDefinition(DataType.VARCHAR255, "name", "NOT NULL UNIQUE");
 
 		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
 		columns.add(colTableName);
