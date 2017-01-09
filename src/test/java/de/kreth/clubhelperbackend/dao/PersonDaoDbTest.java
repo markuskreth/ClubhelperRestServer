@@ -17,7 +17,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
+import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
 
 import de.kreth.clubhelperbackend.aspects.MysqlDbCheckAspect;
 import de.kreth.clubhelperbackend.pojo.Adress;
@@ -114,7 +114,7 @@ public class PersonDaoDbTest {
 
 		while (rs.next()) {
 			String tableName = rs.getString("TABLE_NAME");
-			tables.add(tableName);
+			tables.add(tableName.toLowerCase());
 		}
 
 		rs.close();
@@ -126,9 +126,9 @@ public class PersonDaoDbTest {
 		assertTrue("Contact Table not found!", tables.contains(Contact.class.getSimpleName().toLowerCase()));
 		assertTrue("Relative Table not found!", tables.contains(Relative.class.getSimpleName().toLowerCase()));
 		assertTrue("Attendance Table not found!", tables.contains(Attendance.class.getSimpleName().toLowerCase()));
-		assertTrue("Group Table not found!", tables.contains(GroupDao.TABLE_NAME));
+		assertTrue("Group Table not found!", tables.contains(GroupDao.TABLE_NAME.toLowerCase()));
 		assertTrue("PersonGroup Table not found!", tables.contains(PersonGroup.class.getSimpleName().toLowerCase()));
-		assertTrue("DeletedEntries Table not found!", tables.contains(DeletedEntriesDao.TABLE_NAME));
+		assertTrue("DeletedEntries Table not found!", tables.contains(DeletedEntriesDao.TABLE_NAME.toLowerCase()));
 		assertTrue("version Table not found!", tables.contains("version"));
 
 	}

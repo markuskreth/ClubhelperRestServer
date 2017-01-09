@@ -19,7 +19,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
+import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
 
 import de.kreth.clubhelperbackend.aspects.MysqlDbCheckAspect;
 import de.kreth.clubhelperbackend.config.SqlForMysql;

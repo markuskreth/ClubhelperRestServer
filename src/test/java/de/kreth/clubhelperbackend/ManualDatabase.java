@@ -9,7 +9,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.PatternLayout;
 import org.slf4j.LoggerFactory;
 
-import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
+import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
 
 import de.kreth.clubhelperbackend.aspects.MysqlDbCheckAspect;
 
