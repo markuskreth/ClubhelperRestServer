@@ -24,11 +24,23 @@
 					</bean>
 				</property>
 			</bean>
-		</mvc:message-converters>
+		</mvc:message-converters> 
+		<mvc:argument-resolvers>
+			<bean
+				class="org.springframework.mobile.device.site.SitePreferenceWebArgumentResolver" />
+			<bean class="org.springframework.mobile.device.DeviceWebArgumentResolver" />
+		</mvc:argument-resolvers>
 	</mvc:annotation-driven>
 
 	<mvc:resources mapping="/resources/**" location="/resources/" />
+ 
+	<mvc:interceptors>
+		<!-- Resolve the device which has generated the request -->
+		<bean
+			class="org.springframework.mobile.device.DeviceResolverHandlerInterceptor" />
 
+	</mvc:interceptors>
+	
 	<bean
 		class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver" />
 

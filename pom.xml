@@ -15,7 +15,6 @@
 	<description>Clubhelper Rest Service</description>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>de.kreth</groupId>
 			<artifactId>databasedefinition</artifactId>
@@ -57,13 +56,19 @@
 			<artifactId>spring-security-web</artifactId>
 			<version>${spring.security.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-config</artifactId>
 			<version>${spring.security.version}</version>
 		</dependency>
-
+ 
+		<!-- Spring Mobile -->
+		<dependency>
+			<groupId>org.springframework.mobile</groupId>
+			<artifactId>spring-mobile-device</artifactId>
+			<version>1.1.4.RELEASE</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>commons-dbcp</groupId>
 			<artifactId>commons-dbcp</artifactId>
