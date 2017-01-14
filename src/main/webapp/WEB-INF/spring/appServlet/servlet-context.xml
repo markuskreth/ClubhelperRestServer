@@ -31,7 +31,18 @@
 			<bean class="org.springframework.mobile.device.DeviceWebArgumentResolver" />
 		</mvc:argument-resolvers>
 	</mvc:annotation-driven>
+ 
+		<!-- User's site preference -->
+		<bean
+			class="org.springframework.mobile.device.site.SitePreferenceHandlerInterceptor" />
 
+		<!-- Redirects users to the device specific site -->
+		<!-- <bean class="org.springframework.mobile.device.switcher.SiteSwitcherHandlerInterceptor" 
+			factory-method="urlPath"> -->
+		<!-- <constructor-arg value="/m" /> -->
+		<!-- <constructor-arg value="/t" /> -->
+		<!-- <constructor-arg value="/SpringMobileHelloWorld" /> -->
+		<!-- </bean> -->
 	<mvc:resources mapping="/resources/**" location="/resources/" />
  
 	<mvc:interceptors>
