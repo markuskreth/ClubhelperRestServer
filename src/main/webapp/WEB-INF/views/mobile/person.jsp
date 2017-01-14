@@ -1,37 +1,70 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="s" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-Name: ${Person.prename}  ${Person.surname}<br/>
-Typ:  ${Person.type}<br />
+
+<script type="text/javascript">
+		$( document ).ready( function() {
+			$('#mainMenuItems')
+				.empty()
+				.append("<li><a href=\"#deletePerson\" class=\"ui-btn ui-icon-delete ui-btn-icon-left\">Löschen</a></li>")
+				.append("<li><a href=\"#addContact\" class=\"ui-btn ui-icon-plus ui-btn-icon-left\">Telefon/Mail</a></li>");
+		});
+		
+		function deletePerson() {
+			alert("deletePerson ${Person.prename} ${Person.surname}");
+		}
+		
+		function addContact() {
+			alert("addContact");
+		}
+</script>
+
+Name:<br />
+${Person.prename} ${Person.surname}<br/>
 Geburtstag:  <fmt:formatDate value="${Person.birth}" pattern="dd.MM.yyyy" /><br />
-Created:  <fmt:formatDate value="${Person.created}" pattern="dd.MM.yyyy HH:mm:ss" /><br />
-Changed:  <fmt:formatDate value="${Person.changed}" pattern="dd.MM.yyyy HH:mm:ss" /><br />
 
 <h4>Kontakte:</h4>
+
+<ul data-role="listview" data-inset="true" data-filter="false">
 <c:forEach var="item" items="${ContactList}">
 <c:choose>
 <c:when test="${item.type == 'Email'}">
-	${item.type}: <a href="mailto:${item.value}">${item.value}</a><br/>
+	<li>
+	<div data-role="controlgroup" data-type="horizontal">
+	<a href="mailto:${item.value}"  data-icon="mail" data-inline="true" data-role="button" data-inline="true">${item.value}</a>
+	</div>
+	</li>
+</c:when>
+<c:when test="${item.type == 'Mobile'}">
+	<li>
+	<div data-role="controlgroup" data-type="horizontal">
+	<a href="tel:${item.value}" data-icon="phone" data-role="button" data-inline="true">${item.value}</a>
+	<a href="sms:${item.value}" data-icon="mail" data-role="button" data-inline="true" data-iconpos="notext"></a>
+	</div>	
+	</li>
 </c:when>
 <c:otherwise>
-	${item.type}: <a href="tel:${item.value}">${item.value}</a><br/>
+	<li>
+	<div data-role="controlgroup" data-type="horizontal">
+	<a href="tel:${item.value}" data-icon="phone" data-mini="true" data-role="button" data-inline="true">${item.value}</a>
+	</div>	
+	</li>
 </c:otherwise>
 </c:choose>
 </c:forEach>
+</ul>
 
 <h4>Adresse:</h4>
 <c:forEach var="item" items="${AdressList}">
 	${item.adress1}<br/>
 	${item.adress2}<br/>
-	${item.plz} ${item.city}<br/> <br/> 
+	${item.plz} ${item.city}<br/>
+	<br/> 
 </c:forEach>
 
 <h4>Beziehungen:</h4>
-<c:forEach var="item" items="${PersonRelativeList}">
-	<a href="<s:url value="/person/${item.toPerson.id}" />">${item.relation}: ${item.toPerson.prename} ${item.toPerson.surname}</a><br/>
-</c:forEach>
-
-
-<div data-role="popup" id="popupMenu">
-    <p>Popup für ${Person.prename}  ${Person.surname}</p>
-</div>
+<ol data-role="listview" data-inset="true" data-filter="false">
+	<c:forEach var="item" items="${PersonRelativeList}">
+		<li><a href="<s:url value="/person/${item.toPerson.id}"/>" data-role="button">${item.relation}: ${item.toPerson.prename} ${item.toPerson.surname}</a></li>
+	</c:forEach>
+</ol>

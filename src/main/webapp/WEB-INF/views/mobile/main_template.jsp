@@ -35,7 +35,7 @@
 		</div>
 	<!-- /content -->
 
-	<div data-role="footer" data-position="fixed">
+	<div data-role="footer" data-position="fixed" data-mini="true">
 		Copyright Markus Kreth - MTV Groﬂ-Buchholz
 	</div>
 	<!-- /footer -->
