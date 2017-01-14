@@ -3,6 +3,7 @@ package de.kreth.clubhelperbackend.controller.abstr;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.mobile.device.Device;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,7 +24,7 @@ public interface ClubController<T> {
 	 * @return Name of View
 	 */
 	// @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	public abstract String getAsView(@PathVariable("id") long id, @RequestParam boolean ajax, Model m);
+	public abstract String getAsView(@PathVariable("id") long id, @RequestParam boolean ajax, Device device, Model m);
 
 	/**
 	 * View: Returns the name of View and inserts the resulting list into the
@@ -36,7 +37,7 @@ public interface ClubController<T> {
 	 * @return Name of View
 	 */
 	// @RequestMapping(value = { "/", "" }, method = RequestMethod.GET)
-	public abstract String getAllAsView(@RequestParam boolean ajax, Model m);
+	public abstract String getAllAsView(@RequestParam boolean ajax, Device device, Model m);
 
 	/*
 	 * ************* REST Methoden ************

@@ -12,7 +12,7 @@
 	
   <appender name="MeinAppender" class="org.apache.log4j.DailyRollingFileAppender">
     <param name="datePattern" value="'.'yyyy-MM-dd_HH-mm" />
-    <param name="file" value="logs/MeineLogDatei.log" />
+    <param name="file" value="${catalina.home}/logs/MeineLogDatei.log" />
     <param name="Append" value="true" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] %c: %m%n" />
@@ -38,7 +38,7 @@
 	</logger>
 	
 	<logger name="org.springframework.context">
-		<level value="debug" />
+		<level value="info" />
 	</logger>
 
 	<logger name="org.springframework.web">
@@ -47,6 +47,14 @@
 
 	<logger name="org.springframework.web.servlet.mvc">
 		<level value="debug" />
+	</logger>
+
+	<logger name="org.springframework.web.servlet.view.tiles2">
+		<level value="all" />
+	</logger>
+
+	<logger name="org.springframework.mobile.device.view">
+		<level value="all" />
 	</logger>
 
 	<!-- Root Logger -->

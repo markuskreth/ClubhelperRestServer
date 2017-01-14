@@ -28,4 +28,29 @@
 	<definition name="PersonGetAjax" extends="ajaxtemplate">
 		<put-attribute name="content" value="/WEB-INF/views/person.jsp" />
 	</definition>
+	
+	<definition name="mobile/maintemplate" template="/WEB-INF/views/mobile/main_template.jsp">
+		<put-attribute name="top" value="/WEB-INF/views/mobile/header.jsp" />
+	</definition>
+	<definition name="mobile/ajaxtemplate" template="/WEB-INF/views/mobile/ajax_template.jsp">
+		<put-attribute name="top" value="/WEB-INF/views/mobile/header.jsp" />
+	</definition>
+	<definition name="mobile/home" extends="mobile/maintemplate">
+		<put-attribute name="content" value="/WEB-INF/views/mobile/home.jsp" />
+	</definition>
+	<definition name="mobile/output" extends="mobile/maintemplate">
+		<put-attribute name="content" value="/WEB-INF/views/mobile/output.jsp" />
+	</definition>
+	<definition name="mobile/PersonAll" extends="mobile/maintemplate">
+		<put-attribute name="content" value="/WEB-INF/views/mobile/personlist.jsp" />
+	</definition>
+	<definition name="mobile/PersonGet" extends="mobile/maintemplate">
+		<put-attribute name="content" value="/WEB-INF/views/mobile/person.jsp" />
+	</definition>
+	<definition name="mobile/PersonAllAjax" extends="mobile/ajaxtemplate">
+		<put-attribute name="content" value="/WEB-INF/views/mobile/personlist.jsp" />
+	</definition>
+	<definition name="mobile/PersonGetAjax" extends="mobile/ajaxtemplate">
+		<put-attribute name="content" value="/WEB-INF/views/mobile/person.jsp" />
+	</definition>
 </tiles-definitions>

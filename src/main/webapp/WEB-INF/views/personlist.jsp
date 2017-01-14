@@ -3,5 +3,3 @@
 <c:forEach var="person" items="${PersonList}">
 	<a href="<s:url value="/person/${person.id}" />">${person.prename} ${person.surname}</a><br/> 
 </c:forEach>
-
-Updated!

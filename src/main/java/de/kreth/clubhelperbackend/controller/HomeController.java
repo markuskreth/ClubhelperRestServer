@@ -47,6 +47,14 @@ public class HomeController {
 
 		logger.info("Welcome home! The client locale is {}.", locale);
 		logger.info("Client Device is running " + device.getDevicePlatform() + ": " + device);
+		if(device.isNormal() == false) {
+
+			try {
+				response.sendRedirect("/person/");
+			} catch (IOException e) {
+				logger.error("Unable to rediret mobile Device to PersonList", e);
+			}
+		}
 		
 		Date date = new Date();
 		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
@@ -57,11 +65,8 @@ public class HomeController {
 
 		String dir = new File(".").getAbsolutePath();
 		model.addAttribute("directory", dir);
-		if(device.isNormal() == false) {
-			return "m_home";
-		} else {
-			return "home";
-		}
+		
+		return "home";
 	}
 
 	@RequestMapping(value = "/downloadJnlp/**", method = RequestMethod.GET)

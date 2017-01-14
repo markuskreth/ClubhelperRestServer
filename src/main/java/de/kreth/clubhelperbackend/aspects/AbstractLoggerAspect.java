@@ -4,10 +4,6 @@ import org.aspectj.lang.JoinPoint;
 
 public class AbstractLoggerAspect {
 
-	public AbstractLoggerAspect() {
-		super();
-	}
-
 	protected StringBuffer generateLogMessage(JoinPoint joinPoint) {
 		StringBuffer logMessage = new StringBuffer();
 		logMessage.append(joinPoint.getTarget().getClass().getName());

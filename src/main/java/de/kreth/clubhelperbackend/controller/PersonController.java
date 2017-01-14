@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mobile.device.Device;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -51,7 +52,7 @@ public class PersonController extends AbstractController<Person> {
 	@Override
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public String getAsView(@PathVariable("id") long id, @RequestParam(required = false) boolean ajax, Model m) {
+	public String getAsView(@PathVariable("id") long id, @RequestParam(required = false) boolean ajax, Device device, Model m) {
 		List<Contact> contacts = contactController.getByParentId(id);
 		m.addAttribute(Contact.class.getSimpleName() + "List", contacts);
 
@@ -75,7 +76,7 @@ public class PersonController extends AbstractController<Person> {
 		}
 		m.addAttribute(PersonRelative.class.getSimpleName() + "List", rel);
 
-		return super.getAsView(id, ajax, m);
+		return super.getAsView(id, ajax, device, m);
 	}
 
 	/**

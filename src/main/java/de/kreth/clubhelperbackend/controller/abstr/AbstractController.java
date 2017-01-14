@@ -6,6 +6,7 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mobile.device.Device;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,7 +38,7 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 	@Override
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public String getAsView(@PathVariable("id") long id, @RequestParam(required = false) boolean ajax, Model m) {
+	public String getAsView(@PathVariable("id") long id, @RequestParam(required = false) boolean ajax, Device device, Model m) {
 		String mapping = elementClass.getSimpleName();
 		m.addAttribute(mapping, getById(id));
 		return mapping + "Get" + (ajax ? "Ajax" : "");
@@ -46,7 +47,7 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 	@Override
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public String getAllAsView(@RequestParam(required = false) boolean ajax, Model m) {
+	public String getAllAsView(@RequestParam(required = false) boolean ajax, Device device, Model m) {
 		String mapping = elementClass.getSimpleName();
 		m.addAttribute(mapping + "List", getAll());
 		return mapping + "All" + (ajax ? "Ajax" : "");
