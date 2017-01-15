@@ -10,6 +10,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet"
 	href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+<link rel="stylesheet"
+	href=<c:url value='/resources/css/custom.css' /> />
 <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
 <script src=<c:url value='/resources/js/moment-with-locales.min.js' />></script>
 <script
@@ -22,21 +24,15 @@ var storeObject = {
 	    adresses : null,
 	    ralations : null
 }
-var baseUrl = null;
 
-baseUrl = location.protocol + '//' + location.host;
+var baseUrl = location.protocol + '//' + location.host + <c:url value='/' />;
 
 var split = location.pathname.replace(/^\/|\/$/g, '').split( '/' );
-for (var i = 0; i < split.length-1; i++) {
-	baseUrl += "/" + split[i];
-}
 var id = parseInt(split[split.length-1]);
 
 if(Number.isInteger(id)) {
-	baseUrl = baseUrl.substring(0, baseUrl.lastIndexOf('/'));
 	storeObject.personId = id;
 	$(":mobile-pagecontainer").pagecontainer( "change", $("#personDetails" ));
-	updateAllPersonDetailData();
 }
 
 $(document).on("pageshow","#personDetails",function(){
@@ -88,6 +84,7 @@ function showPersonPerson() {
 	$("#personDetailPerson")
 		.append("<p>Name:</p><p>" + storeObject.person.prename + " " + storeObject.person.surname + "</p>")
 		.append("<p>Geburtstag:" + date.format('L') + " Alter: " + date.fromNow(true) + "</p>");
+	$("#personDetailPerson").trigger("create");
 }
 
 function showPersonContacts() {
@@ -97,11 +94,17 @@ function showPersonContacts() {
 		var element = renderContact(con);
 		obj.append(element);
 	}
+	obj.trigger("create");
 }
 
 function renderContact(contact) {
 
-	var link = $("<a data-mini='true' data-role='button' data-inline='true'></a>").append(contact.value);
+	var link = $("<a></a>");
+	link.attr("data-role", "button");
+	link.attr("data-iconpos", "right");
+// 	link.attr("data-mini", "true");
+	link.attr("data-inline", "true");
+	link.attr("data-corners", "true");
 
 	if(contact.type == 'Email') {
 		link.attr("href", "mailto:" + contact.value);
@@ -113,8 +116,16 @@ function renderContact(contact) {
 		link.attr("href", "tel:" + contact.value);
 		link.attr("data-icon", "phone");
 	}
-	
-	return $("<li></li>").append($("<div data-role='controlgroup' data-type='horizontal'></div>").append(link));
+	link.text(contact.value);
+	if(contact.type == 'Mobile') {
+		link = [link, link.clone()];
+		link[1].attr("href", "sms:" + contact.value);
+		link[1].attr("data-icon", "mail");
+		link[1].attr("data-iconpos", "notext");
+	}
+	return $("<li></li>")
+		.append($("<div></div>").attr("data-role", "controlgroup").attr("data-type", "horizontal")
+				.append(link));
 }
 </script>
 </head>
