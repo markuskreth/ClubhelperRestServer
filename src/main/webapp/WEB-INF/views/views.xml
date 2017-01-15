@@ -29,8 +29,6 @@
 		<put-attribute name="content" value="/WEB-INF/views/person.jsp" />
 	</definition>
 	
-	<definition name="mobile/home" template="/WEB-INF/views/mobile/mobile.jsp">
-	</definition>
 	<definition name="mobile/PersonAll" template="/WEB-INF/views/mobile/mobile.jsp">
 	</definition>
 	<definition name="mobile/PersonGet" template="/WEB-INF/views/mobile/mobile.jsp">

@@ -47,7 +47,14 @@ public class HomeController {
 
 		logger.info("Welcome home! The client locale is {}.", locale);
 		logger.info("Client Device is running " + device.getDevicePlatform() + ": " + device);
-		
+		if(device.isNormal() == false) {
+			try {
+				response.sendRedirect("person");
+				return null;
+			} catch (IOException e) {
+				logger.error("Unable to redirect Mobile Device to person", e);
+			}
+		}
 		Date date = new Date();
 		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
 
