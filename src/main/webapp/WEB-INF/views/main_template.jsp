@@ -86,7 +86,7 @@ function sendPost(uri, data)
 	rel="stylesheet" type="text/css" />
 <link href='http://fonts.googleapis.com/css?family=Abel|Satisfy'
 	rel='stylesheet' type='text/css' />
-<link href="<c:url value="/resources/0906/css/style.css" />"
+<link href="<c:url value='/resources/0906/css/style.css' />"
 	rel="stylesheet" type="text/css" media="screen" />
 </head>
 <body>
