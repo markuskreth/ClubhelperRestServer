@@ -14,6 +14,8 @@
 	href=<c:url value='/resources/css/custom.css' /> />
 <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
 <script src=<c:url value='/resources/js/moment-with-locales.min.js' />></script>
+<script src=<c:url value='/resources/js/personwritesupport.js' />></script>
+<script src=<c:url value='/resources/js/personlistsupport.js' />></script>
 <script
 	src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 <script type="text/javascript">
@@ -60,14 +62,6 @@ function updateAllPersonDetailData() {
 		  }
 		});
 	  
-}
-
-function printPhoneList() {
-	alert("printPhoneList aus mainmenu");
-}
-
-function printPhoneList2() {
-	alert("printPhoneList aus popup");
 }
 
 function showPerson(personId, prename, surname) {
@@ -133,11 +127,11 @@ function renderContact(contact) {
 	<div data-role="page" id="personList">
 		<div data-role="header" data-position="fixed">
 			<h1>Clubhelper Mobile</h1>
-			<a href="#mainMenu" data-rel="popup" data-role="button"
+			<a href="#personListMenu" data-rel="popup" data-role="button"
 				data-icon="bars" data-mini="true" data-rel="popup"></a>
-			<div data-role="popup" id="mainMenu">
+			<div data-role="popup" id="personListMenu">
 				<ul id="mainMenuItems">
-					<li><a href="#" onclick="printPhoneList" data-rel="popup" class="ui-btn ui-icon-bulletes ui-btn-icon-left">Listen</a></li>
+					<li><a href="#" onclick="printPhoneList2()" data-rel="popup" class="ui-btn ui-icon-bulletes ui-btn-icon-left">Listen</a></li>
 				</ul>
 			</div>
 		</div>
@@ -151,7 +145,7 @@ function renderContact(contact) {
 							<div data-role="navbar">
 							  <ul>
 							    <li><a href="#" onclick="addPerson()" class="ui-btn ui-icon-plus">Hinzufügen</a></li>
-							    <li><a href="#" onclick="printLists()" class="ui-btn ui-icon-bulletes">Listen</a></li>
+							    <li><a href="#" onclick="printPhoneList()" class="ui-btn ui-icon-bulletes">Listen</a></li>
 							  </ul>
 							</div>
 							<p>Personen</p>
@@ -194,7 +188,7 @@ function renderContact(contact) {
 						<div class="gradient">	
 							<div data-role="navbar">
 							  <ul>
-							    <li><a href="#addDetail" class="ui-btn ui-icon-plus">Hinzufügen</a></li>
+							    <li><a href="#" onclick="addPersonDetail()" class="ui-btn ui-icon-plus">Hinzufügen</a></li>
 							  </ul>
 							</div>
 							<div id="personDetailPerson"></div>
