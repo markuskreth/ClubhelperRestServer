@@ -8,7 +8,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Club Helper Web</title>
-<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src=<c:url value='/resources/js/jquery-3.1.1.min.js' />></script>
 <script type="text/javascript">
 
 		$( document ).ready( function() {

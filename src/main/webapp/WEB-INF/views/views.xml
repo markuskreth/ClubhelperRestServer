@@ -29,6 +29,8 @@
 		<put-attribute name="content" value="/WEB-INF/views/person.jsp" />
 	</definition>
 	
+	<definition name="test" template="/WEB-INF/tests/QUnit.jsp" />
+	
 	<definition name="mobile/PersonAll" template="/WEB-INF/views/mobile/mobile.jsp">
 	</definition>
 	<definition name="mobile/PersonGet" template="/WEB-INF/views/mobile/mobile.jsp">

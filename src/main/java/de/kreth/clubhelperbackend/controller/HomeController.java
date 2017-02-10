@@ -43,11 +43,12 @@ public class HomeController {
 	 * Simply selects the home view to render by returning its name.
 	 */
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String home(HttpServletRequest request, HttpServletResponse response, Device device, Locale locale, Model model) {
+	public String home(HttpServletRequest request, HttpServletResponse response, Device device, Locale locale,
+			Model model) {
 
 		logger.info("Welcome home! The client locale is {}.", locale);
 		logger.info("Client Device is running " + device.getDevicePlatform() + ": " + device);
-		if(device.isNormal() == false) {
+		if (device.isNormal() == false) {
 			try {
 				response.sendRedirect("person");
 				return null;
@@ -64,8 +65,13 @@ public class HomeController {
 
 		String dir = new File(".").getAbsolutePath();
 		model.addAttribute("directory", dir);
-		
+
 		return "home";
+	}
+
+	@RequestMapping(value = "/test", method = RequestMethod.GET)
+	public String runTests() {
+		return "test";
 	}
 
 	@RequestMapping(value = "/downloadJnlp/**", method = RequestMethod.GET)
