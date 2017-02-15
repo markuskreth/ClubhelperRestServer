@@ -165,10 +165,6 @@ function addPerson() {
 	alert("addPerson clicked!");
 }
 
-function addPersonDetail() {
-	alert("addPersonDetail clicked!");
-}
-
 function printPhoneList() {
 	alert("printPhoneList aus mainmenu");
 }

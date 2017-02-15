@@ -15,6 +15,7 @@
 <script src=<c:url value='/resources/js/moment-with-locales.min.js' />></script>
 <script src=<c:url value='/resources/js/person.js' />></script>
 <script src=<c:url value='/resources/js/mobile_business.js' />></script>
+<script src=<c:url value='/resources/js/mobile_edit_business.js' />></script>
 <script src=<c:url value='/resources/js/jquery.mobile-1.4.5.min.js' />></script>
 <script type="text/javascript">
 var baseUrl = location.protocol + '//' + location.host + <c:url value='/' />;
@@ -93,8 +94,8 @@ var baseUrl = location.protocol + '//' + location.host + <c:url value='/' />;
 						<div class="gradient">
 							<div data-role="navbar">
 								<ul>
-									<li><a href="#" onclick="addPersonDetail()"
-										class="ui-btn ui-icon-plus">Hinzufügen</a></li>
+									<li><a href="#" onclick="editPerson()"
+										data-role="button" data-icon="edit" data-theme="b" data-inline="true">Bearbeiten</a></li>
 								</ul>
 							</div>
 							<div id="personDetailPerson"></div>
@@ -129,6 +130,60 @@ var baseUrl = location.protocol + '//' + location.host + <c:url value='/' />;
 
 	</div>
 	<!-- /page -->
+	
+	
+	
+	<div data-role="page" id="personEdit">
+		<div data-role="header" data-position="fixed" data-add-back-btn="true">
+			<h1>Clubhelper Mobile</h1>
+		</div>
+		<!-- /header -->
+
+		<div role="main" class="ui-content">
+			<div>
+				<div id="content" class="width25 floatRight leftColumn">
+					<div class="width75 floatLeft">
+						<div class="gradient">
+							<div id="personDetailPersonEdit"></div>
+							<div data-role="header" data-position="inline">
+								<h4>Kontakte:</h4>
+								<a href="#" onclick="alert('Kontakt hinzufügen!');"
+								class="ui-btn ui-btn-right ui-icon-plus ui-shadow ui-corner-all ui-btn-icon-notext"></a>
+							</div>
+							<ul id="personDetailContactsEdit" data-role="listview"
+								data-inset="true" data-filter="false">
+							</ul>
+							<div data-role="header" data-position="inline">
+								<h4>Adresse:</h4>
+								<a href="#" onclick="alert('Adresse hinzufügen!');"
+								class="ui-btn ui-btn-right ui-icon-plus ui-shadow ui-corner-all ui-btn-icon-notext"></a>
+							</div>
+							<ul id="personDetailAdressesEdit" data-role="listview"
+								data-inset="true" data-filter="false">
+							</ul>
+							<div data-role="header" data-position="inline">
+								<h4>Beziehungen:</h4>
+								<a href="#" onclick="alert('Beziehung hinzufügen!');"
+								class="ui-btn ui-btn-right ui-icon-plus ui-shadow ui-corner-all ui-btn-icon-notext"></a>
+							</div>
+							<ul id="personDetailRelationsEdit" data-role="listview"
+								data-inset="true" data-filter="false">
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- /content -->
+
+		<div data-role="footer" data-position="fixed" data-mini="true">
+			Copyright Markus Kreth - MTV Groß-Buchholz</div>
+		<!-- /footer -->
+
+	</div>
+	<!-- /page -->
+	
+	
 	<div id="printLists" data-role="popup">
 		<a href="#" data-role="button" onclick="printPhoneList2">Telefonliste</a>
 	</div>
