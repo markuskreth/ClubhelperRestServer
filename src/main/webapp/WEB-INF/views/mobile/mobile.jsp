@@ -10,13 +10,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet"
 	href=<c:url value='/resources/css/jquery.mobile-1.4.5.min.css' /> />
+<link rel="stylesheet" href=<c:url value='/resources/css/jquery.mobile.datepicker.css' /> />
 <link rel="stylesheet" href=<c:url value='/resources/css/custom.css' /> />
 <script src=<c:url value='/resources/js/jquery-1.11.1.min.js' />></script>
 <script src=<c:url value='/resources/js/moment-with-locales.min.js' />></script>
+<script src=<c:url value='/resources/js/jquery.mobile-1.4.5.min.js' />></script>
+<script src=<c:url value='/resources/js/jquery.mobile.datepicker.js' />></script>
 <script src=<c:url value='/resources/js/person.js' />></script>
 <script src=<c:url value='/resources/js/mobile_business.js' />></script>
 <script src=<c:url value='/resources/js/mobile_edit_business.js' />></script>
-<script src=<c:url value='/resources/js/jquery.mobile-1.4.5.min.js' />></script>
 <script type="text/javascript">
 var baseUrl = location.protocol + '//' + location.host + <c:url value='/' />;
 </script>
@@ -131,8 +133,6 @@ var baseUrl = location.protocol + '//' + location.host + <c:url value='/' />;
 	</div>
 	<!-- /page -->
 	
-	
-	
 	<div data-role="page" id="personEdit">
 		<div data-role="header" data-position="fixed" data-add-back-btn="true">
 			<h1>Clubhelper Mobile</h1>
@@ -186,6 +186,10 @@ var baseUrl = location.protocol + '//' + location.host + <c:url value='/' />;
 	
 	<div id="printLists" data-role="popup">
 		<a href="#" data-role="button" onclick="printPhoneList2">Telefonliste</a>
+	</div>
+	
+	<div id="editDialog" data-role="page">
+		
 	</div>
 </body>
 </html>

@@ -1,14 +1,14 @@
 
-function Person(personId, targetFunction){
+function Person(personId, targetFunction, relationId){
 	
 	var person = sessionStorage.getItem("personId" + personId);
 	
 	if(person != null) {
-		targetFunction(new PersonInstance(personId, JSON.parse(person)));
+		targetFunction(new PersonInstance(personId, JSON.parse(person), relationId));
 	} else {
 		repo(baseUrl + "/person/" + personId, function(response) {
 			sessionStorage.setItem("personId" + personId, JSON.stringify(response));
-			targetFunction(new PersonInstance(personId, response));
+			targetFunction(new PersonInstance(personId, response, relationId));
 		});
 		
 	}
@@ -24,10 +24,11 @@ var repo = function (requestUrl, targetFunction) {
 }
 
 class PersonInstance {
-	constructor(personId, response) {
+	constructor(personId, response, relation) {
 		this.personId = personId;
 		this.prename = response.prename;
 		this.surname = response.surname;
+		this.relation = relation;
 
 		this.birth=response.birth;
 		this._bday = moment(response.birth, "DD/MM/YYYY HH:mm:ss.SSS ZZ");	
@@ -82,11 +83,15 @@ class PersonInstance {
 			
 			if (rel.person1 == this.personId) {
 				relId = rel.person2;
+				rel.name = rel.toPerson1Relation;
 			} else {
 				relId = rel.person1;
+				rel.name = rel.toPerson2Relation;
 			}
 			
-			Person(relId, targetFunction);
+			Person(relId, targetFunction, rel);
 		}
 	}
 }
+
+

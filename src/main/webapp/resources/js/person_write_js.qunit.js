@@ -12,5 +12,5 @@
 		});
 		
 		QUnit.test("Update Person Birthday", function(assert) {
-			
+			assert.equal(1,1);
 		});

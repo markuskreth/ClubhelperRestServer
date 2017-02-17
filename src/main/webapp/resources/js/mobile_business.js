@@ -125,14 +125,14 @@ function showPersonContacts(person) {
 }
 
 function renderContact(contact) {
-	renderContact(contact, false);
+	renderContact(contact, false, "right");
 }
 
-function renderContact(contact, withMiniAttr) {
+function renderContact(contact, withMiniAttr, iconAlign) {
 
 	var link = $("<a></a>");
 	link.attr("data-role", "button");
-	link.attr("data-iconpos", "right");
+	link.attr("data-iconpos", iconAlign);
 	link.attr("data-inline", "true");
 	link.attr("data-corners", "true");
 

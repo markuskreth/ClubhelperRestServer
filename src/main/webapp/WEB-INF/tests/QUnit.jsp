@@ -20,6 +20,7 @@
 				+ <c:url value='/' />;
 	</script>
 	<script src=<c:url value='/resources/js/person_js.qunit.js' />></script>
+	<script src=<c:url value='/resources/js/person_write_js.qunit.js' />></script>
 </body>
 </html>
 
