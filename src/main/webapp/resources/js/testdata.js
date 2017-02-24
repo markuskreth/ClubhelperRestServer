@@ -133,3 +133,16 @@ var repoReplacement = function(requestUrl, targetFunction) {
 	}
 
 }
+var ajaxHistory = [];
+
+var ajaxReplacement = function (requestUrl, object, type, resultFunction) {
+	var obj = Object.create(null);
+	obj.requestUrl = requestUrl;
+	obj.object = object;
+	obj.type = type;
+	obj.resultFunction = resultFunction;
+	
+	ajaxHistory.push(obj);
+	resultFunction(object);
+}
+

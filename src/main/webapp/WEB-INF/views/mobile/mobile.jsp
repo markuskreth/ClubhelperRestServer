@@ -147,7 +147,7 @@ var baseUrl = location.protocol + '//' + location.host + <c:url value='/' />;
 							<div id="personDetailPersonEdit"></div>
 							<div data-role="header" data-position="inline">
 								<h4>Kontakte:</h4>
-								<a href="#" onclick="alert('Kontakt hinzufügen!');"
+								<a href="#" onclick="addContact();"
 								class="ui-btn ui-btn-right ui-icon-plus ui-shadow ui-corner-all ui-btn-icon-notext"></a>
 							</div>
 							<ul id="personDetailContactsEdit" data-role="listview"
@@ -155,7 +155,7 @@ var baseUrl = location.protocol + '//' + location.host + <c:url value='/' />;
 							</ul>
 							<div data-role="header" data-position="inline">
 								<h4>Adresse:</h4>
-								<a href="#" onclick="alert('Adresse hinzufügen!');"
+								<a href="#" onclick="addAdress();"
 								class="ui-btn ui-btn-right ui-icon-plus ui-shadow ui-corner-all ui-btn-icon-notext"></a>
 							</div>
 							<ul id="personDetailAdressesEdit" data-role="listview"
@@ -163,7 +163,7 @@ var baseUrl = location.protocol + '//' + location.host + <c:url value='/' />;
 							</ul>
 							<div data-role="header" data-position="inline">
 								<h4>Beziehungen:</h4>
-								<a href="#" onclick="alert('Beziehung hinzufügen!');"
+								<a href="#" onclick="addRelation();"
 								class="ui-btn ui-btn-right ui-icon-plus ui-shadow ui-corner-all ui-btn-icon-notext"></a>
 							</div>
 							<ul id="personDetailRelationsEdit" data-role="listview"

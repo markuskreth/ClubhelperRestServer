@@ -4,10 +4,13 @@
 			beforeEach : function() {
 				sessionStorage.clear();
 				origRepo = repo;
+				origAjax = ajax;
 				repo = repoReplacement;
+				ajax = ajaxReplacement;
 			},
 			afterEach : function() {
-				repo = origRepo
+				repo = origRepo;
+				ajax = origAjax;
 			}
 		});
 
@@ -16,7 +19,6 @@
 			var person1 = new PersonInstance(1, personMarkusResponse);
 			assert.equal("Markus", person1.prename);
 			assert.equal("Kreth", person1.surname);
-			assert.equal("43 Jahre", person1.age());
 			assert.equal("21.08.1973", person1.birthday());
 			assert.equal(1, person1.personId);
 		});
@@ -28,7 +30,6 @@
 			Person(1, function(person1) {
 				assert.equal("Markus", person1.prename);
 				assert.equal("Kreth", person1.surname);
-				assert.equal("43 Jahre", person1.age());
 				assert.equal("21.08.1973", person1.birthday());
 				assert.equal(1, person1.personId);
 				done();
@@ -127,7 +128,6 @@
 
 						assert.equal("Markus", person1.prename, "prename found");
 						assert.equal("Kreth", person1.surname, "surname found");
-						assert.equal("43 Jahre", person1.age(), "age correct");
 						assert.equal("21.08.1973", person1.birthday(), "birthday shown.");
 						assert.equal(1, person1.personId);
 						done();

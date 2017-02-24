@@ -177,7 +177,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 
 	@Override
 	public List<T> getByWhere(String where) {
-		return getJdbcTemplate().query(SQL_QUERY_ALL + " AND " + where, mapper);
+		return getJdbcTemplate().query(SQL_QUERY_ALL + " AND " + where + " AND deleted is null", mapper);
 	}
 
 	@Override

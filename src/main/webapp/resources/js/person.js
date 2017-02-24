@@ -19,7 +19,28 @@ var repo = function (requestUrl, targetFunction) {
 	$.ajax({
 		url : requestUrl,
 		dataType : "json",
+	    'error': function( jqXHR, textStatus, errorThrown){
+	    	alert(requestUrl + "\n" + textStatus + "\n" + errorThrown);
+	    },
 		success : targetFunction
+	});
+}
+
+var ajax = function (requestUrl, object, type, resultFunction) {
+	var withResultFunction = true;
+	if(resultFunction == null) {
+		withResultFunction = false;
+	}
+	
+	$.ajax(requestUrl,{
+	    'data': JSON.stringify(object), //{action:'x',params:['a','b','c']}
+	    'type': type,
+	    'processData': withResultFunction,
+	    'success': resultFunction,
+	    'error': function( jqXHR, textStatus, errorThrown){
+	    	alert(requestUrl + "\n" + textStatus + "\n" + errorThrown);
+	    },
+	    'contentType': 'application/json' //typically 'application/x-www-form-urlencoded', but the service you are calling may expect 'text/json'... check with the service to see what they expect as content-type in the HTTP header.
 	});
 }
 
@@ -60,6 +81,10 @@ class PersonInstance {
 		}
 	}
 	
+	deleteRelatives() {
+		this._relatives = null;
+	}
+	
 	relatives(targetFunction) {
 		if(this._relatives == null) {
 			var me = this;
@@ -91,6 +116,16 @@ class PersonInstance {
 			
 			Person(relId, targetFunction, rel);
 		}
+	}
+	
+	updateContact(contact, targetFunction) {
+		var url = baseUrl + "/contact/" + contact.id;
+		var me = this;
+		ajax(url, contact, "put", function(con) {
+			var text = JSON.stringify(me);
+			sessionStorage.setItem("personId" + me.personId, text);
+			targetFunction(contact);
+		});
 	}
 }
 
