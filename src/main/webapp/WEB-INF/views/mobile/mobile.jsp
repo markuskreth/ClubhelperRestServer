@@ -63,11 +63,7 @@ var baseUrl = location.protocol + '//' + location.host + <c:url value='/' />;
 								</ul>
 							</div>
 							<p>Personen</p>
-							<ul data-role="listview" data-inset="true" data-filter="true">
-								<c:forEach var="person" items="${PersonList}">
-									<li><a href="#" onclick="showPerson(${person.id})">${person.prename}
-											${person.surname}</a></li>
-								</c:forEach>
+							<ul id="personList" data-role="listview" data-inset="true" data-filter="true">
 							</ul>
 						</div>
 					</div>

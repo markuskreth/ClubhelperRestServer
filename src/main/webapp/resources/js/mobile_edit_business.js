@@ -129,6 +129,7 @@ function addContact() {
 function addRelation() {
 
 	Person(currentPersonId, function(person) {
+		
 		alert("addRelation to " + person.prename + " "
 				+ person.surname);
 	});

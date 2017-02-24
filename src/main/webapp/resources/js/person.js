@@ -19,7 +19,7 @@ var repo = function (requestUrl, targetFunction) {
 	$.ajax({
 		url : requestUrl,
 		dataType : "json",
-	    'error': function( jqXHR, textStatus, errorThrown){
+	    error: function( jqXHR, textStatus, errorThrown){
 	    	alert(requestUrl + "\n" + textStatus + "\n" + errorThrown);
 	    },
 		success : targetFunction

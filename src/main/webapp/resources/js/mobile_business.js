@@ -13,6 +13,25 @@ $(document).ready(function() {
 		}
 	});
 
+
+	repo(baseUrl + "person/", function(response) {
+
+		var ul = $("#personList");
+		for ( var index in response) {
+			var person = response[index];
+
+			sessionStorage.setItem("personId" + person.id, JSON.stringify(person));
+			var link = $("<a href='#'></a>").text(person.prename + " " + person.surname);
+			link.click(function() {
+					showPerson(person.id);
+				});
+			var item = $("<li></li>").append(link);
+			ul.append(item);
+		}
+		ul.listview().listview('refresh');
+	});
+	
+
 	var split = location.pathname.replace(/^\/|\/$/g, '').split('/');
 	var id = parseInt(split[split.length - 1]);
 
