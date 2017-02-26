@@ -22,8 +22,10 @@ $(document).ready(function() {
 
 			sessionStorage.setItem("personId" + person.id, JSON.stringify(person));
 			var link = $("<a href='#'></a>").text(person.prename + " " + person.surname);
+			link.attr("personId", person.id);
 			link.click(function() {
-					showPerson(person.id);
+					var pId = $(this).attr("personId");
+					showPerson(pId);
 				});
 			var item = $("<li></li>").append(link);
 			ul.append(item);

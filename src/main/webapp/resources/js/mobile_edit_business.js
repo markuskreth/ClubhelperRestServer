@@ -301,12 +301,22 @@ function editContact(contactId) {
 
 					var content = createEditContactContent(con);
 					var action = function() {
-						var value = $("#changeContactText").val();
-						var type = $("#changeContactTypeSelect").val();
-						
-						alert("Create Contact for " + person.prename + " " + person.surname + ": " + type + "=" + value);
+
+						con.value = $("#changeContactText").val();
+						con.type = $("#changeContactTypeSelect").val();
+
+						var url = baseUrl + "contact/" + con.id;
+						var me = person;
+						ajax(url, con, "put",
+								function() {
+									me.setContacts(null);
+									var text = JSON.stringify(me);
+									sessionStorage.setItem("personId" + me.personId, text);
+									editPerson();
+								});
 					};
 					showDialog(headText, content, action);
+					break;
 				}
 			}
 		});
