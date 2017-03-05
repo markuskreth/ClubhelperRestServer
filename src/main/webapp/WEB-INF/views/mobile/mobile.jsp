@@ -80,7 +80,7 @@ var baseUrl = location.protocol + '//' + location.host + <c:url value='/' />;
 	<!-- /page -->
 
 	<div data-role="page" id="personDetails">
-		<div data-role="header" data-position="fixed" data-add-back-btn="true">
+		<div data-role="header" data-position="fixed" data-add-back-btn="true" data-back-btn-text="Zur\u00fcck">
 			<h1>Clubhelper Mobile</h1>
 		</div>
 		<!-- /header -->
@@ -130,7 +130,7 @@ var baseUrl = location.protocol + '//' + location.host + <c:url value='/' />;
 	<!-- /page -->
 	
 	<div data-role="page" id="personEdit">
-		<div data-role="header" data-position="fixed" data-add-back-btn="true">
+		<div data-role="header" data-position="fixed" data-add-back-btn="true" data-back-btn-text="Zur\u00fcck">
 			<h1>Clubhelper Mobile</h1>
 		</div>
 		<!-- /header -->

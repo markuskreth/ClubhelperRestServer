@@ -47,17 +47,42 @@ var ajax = function (requestUrl, object, type, resultFunction) {
 class PersonInstance {
 	constructor(personId, response, relation) {
 		this.personId = personId;
+		this.id = response.id;
 		this.prename = response.prename;
 		this.surname = response.surname;
+		this.created = response.created;
+		this.changed = response.changed;
+		this.type = response.type;
 		this.relation = relation;
 
 		this.birth=response.birth;
 		this._bday = moment(response.birth, "DD/MM/YYYY HH:mm:ss.SSS ZZ");	
 		this._bday.locale('DE_de');
+		this._changed = false;
 	}
 	
 	age() {
 		return this._bday.fromNow(true);
+	}
+	
+	hasChanges() {
+		return this._changed;
+	}
+	
+	hasChanged() {
+		this._changed = true;
+	}
+
+	update(targetFunction) {
+		this.changed = null;
+		ajax(baseUrl + "/person/" + this.id, this, "put", function(response) {
+			sessionStorage.setItem("personId" + this.id, JSON.stringify(response));
+			if(targetFunction != null) {
+				targetFunction(new PersonInstance(response.id, response, null));
+				
+			}
+		})
+		this._changed = false;
 	}
 	
 	birthday() {

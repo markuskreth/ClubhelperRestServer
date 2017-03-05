@@ -182,10 +182,6 @@ function renderContact(contact, withMiniAttr, iconAlign) {
 	return link;
 }
 
-function addPerson() {
-	alert("addPerson clicked!");
-}
-
 function printPhoneList() {
 	alert("printPhoneList aus mainmenu");
 }

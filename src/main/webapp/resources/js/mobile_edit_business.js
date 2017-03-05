@@ -1,3 +1,5 @@
+var currentPerson;
+
 function editPerson() {
 
 	$("#personDetailPersonEdit").empty();
@@ -10,100 +12,123 @@ function editPerson() {
 	Person(
 			currentPersonId,
 			function(person) {
+				currentPerson = person;
+				updatePersonView();
 
-				var bday = person.birthday();
-				var datepicker = $("<input />").attr("data-role", "datebox")
-						.attr("type", "date").attr("name", "birthday").attr(
-								"id", "birthday");
+				$.mobile.activePage.find(".ui-header [data-rel=back]").click(function () {
 
-				datepicker.val(bday);
-
-				$("#personDetailPersonEdit").append(
-						$("<label></label>").attr("for", "prename").text(
-								"Vorname:")).append(
-						$("<input />").attr("type", "text").attr("name",
-								"prename").attr("id", "prename").attr("value",
-								person.prename)).append(
-						$("<label></label>").attr("for", "surname").text(
-								"Nachname:")).append(
-						$("<input />").attr("type", "text").attr("name",
-								"surname").attr("id", "surname").attr("value",
-								person.surname)).append(
-						$("<label></label>").attr("for", "birthday").text(
-								"Geburtstag:")).append(datepicker);
-
-				$("#personDetailPerson").trigger("create");
-
-				var obj = $("#personDetailContactsEdit");
-				person.contacts(function(items) {
-
-					for ( var index in items) {
-						var con = items[index];
-
-						var element = renderEditContact(con);
-
-						element = $("<li></li>").append(
-								$("<div></div>").attr("data-role",
-										"controlgroup").attr("data-type",
-										"horizontal").append(element));
-
-						obj.append(element);
-					}
-					obj.trigger("create");
-				})
-
-				person
-						.relatives(function(relativePerson) {
-
-							var link = $("<a></a>");
-							link.attr("width", "100%");
-							link.attr("data-role", "button");
-							link.attr("data-iconpos", "right");
-							link.attr("href", "#");
-							link.text(relativePerson.relation.name + ": "
-									+ relativePerson.prename + " "
-									+ relativePerson.surname);
-
-							var group = $("<div></div>")
-									.attr("data-role", "controlgroup")
-									.attr("data-type", "horizontal")
-									.append(link)
-									.append(
-											$("<a></a>")
-													.attr("href", "#")
-													.attr("data-role", "button")
-													.attr("data-iconpos", "notext")
-													.click(function() {
-														editRelation(relativePerson.relation.id);
-													})
-													.attr("data-icon", "edit")
-													.text("edit"))
-									.append(
-											$("<a></a>")
-													.attr("href", "#")
-													.attr("data-role", "button")
-													.attr("data-iconpos", "notext")
-													.click(function() {
-														deleteRelation(relativePerson.relation.id);
-													})
-													.attr("data-icon", "delete")
-													.text("edit"));
-
-							var obj = $("#personDetailRelationsEdit");
-
-							obj.append(group);
-
-							obj.trigger("create");
+					if(currentPerson.hasChanges()) {
+						currentPerson.update(function (person) {
+							currentPerson = person;
 						});
+					}
+				});
 			});
+}
 
+function updatePersonView() {
+
+	$("#personDetailPersonEdit").empty();
+	$("#personDetailContactsEdit").empty();
+	$("#personDetailAdressesEdit").empty();
+	$("#personDetailRelationsEdit").empty();
+
+	var bday = currentPerson.birthday();
+	var datepicker = $("<input />").attr("data-role", "datebox")
+			.attr("type", "date").attr("name", "birthday").attr(
+					"id", "birthday");
+
+	datepicker.val(bday);
+
+	$("#personDetailPersonEdit").append(
+			$("<label></label>").attr("for", "prename").text(
+					"Vorname:")).append(
+			$("<input />").attr("type", "text").attr("name",
+					"prename").attr("id", "prename").attr("value",
+					currentPerson.prename).on('input',function(e){
+						currentPerson.prename = $("#prename").val();
+						currentPerson.hasChanged();
+				    })).append(
+			$("<label></label>").attr("for", "surname").text(
+					"Nachname:")).append(
+			$("<input />").attr("type", "text").attr("name",
+					"surname").attr("id", "surname").attr("value",
+					currentPerson.surname).on('input',function(e){
+						currentPerson.surname = $("#surname").val();
+						currentPerson.hasChanged();
+				    })).append(
+			$("<label></label>").attr("for", "birthday").text(
+					"Geburtstag:")).append(datepicker);
+
+	$("#personDetailPerson").trigger("create");
+
+	var obj = $("#personDetailContactsEdit");
+	currentPerson.contacts(function(items) {
+
+		for ( var index in items) {
+			var con = items[index];
+
+			var element = renderEditContact(con);
+
+			element = $("<li></li>").append(
+					$("<div></div>").attr("data-role",
+							"controlgroup").attr("data-type",
+							"horizontal").append(element));
+
+			obj.append(element);
+		}
+		obj.trigger("create");
+	})
+
+	currentPerson
+			.relatives(function(relativePerson) {
+
+				var link = $("<a></a>");
+				link.attr("width", "100%");
+				link.attr("data-role", "button");
+				link.attr("data-iconpos", "right");
+				link.attr("href", "#");
+				link.text(relativePerson.relation.name + ": "
+						+ relativePerson.prename + " "
+						+ relativePerson.surname);
+
+				var group = $("<div></div>")
+						.attr("data-role", "controlgroup")
+						.attr("data-type", "horizontal")
+						.append(link)
+						.append(
+								$("<a></a>")
+										.attr("href", "#")
+										.attr("data-role", "button")
+										.attr("data-iconpos", "notext")
+										.click(function() {
+											editRelation(relativePerson.relation.id);
+										})
+										.attr("data-icon", "edit")
+										.text("edit"))
+						.append(
+								$("<a></a>")
+										.attr("href", "#")
+										.attr("data-role", "button")
+										.attr("data-iconpos", "notext")
+										.click(function() {
+											deleteRelation(relativePerson.relation.id);
+										})
+										.attr("data-icon", "delete")
+										.text("edit"));
+
+				var obj = $("#personDetailRelationsEdit");
+
+				obj.append(group);
+
+				obj.trigger("create");
+			});	
 }
 
 function addContact() {
 
-	Person(currentPersonId, function(person) {
 
-		var headText = unescape("Kontakt hinzufügen für " + person.prename + " " + person.surname);
+		var headText = unescape("Kontakt hinzufügen für " + currentPerson.prename + " " + currentPerson.surname);
 		var con = {id:-1, personId:currentPersonId, type:"", value:""};
 
 		var content = createEditContactContent(con);
@@ -112,40 +137,33 @@ function addContact() {
 			con.type = $("#changeContactTypeSelect").val();
 
 			var url = baseUrl + "contact/" + con.id;
-			var me = person;
+			var me = currentPerson;
 			ajax(url, con, "post",
 					function() {
 						me.setContacts(null);
 						var text = JSON.stringify(me);
 						sessionStorage.setItem("personId" + me.personId, text);
-						editPerson();
+						updatePersonView();
 					});
 			
 		};
 		showDialog(headText, content, action);
-	});
 }
 
 function addRelation() {
 
-	Person(currentPersonId, function(person) {
-		
-		alert("addRelation to " + person.prename + " "
-				+ person.surname);
-	});
+		alert("addRelation to " + currentPerson.prename + " "
+				+ currentPerson.surname);
 }
 
 function addAdress() {
-
-	Person(currentPersonId, function(person) {
-		alert("addAdress to " + person.prename + " "
-				+ person.surname);
-	});
+		alert("addAdress to " + currentPerson.prename + " "
+				+ currentPerson.surname);
 }
 
 function deleteRelation(relativeId) {
-	Person(currentPersonId, function(person) {
-		person.relatives(function(relativePerson) {
+
+		currentPerson.relatives(function(relativePerson) {
 
 			if (relativePerson.relation.id == relativeId) {
 
@@ -157,20 +175,19 @@ function deleteRelation(relativeId) {
 				var action = function() {
 
 					var url = baseUrl + "/relative/" + relativeId;
-					var me = person;
+					var me = currentPerson;
 					ajax(url, relativePerson.relation, "delete",
 							function() {
 								me.deleteRelatives();
 								var text = JSON.stringify(me);
 								sessionStorage.setItem("personId"
 										+ me.personId, text);
-								editPerson();
+								updatePersonView();
 							});
 				};
 				showDialog(headText, contentText, action);
 			}
 		})
-	})
 
 }
 
@@ -258,8 +275,7 @@ function editRelation(relativeId) {
 
 function deleteContact(contactId) {
 
-	Person(currentPersonId, function(person) {
-		person.contacts(function(items) {
+		currentPerson.contacts(function(items) {
 			for ( var index in items) {
 
 				var con = items[index];
@@ -271,13 +287,13 @@ function deleteContact(contactId) {
 					var action = function() {
 
 						var url = baseUrl + "contact/" + contactId;
-						var me = person;
+						var me = currentPerson;
 						ajax(url, con, "delete",
 								function() {
 									me.setContacts(null);
 									var text = JSON.stringify(me);
 									sessionStorage.setItem("personId" + me.personId, text);
-									editPerson();
+									updatePersonView();
 								});
 					}
 
@@ -287,12 +303,11 @@ function deleteContact(contactId) {
 
 		});
 
-	});
 }
 
 function editContact(contactId) {
-	Person(currentPersonId, function(person) {
-		person.contacts(function(items) {
+
+		currentPerson.contacts(function(items) {
 
 			for ( var index in items) {
 				var con = items[index];
@@ -306,13 +321,13 @@ function editContact(contactId) {
 						con.type = $("#changeContactTypeSelect").val();
 
 						var url = baseUrl + "contact/" + con.id;
-						var me = person;
+						var me = currentPerson;
 						ajax(url, con, "put",
 								function() {
 									me.setContacts(null);
 									var text = JSON.stringify(me);
 									sessionStorage.setItem("personId" + me.personId, text);
-									editPerson();
+									updatePersonView();
 								});
 					};
 					showDialog(headText, content, action);
@@ -320,7 +335,6 @@ function editContact(contactId) {
 				}
 			}
 		});
-	});
 }
 
 function createEditContactContent(con) {
@@ -356,18 +370,21 @@ function createEditContactContent(con) {
 function changeContact(contactId) {
 	var type = $("#changeContactTypeSelect").val();
 	var value = $("#changeContactText").val();
-	Person(currentPersonId, function(p) {
-		p.contacts(function(contacts) {
+
+	currentPerson.contacts(function(contacts) {
 			for (var i = 0; i < contacts.length; i++) {
 				var con = contacts[i];
 				if (con.id == contactId) {
 					con.type = type;
 					con.value = value;
-					p.updateContact(con, function(contact) {
-						editPerson();
+					currentPerson.updateContact(con, function(contact) {
+						updatePersonView();
 					});
 				}
 			}
 		})
-	});
+}
+
+function addPerson() {
+	alert("addPerson clicked!");
 }
