@@ -1,18 +1,7 @@
 
 var currentPersonId = null;
 
-$(document).on("pageshow", "#personDetails", function() {
-	updateAllPersonDetailData();
-});
-
-$(document).ready(function() {
-
-	$("#collapsibleRelations").collapsible({
-		expand : function(event, ui) {
-			updateRelations();
-		}
-	});
-
+function loadPersonList() {
 
 	repo(baseUrl + "person/", function(response) {
 
@@ -33,6 +22,25 @@ $(document).ready(function() {
 		ul.listview().listview('refresh');
 	});
 	
+}
+
+$(document).ready(function() {
+
+	$("#collapsibleRelations").collapsible({
+		expand : function(event, ui) {
+			updateRelations();
+		}
+	});
+
+	loadPersonList();
+
+	$(document).on("pageshow", "#personDetails", function() {
+		updateAllPersonDetailData();
+	});
+
+	$(document).on("pageshow", "#personDetails", function() {
+		loadPersonList();
+	});
 
 	var split = location.pathname.replace(/^\/|\/$/g, '').split('/');
 	var id = parseInt(split[split.length - 1]);
