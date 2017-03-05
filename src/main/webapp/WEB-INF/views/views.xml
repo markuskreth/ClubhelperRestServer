@@ -35,4 +35,8 @@
 	</definition>
 	<definition name="mobile/PersonGet" template="/WEB-INF/views/mobile/mobile.jsp">
 	</definition>
+<!-- 	<definition name="mobile/login" template="/WEB-INF/views/mobile/login.jsp"> -->
+<!-- 	</definition> -->
+<!-- 	<definition name="login" template="/WEB-INF/views/login.jsp"> -->
+<!-- 	</definition> -->
 </tiles-definitions>
