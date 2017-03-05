@@ -1,5 +1,5 @@
 
-		QUnit.module("Person Class Tests", {
+		QUnit.module("Person List and Detail Tests", {
 
 			beforeEach : function() {
 				sessionStorage.clear();

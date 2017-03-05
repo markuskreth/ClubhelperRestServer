@@ -112,7 +112,7 @@ public class AbstractDaoTest {
 
 		String where = "person_id=1";
 
-		String regex = "(?iu)select\\s+\\*\\s+from\\s+`tablename`\\s+where\\s+deleted\\s+is\\s+null\\s+and\\s+person_id=1";
+		String regex = "(?iu)select\\s+\\*\\s+from\\s+`tablename`\\s+where\\s+deleted\\s+is\\s+null\\s+and\\s+person_id=1\\s+AND\\s+deleted\\s+is\\s+null";
 
 		dao.getByWhere(where);
 
