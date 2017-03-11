@@ -8,11 +8,17 @@
 
 	<parent>
 		<groupId>de.kreth</groupId>
-		<version>1.0.3-SNAPSHOT</version>
+		<version>1.0.4-SNAPSHOT</version>
 		<artifactId>clubhelper-parent</artifactId>
 	</parent>
 
 	<description>Clubhelper Rest Service</description>
+
+	<scm>
+		<connection>scm:git:git@github.com:markuskreth/ClubhelperRestServer.git</connection>
+		<developerConnection>scm:git:git@github.com:markuskreth/ClubhelperRestServer.git</developerConnection>
+		<url>http://github.com/markuskreth/ClubhelperRestServer</url>
+	</scm>
 
 	<dependencies>
 		<dependency>
