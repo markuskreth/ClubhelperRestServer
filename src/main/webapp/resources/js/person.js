@@ -10,7 +10,6 @@ function Person(personId, targetFunction, relationId){
 			sessionStorage.setItem("personId" + personId, JSON.stringify(response));
 			targetFunction(new PersonInstance(personId, response, relationId));
 		});
-		
 	}
 } 
 

@@ -31,12 +31,11 @@
 	
 	<definition name="test" template="/WEB-INF/tests/QUnit.jsp" />
 	
-	<definition name="mobile/PersonAll" template="/WEB-INF/views/mobile/mobile.jsp">
-	</definition>
-	<definition name="mobile/PersonGet" template="/WEB-INF/views/mobile/mobile.jsp">
-	</definition>
-<!-- 	<definition name="mobile/login" template="/WEB-INF/views/mobile/login.jsp"> -->
-<!-- 	</definition> -->
-<!-- 	<definition name="login" template="/WEB-INF/views/login.jsp"> -->
-<!-- 	</definition> -->
+	<definition name="mobile/PersonAll" template="/WEB-INF/views/mobile/mobile.jsp" />
+	
+	<definition name="mobile/PersonGet" template="/WEB-INF/views/mobile/mobile.jsp" />
+	
+	<definition name="mobile/login" template="/WEB-INF/views/mobile/login.jsp" />
+	<definition name="login" template="/WEB-INF/views/login.jsp" />
+		
 </tiles-definitions>

@@ -5,23 +5,29 @@
 	http://www.springframework.org/schema/security
 	http://www.springframework.org/schema/security/spring-security.xsd">
 
-	<http auto-config="true" use-expressions="true" create-session="always">
+	<http auto-config="true" use-expressions="true">
 		<csrf disabled="true" />
 
-		<!-- <form-login -->
-		<!-- login-page="/login" -->
-		<!-- username-parameter="username" -->
-		<!-- password-parameter="password" /> -->
-
+		<form-login
+			login-page="/login"
+			username-parameter="username"
+			password-parameter="password"
+			authentication-success-handler-ref="clubLoginHandler" 
+			/>
+			
+		<remember-me key="MtvTrampolin-GB" token-validity-seconds="86400" />
 	</http>
+
+	<beans:bean id="clubLoginHandler"
+		class="de.kreth.clubhelperbackend.controller.ClubLoginHandler" />
 
 	<!-- default-target-url="/welcome" -->
 	<!-- authentication-failure-url="/login?error" -->
-
 	<global-method-security secured-annotations="enabled"
 		pre-post-annotations="enabled" />
 
 	<authentication-manager>
 		<authentication-provider ref="clubhelperAuthenticationProvider" />
 	</authentication-manager>
+
 </beans:beans>

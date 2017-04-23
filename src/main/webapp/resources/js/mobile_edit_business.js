@@ -34,9 +34,11 @@ function updatePersonView() {
 	$("#personDetailRelationsEdit").empty();
 
 	var bday = currentPerson.birthday();
-	var datepicker = $("<input />").attr("data-role", "datebox")
-			.attr("type", "date").attr("name", "birthday").attr(
-					"id", "birthday");
+	var datepicker = $("<input />")
+			.attr("data-role", "datebox")
+			.attr("type", "date")
+			.attr("name", "birthday")
+			.attr("id", "birthday");
 
 	datepicker.val(bday);
 

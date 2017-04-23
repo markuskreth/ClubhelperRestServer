@@ -1,29 +1,6 @@
 
 var currentPersonId = null;
 
-function loadPersonList() {
-
-	repo(baseUrl + "person/", function(response) {
-
-		var ul = $("#personList");
-		for ( var index in response) {
-			var person = response[index];
-
-			sessionStorage.setItem("personId" + person.id, JSON.stringify(person));
-			var link = $("<a href='#'></a>").text(person.prename + " " + person.surname);
-			link.attr("personId", person.id);
-			link.click(function() {
-					var pId = $(this).attr("personId");
-					showPerson(pId);
-				});
-			var item = $("<li></li>").append(link);
-			ul.append(item);
-		}
-		ul.listview().listview('refresh');
-	});
-	
-}
-
 $(document).ready(function() {
 
 	$("#collapsibleRelations").collapsible({
@@ -51,6 +28,29 @@ $(document).ready(function() {
 	}
 
 });
+
+function loadPersonList() {
+
+	repo(baseUrl + "person/", function(response) {
+
+		var ul = $("#personList");
+		for ( var index in response) {
+			var person = response[index];
+
+			sessionStorage.setItem("personId" + person.id, JSON.stringify(person));
+			var link = $("<a href='#'></a>").text(person.prename + " " + person.surname);
+			link.attr("personId", person.id);
+			link.click(function() {
+					var pId = $(this).attr("personId");
+					showPerson(pId);
+				});
+			var item = $("<li></li>").append(link);
+			ul.append(item);
+		}
+		ul.listview().listview('refresh');
+	});
+
+}
 
 function showPerson(personId) {
 	currentPersonId = personId;

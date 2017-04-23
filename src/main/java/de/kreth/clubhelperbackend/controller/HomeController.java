@@ -74,6 +74,16 @@ public class HomeController {
 		return "test";
 	}
 
+	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	public String showLogin(Device device) {
+//		if(device.isNormal() == false) {
+//			return "mobile/login";
+//		} else {
+//			return "login";
+//		}
+		return "login";
+	}
+
 	@RequestMapping(value = "/downloadJnlp/**", method = RequestMethod.GET)
 	@ResponseBody
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STAFF')")
