@@ -118,13 +118,13 @@ public class MysqlDbCheckAspect implements Database {
 				version = rs.getInt("version");
 
 		} catch (SQLException e) {
-			e.printStackTrace(System.out);
+			logger.warn("Error on Database", e);
 		} finally {
 			if (stm != null)
 				try {
 					stm.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					logger.debug("Error on Database close", e);
 				}
 		}
 
@@ -164,14 +164,14 @@ public class MysqlDbCheckAspect implements Database {
 			try {
 				con.rollback();
 			} catch (SQLException e1) {
-				e1.printStackTrace();
+				logger.error("Error on database rollback after exception " + e.getMessage(), e1);
 			}
-			e.printStackTrace();
+			logger.error("Error updating verions", e);
 		} finally {
 			try {
 				con.setAutoCommit(autoCommit);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				logger.info("Error restoring autocommit to " + autoCommit, e);
 			}
 		}
 

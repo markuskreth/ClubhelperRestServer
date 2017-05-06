@@ -37,7 +37,7 @@
 		class="org.springframework.mobile.device.site.SitePreferenceHandlerInterceptor" />
 
 	<mvc:resources mapping="/resources/**" location="/resources/" />
-
+	
 	<mvc:interceptors>
 		<!-- Resolve the device which has generated the request -->
 		<bean

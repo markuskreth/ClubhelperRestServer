@@ -19,7 +19,7 @@ public class ClubLoginHandler implements AuthenticationSuccessHandler {
 			return;
 		}
 
-		response.sendRedirect("/person");
+		response.sendRedirect("");
 	}
 
 }
