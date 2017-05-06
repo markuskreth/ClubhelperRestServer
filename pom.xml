@@ -226,7 +226,6 @@
 			<version>1.8.4</version>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
@@ -290,47 +289,19 @@
 					<path>/ClubHelperBackend</path>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>com.cj.qunit.mojo</groupId>
-				<artifactId>qunit-maven-plugin</artifactId>
-				<version>2.3.2</version>
-				<executions>
-					<execution>
-						<phase>test</phase>
-						<goals>
-							<goal>test</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>${maven-dependency-plugin.version}</version>
-				<executions>
-					<execution>
-						<id>applet-dependencies</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>de.kreth</groupId>
-									<artifactId>clubhelper-client</artifactId>
-									<version>${project.version}</version>
-									<classifier>jar-with-dependencies</classifier>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${basedir}/src/main/webapp/resources</outputDirectory>
-									<destFileName>ClubHelperClient.jar</destFileName>
-								</artifactItem>
-							</artifactItems>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+<!-- 			<plugin> -->
+<!-- 				<groupId>com.cj.qunit.mojo</groupId> -->
+<!-- 				<artifactId>qunit-maven-plugin</artifactId> -->
+<!-- 				<version>2.3.2</version> -->
+<!-- 				<executions> -->
+<!-- 					<execution> -->
+<!-- 						<phase>test</phase> -->
+<!-- 						<goals> -->
+<!-- 							<goal>test</goal> -->
+<!-- 						</goals> -->
+<!-- 					</execution> -->
+<!-- 				</executions> -->
+<!-- 			</plugin> -->
 		</plugins>
 	</build>
 </project>
