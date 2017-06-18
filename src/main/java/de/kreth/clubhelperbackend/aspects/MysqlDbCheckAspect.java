@@ -40,7 +40,7 @@ public class MysqlDbCheckAspect implements Database {
 		logger.debug("init with " + dataSource);
 		try {
 			con = dataSource.getConnection();
-			logger.info("finished init, got con: " + con);
+			logger.info("finished db init, got con: " + con);
 			checkDb();
 		} catch (SQLException e) {
 			throw new InvalidDataAccessApiUsageException("Keine Connection aus DataSource erhalten", e);
@@ -49,9 +49,10 @@ public class MysqlDbCheckAspect implements Database {
 
 	@Before("execution (* de.kreth.clubhelperbackend.dao.*.*(..))")
 	public synchronized void checkDb() {
-		logger.trace("Checking Database...");
-		if (isChecked)
+		if (isChecked) {
+			logger.trace("Database already checked.");
 			return;
+		}
 		isChecked = true;
 		logger.debug("Initalizing Database");
 
@@ -62,7 +63,6 @@ public class MysqlDbCheckAspect implements Database {
 			DatabaseConfiguration manager = new DatabaseConfiguration(currentDbVersion);
 			manager.executeOn(this);
 			setTransactionSuccessful();
-			logger.info("Installed Tables successfully.");
 		} catch (SQLException e) {
 
 			logger.error("Failed to update. Rolling back.", e);
@@ -118,7 +118,7 @@ public class MysqlDbCheckAspect implements Database {
 				version = rs.getInt("version");
 
 		} catch (SQLException e) {
-			logger.warn("Error on Database", e);
+			logger.warn("Error on Database fetch version", e);
 		} finally {
 			if (stm != null)
 				try {
