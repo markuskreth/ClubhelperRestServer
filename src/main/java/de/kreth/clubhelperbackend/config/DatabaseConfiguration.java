@@ -79,6 +79,9 @@ public class DatabaseConfiguration {
 			addUniqueGroupName();
 			addUniquePersonGroup();
 		}
+		if(fromVersion != LATEST_VERSION && logger.isInfoEnabled()) {
+			logger.info("Prepared Datebase update from Version " + fromVersion + " to Version " + LATEST_VERSION);
+		}
 	}
 
 	private void addUniqueGroupName() {
@@ -289,6 +292,7 @@ public class DatabaseConfiguration {
 
 		if (tablesToCreate != null) {
 
+			logger.info("Installing/ Updating tables: " + tablesToCreate);
 			for (TableDefinition def : tablesToCreate) {
 				String sql = de.kreth.dbmanager.DbManager.createSqlStatement(def);
 				logger.debug(sql);
@@ -329,6 +333,7 @@ public class DatabaseConfiguration {
 		if (fromVersion != LATEST_VERSION) {
 			logger.debug(sql);
 			db.execSQL(sql);
+			logger.info("Updated database to version " + LATEST_VERSION);
 		} else {
 			logger.info("Database was up to date.");
 		}

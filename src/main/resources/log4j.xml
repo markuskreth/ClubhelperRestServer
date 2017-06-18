@@ -9,34 +9,34 @@
 			<param name="ConversionPattern" value="%-5p: %c - %m%n" />
 		</layout>
 	</appender>
-	
-  <appender name="MeinAppender" class="org.apache.log4j.DailyRollingFileAppender">
-    <param name="datePattern" value="'.'yyyy-MM-dd_HH-mm" />
-    <param name="file" value="${catalina.home}/logs/MeineLogDatei.log" />
-    <param name="Append" value="true" />
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] %c: %m%n" />
-    </layout>
-  </appender>
-  
+
+	<appender name="MeinAppender" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="datePattern" value="'.'yyyy-MM-dd_HH-mm" />
+		<param name="file" value="${catalina.home}/logs/MeineLogDatei.log" />
+		<param name="Append" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] %c: %m%n" />
+		</layout>
+	</appender>
+
 	<!-- Application Loggers -->
 	<logger name="de.kreth.clubhelperbackend">
 		<level value="all" />
 	</logger>
-	
+
 	<!-- 3rdparty Loggers -->
 	<logger name="org.springframework.core">
-		<level value="debug" />
+		<level value="info" />
 	</logger>
-	
+
 	<logger name="org.springframework.spring-aop">
-		<level value="warn" />
+		<level value="info" />
 	</logger>
-	
+
 	<logger name="org.springframework.beans">
 		<level value="info" />
 	</logger>
-	
+
 	<logger name="org.springframework.context">
 		<level value="info" />
 	</logger>
@@ -46,15 +46,15 @@
 	</logger>
 
 	<logger name="org.springframework.web.servlet.mvc">
-		<level value="debug" />
+		<level value="warn" />
 	</logger>
 
 	<logger name="org.springframework.web.servlet.view.tiles2">
-		<level value="all" />
+		<level value="info" />
 	</logger>
 
 	<logger name="org.springframework.mobile.device.view">
-		<level value="all" />
+		<level value="debug" />
 	</logger>
 
 	<!-- Root Logger -->
@@ -63,5 +63,5 @@
 		<appender-ref ref="console" />
 		<appender-ref ref="MeinAppender" />
 	</root>
-	
+
 </log4j:configuration>
