@@ -1,5 +1,6 @@
 
 var currentPersonId = null;
+var currentPerson = null;
 
 $(document).ready(function() {
 
@@ -58,9 +59,7 @@ function showPerson(personId) {
 }
 
 function updateRelations() {
-	Person(currentPersonId, function(person) {
-		updateRelationsFor(person);
-	});
+	updateRelationsFor(currentPerson);
 }
 
 function updateRelationsFor(person) {
@@ -71,24 +70,103 @@ function updateRelationsFor(person) {
 
 function updateAllPersonDetailData() {
 
-	$("#personDetailPerson").empty();
+	$('#personPrename').text('');
+	$("#personSurname").text('');
+	$("#personBirthday").text('');
+	$("#personAge").text('');
+	
 	$("#personDetailRelations").empty();
 	$("#personDetailContacts").empty();
 
 	Person(currentPersonId, function(person) {
+		currentPerson = person;
 		showPersonPerson(person);
 		showPersonContacts(person);
 	});	
 }
 
+function showGroups(withDelete) {
+
+	currentPerson.groups(function(groups, allGroupResult) {
+		var content = $("<div></div>");
+		
+		var part = $("<div></div>").attr("data-role","controlgroup").attr("id","personGroups");
+		content.append(part);
+		
+		for (i = 0, len=groups.length; i<len; i++) {
+			if(withDelete) {
+				part.attr("data-type","horizontal");
+			}
+			
+			part.append($("<button></button>")
+					.attr("data-mini","true")
+					.text(groups[i].name));
+			if(withDelete) {
+				var delBtn = $("<button></button>")
+				.attr("data-mini","true")
+				.attr("data-icon","delete")
+				.attr("data-iconpos","notext")
+				.attr("groupid", groups[i].id)
+				.on("click", function(e) {
+					currentPerson.removeGroup($(this).attr("groupid"));
+					$(this).parent().remove();
+				})
+				.text(groups[i].name);
+				part.append(delBtn);
+			}
+		}
+		if(withDelete) {
+			content.append($("<H3 />").attr("class","ui-bar ui-bar-a").html("Verfügbar"));
+			var wrapper = $("<div  class=\"ui-body\"></div>").attr("data-role","controlgroup");
+			content.append(wrapper);
+			for (var i = 0, allLen = allGroupResult.length; i < allLen; i++) {
+				wrapper.append($("<button></button>")
+						.attr("data-mini","true")
+						.attr("data-icon","add")
+						.text(allGroupResult[i].name))
+						.attr("Groupname", allGroupResult[i].name)
+						.attr("groupid", allGroupResult[i].id)
+						.on("click", function(e) {
+							var me = $(this);
+							if(me.attr("lastEventTimestamp") == e.timeStamp) {
+								return;
+							}
+							var added = $("<div></div>")
+								.attr("data-role","controlgroup")
+								.attr("data-type","horizontal")
+								.append($("<button></button>")
+										.attr("data-mini","true")
+										.text(me.attr("Groupname")).trigger("create"))
+								.append($("<button></button>")
+										.attr("data-mini","true")
+										.attr("data-icon","delete")
+										.attr("data-iconpos","notext")
+										.attr("groupid", me.attr("groupid"))
+										.on("click", function(e) {
+//											currentPerson.removeGroup(me.attr("groupid"));
+											me.parent().remove();
+										})
+										.text(me.attr("Groupname")).trigger("create"));
+							added.trigger("create");
+							$("#personGroups").append(added);
+							me.attr("lastEventTimestamp", e.timeStamp);
+						});
+
+			}
+		}
+
+		showDialog("Gruppen für " + currentPerson.prename + " " + currentPerson.surname, content, null);
+	});
+}
+
 function showPersonPerson(person) {
-	$("#personDetailPerson")
-		.append("<p>Name:</p><p>" + person.prename 
-		+ " " + person.surname + "</p>")
-		.append("<p>Geburtstag:" + person.birthday() 
-		+ " Alter: " + person.age() + "</p>");
+	console.log("Showing " + person.prename + " " + person.surname);
+	$('#personPrename').text(person.prename);
+	$("#personSurname").text(person.surname);
+	$("#personBirthday").text(person.birthday());
+	$("#personAge").text(person.age());
 	
-	$("#personDetailPerson").trigger("create");
+//	$("#personDetailPerson").trigger("create");
 }
 
 function showPersonRelations(relativePerson) {
@@ -188,6 +266,40 @@ function renderContact(contact, withMiniAttr, iconAlign) {
 	}
 
 	return link;
+}
+
+
+function showDialog(headText, contentText, action) {
+
+	var editDialog = $("#editDialog");
+	editDialog.empty();
+	editDialog.append($("<div data-role=\"header\"></div>")
+			.append($("<H2></H2>").text(headText)))
+			.append($("<div data-role=\"main\" class=\"ui-content\"></div>")
+			.append($("<P></P>").append(contentText)));
+
+	if(action != null) {
+		editDialog.append($("<a></a>")
+				.attr("href", "#")
+				.attr("data-role", "button")
+				.click(function() {
+					editDialog.dialog("close");
+					action();
+				})
+				.attr("data-icon", "ok").text("OK"));
+	}
+	editDialog.append($("<a></a>")
+			.attr("href", "#")
+			.attr("data-role", "button")
+			.click(function() {
+				editDialog.dialog( "close" );
+			})
+			.attr("data-icon", "cancel")
+			.text("Abbrechen"));
+	editDialog.trigger("create");
+	$.mobile.changePage("#editDialog", {
+		role : "dialog"
+	});
 }
 
 function printPhoneList() {

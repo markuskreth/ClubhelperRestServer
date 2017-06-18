@@ -6,10 +6,15 @@ function Person(personId, targetFunction, relationId){
 	if(person != null) {
 		targetFunction(new PersonInstance(personId, JSON.parse(person), relationId));
 	} else {
-		repo(baseUrl + "/person/" + personId, function(response) {
-			sessionStorage.setItem("personId" + personId, JSON.stringify(response));
-			targetFunction(new PersonInstance(personId, response, relationId));
-		});
+		if(personId>=0) {
+
+			repo(baseUrl + "/person/" + personId, function(response) {
+				sessionStorage.setItem("personId" + personId, JSON.stringify(response));
+				targetFunction(new PersonInstance(personId, response, relationId));
+			});
+		} else {
+			targetFunction(new PersonInstance(personId, null, null));
+		}
 	}
 } 
 
@@ -43,21 +48,42 @@ var ajax = function (requestUrl, object, type, resultFunction) {
 	});
 }
 
+var allGroups = function(targetFunction) {
+
+	var groups = sessionStorage.getItem("allGroups");
+	if(groups != null) {
+		targetFunction(JSON.parse(groups));
+	} else {
+		repo(baseUrl + "/group/", function(response) {
+			sessionStorage.setItem("allGroups", JSON.stringify(response));
+			targetFunction(response);
+		});
+		
+	}
+}
+
 class PersonInstance {
 	constructor(personId, response, relation) {
 		this.personId = personId;
-		this.id = response.id;
-		this.prename = response.prename;
-		this.surname = response.surname;
-		this.created = response.created;
-		this.changed = response.changed;
-		this.type = response.type;
-		this.relation = relation;
+		if(response!=null) {
+			this.id = response.id;
+			this.prename = response.prename;
+			this.surname = response.surname;
+			this.created = response.created;
+			this.changed = response.changed;
+			this.type = response.type;
+			this.relation = relation;
 
-		this.birth=response.birth;
-		this._bday = moment(response.birth, "DD/MM/YYYY HH:mm:ss.SSS ZZ");	
-		this._bday.locale('DE_de');
-		this._changed = false;
+			this.birth=response.birth;
+			this._bday = moment(response.birth, "DD/MM/YYYY HH:mm:ss.SSS ZZ");
+			this._bday.locale('DE_de');
+			this._changed = false;
+		} else {
+			this.id = personId;
+			this.birth=null;
+			this._bday = moment(null, "DD/MM/YYYY HH:mm:ss.SSS ZZ");
+			this._changed = false;
+		}
 	}
 	
 	age() {
@@ -74,8 +100,14 @@ class PersonInstance {
 
 	update(targetFunction) {
 		this.changed = null;
-		ajax(baseUrl + "/person/" + this.id, this, "put", function(response) {
-			sessionStorage.setItem("personId" + this.id, JSON.stringify(response));
+
+		var call="put";
+		if(this.id<0) {
+			call="post";
+		}
+		
+		ajax(baseUrl + "/person/" + this.id, this, call, function(response) {
+			sessionStorage.setItem("personId" + response.id, JSON.stringify(response));
 			if(targetFunction != null) {
 				targetFunction(new PersonInstance(response.id, response, null));
 				
@@ -151,6 +183,52 @@ class PersonInstance {
 			targetFunction(contact);
 		});
 	}
+	
+	groups (targetFunction) {
+		if(this.persGroups == null) {
+			var me = this;
+			repo(baseUrl + "/persongroup/for/" + me.personId, function(response) {
+				me.persGroups = response;
+				var text = JSON.stringify(me);
+				sessionStorage.setItem("personId" + me.personId, text);
+				me.processGroups(targetFunction);
+			});
+		} else {
+			this.processGroups(targetFunction);
+		}
+	}
+	
+	processGroups (targetFunction) {
+		var me = this;
+		allGroups(function(allGroupResult){
+			var personGroups = [];
+			var ids = [];
+			
+			for (var j = 0, allLen = allGroupResult.length; j < allLen; j++) {
+				for (var i = 0, len = me.persGroups.length; i < len; i++) {
+					if (me.persGroups[i].groupId==allGroupResult[j].id) {
+						if(ids[allGroupResult[j].id]) continue;
+						ids[allGroupResult[j].id] = true;
+						personGroups.push(allGroupResult[j]);
+					}
+				}
+			}
+			targetFunction(personGroups, allGroupResult);
+		});
+	}
+	
+	removeGroup(groupId) {
+		var me = this;
+		for (var i = 0, len = me.persGroups.length; i < len; i++) {
+			if (me.persGroups[i].groupId==groupId) {
+				var index = i;
+				ajax(baseUrl + "/persongroup/" + me.persGroups[i].id, me.persGroups[i], "delete", function(response) {
+					me.persGroups.splice(index, 1);
+					sessionStorage.setItem("personId" + me.personId, JSON.stringify(me));
+				});
+				break;
+			}
+		}
+	}
 }
-
 
