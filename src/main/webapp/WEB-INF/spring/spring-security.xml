@@ -12,7 +12,8 @@
 			login-page="/login"
 			username-parameter="username"
 			password-parameter="password"
-			authentication-success-handler-ref="clubLoginHandler" 
+			authentication-success-handler-ref="clubLoginHandler"
+			always-use-default-target = "true"
 			/>
 			
 		<remember-me key="MtvTrampolin-GB" token-validity-seconds="86400" />
