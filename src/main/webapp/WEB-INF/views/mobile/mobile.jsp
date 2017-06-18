@@ -1,26 +1,30 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
+	pageEncoding="utf-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="s"%>
 <!doctype html>
-<html>
+<html lang="de">
 <head>
 <title>Clubhelper Mobile</title>
+<meta charset="utf-8">
+<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet"
 	href=<c:url value='/resources/css/jquery.mobile-1.4.5.min.css' /> />
-<link rel="stylesheet" href=<c:url value='/resources/css/jquery.mobile.datepicker.css' /> />
+<link rel="stylesheet"
+	href=<c:url value='/resources/css/jquery.mobile.datepicker.css' /> />
 <link rel="stylesheet" href=<c:url value='/resources/css/custom.css' /> />
 <script src=<c:url value='/resources/js/jquery-1.11.1.min.js' />></script>
 <script src=<c:url value='/resources/js/moment-with-locales.min.js' />></script>
 <script src=<c:url value='/resources/js/jquery.mobile-1.4.5.min.js' />></script>
 <script src=<c:url value='/resources/js/jquery.mobile.datepicker.js' />></script>
-<script src=<c:url value='/resources/js/person.js' />></script>
-<script src=<c:url value='/resources/js/mobile_business.js' />></script>
-<script src=<c:url value='/resources/js/mobile_edit_business.js' />></script>
+<script charset="utf-8" src=<c:url value='/resources/js/person.js' />></script>
+<script charset="utf-8" src=<c:url value='/resources/js/mobile_business.js' />></script>
+<script charset="utf-8" src=<c:url value='/resources/js/mobile_edit_business.js' />></script>
 <script type="text/javascript">
-var baseUrl = location.protocol + '//' + location.host + <c:url value='/' />;
+	var baseUrl = location.protocol + '//' + location.host
+			+ <c:url value='/' />;
 </script>
 <style>
 .ui-icon-person {
@@ -49,7 +53,7 @@ var baseUrl = location.protocol + '//' + location.host + <c:url value='/' />;
 		</div>
 		<!-- /header -->
 
-		<div role="main" class="ui-content">
+		<div role="main" class="ui-">
 			<div>
 				<div id="content" class="width25 floatRight leftColumn">
 					<div class="width75 floatLeft">
@@ -57,14 +61,15 @@ var baseUrl = location.protocol + '//' + location.host + <c:url value='/' />;
 							<div data-role="navbar">
 								<ul>
 									<li><a href="#" onclick="addPerson()"
-										class="ui-btn ui-icon-plus">Hinzuf¸gen</a></li>
+										class="ui-btn ui-icon-plus">Hinzuf√ºgen</a></li>
 									<li><a href="#" onclick="printPhoneList()"
 										class="ui-btn ui-icon-bulletes">Listen</a></li>
 								</ul>
 							</div>
 							<div>
 								<p>Personen</p>
-								<ul id="personList" data-role="listview" data-inset="true" data-filter="true">
+							<ul id="personList" data-role="listview" data-inset="true"
+								data-filter="true">
 								</ul>
 							</div>
 						</div>
@@ -75,14 +80,15 @@ var baseUrl = location.protocol + '//' + location.host + <c:url value='/' />;
 		<!-- /content -->
 
 		<div data-role="footer" data-position="fixed" data-mini="true">
-			Copyright Markus Kreth - MTV Groﬂ-Buchholz</div>
+			Copyright Markus Kreth - MTV Gro√ü-Buchholz</div>
 		<!-- /footer -->
 
 	</div>
 	<!-- /page -->
 
 	<div data-role="page" id="personDetails">
-		<div data-role="header" data-position="fixed" data-add-back-btn="true" data-back-btn-text="Zur\u00fcck">
+		<div data-role="header" data-position="fixed" data-add-back-btn="true"
+			data-back-btn-text="Zur\u00fcck">
 			<h1>Clubhelper Mobile</h1>
 		</div>
 		<!-- /header -->
@@ -95,10 +101,24 @@ var baseUrl = location.protocol + '//' + location.host + <c:url value='/' />;
 							<div data-role="navbar">
 								<ul>
 									<li><a href="#" onclick="editPerson()"
-										data-role="button" data-icon="edit" data-theme="b" data-inline="true">Bearbeiten</a></li>
+										id="showGroupButton" data-role="button" data-icon="edit"
+										data-theme="b" data-inline="true">Bearbeiten</a></li>
 								</ul>
 							</div>
-							<div id="personDetailPerson"></div>
+							<div id="personDetailPerson">
+								<p>
+									Name: <a href="#" onclick="showGroups()" id="showGroupButton"
+										data-role="button" data-icon="edit" data-theme="b"
+										data-inline="true">Gruppen</a>
+								</p>
+								<p>
+									<span id="personPrename">dummy1</span> <span id="personSurname">dummy2</span>
+								</p>
+								<p>
+									Geburtstag:<span id="personBirthday"></span> Alter: <span
+										id="personAge"></span>
+								</p>
+							</div>
 							<div data-collapsed="false" data-role="collapsible">
 								<h4>Kontakte:</h4>
 								<ul id="personDetailContacts" data-role="listview"
@@ -125,28 +145,29 @@ var baseUrl = location.protocol + '//' + location.host + <c:url value='/' />;
 		<!-- /content -->
 
 		<div data-role="footer" data-position="fixed" data-mini="true">
-			Copyright Markus Kreth - MTV Groﬂ-Buchholz</div>
+			Copyright Markus Kreth - MTV Gro√ü-Buchholz</div>
 		<!-- /footer -->
 
 	</div>
 	<!-- /page -->
-	
+
 	<div data-role="page" id="personEdit">
-		<div data-role="header" data-position="fixed" data-add-back-btn="true" data-back-btn-text="Zur\u00fcck">
+		<div data-role="header" data-position="fixed" data-add-back-btn="true"
+			data-back-btn-text="Zur\u00fcck">
 			<h1>Clubhelper Mobile</h1>
 		</div>
 		<!-- /header -->
 
 		<div role="main" class="ui-content">
 			<div>
-				<div id="content" class="width25 floatRight leftColumn">
+				<div id="contentEdit" class="width25 floatRight leftColumn">
 					<div class="width75 floatLeft">
 						<div class="gradient">
 							<div id="personDetailPersonEdit"></div>
 							<div data-role="header" data-position="inline">
 								<h4>Kontakte:</h4>
 								<a href="#" onclick="addContact();"
-								class="ui-btn ui-btn-right ui-icon-plus ui-shadow ui-corner-all ui-btn-icon-notext"></a>
+									class="ui-btn ui-btn-right ui-icon-plus ui-shadow ui-corner-all ui-btn-icon-notext"></a>
 							</div>
 							<ul id="personDetailContactsEdit" data-role="listview"
 								data-inset="true" data-filter="false">
@@ -154,7 +175,7 @@ var baseUrl = location.protocol + '//' + location.host + <c:url value='/' />;
 							<div data-role="header" data-position="inline">
 								<h4>Adresse:</h4>
 								<a href="#" onclick="addAdress();"
-								class="ui-btn ui-btn-right ui-icon-plus ui-shadow ui-corner-all ui-btn-icon-notext"></a>
+									class="ui-btn ui-btn-right ui-icon-plus ui-shadow ui-corner-all ui-btn-icon-notext"></a>
 							</div>
 							<ul id="personDetailAdressesEdit" data-role="listview"
 								data-inset="true" data-filter="false">
@@ -162,7 +183,7 @@ var baseUrl = location.protocol + '//' + location.host + <c:url value='/' />;
 							<div data-role="header" data-position="inline">
 								<h4>Beziehungen:</h4>
 								<a href="#" onclick="addRelation();"
-								class="ui-btn ui-btn-right ui-icon-plus ui-shadow ui-corner-all ui-btn-icon-notext"></a>
+									class="ui-btn ui-btn-right ui-icon-plus ui-shadow ui-corner-all ui-btn-icon-notext"></a>
 							</div>
 							<ul id="personDetailRelationsEdit" data-role="listview"
 								data-inset="true" data-filter="false">
@@ -179,19 +200,17 @@ var baseUrl = location.protocol + '//' + location.host + <c:url value='/' />;
 		<!-- /content -->
 
 		<div data-role="footer" data-position="fixed" data-mini="true">
-			Copyright Markus Kreth - MTV Groﬂ-Buchholz</div>
+			Copyright Markus Kreth - MTV Gro√ü-Buchholz</div>
 		<!-- /footer -->
 
 	</div>
 	<!-- /page -->
-	
-	
+
+
 	<div id="printLists" data-role="popup">
 		<a href="#" data-role="button" onclick="printPhoneList2">Telefonliste</a>
 	</div>
-	
-	<div id="editDialog" data-role="page">
-		
-	</div>
+
+	<div id="editDialog" data-role="page"></div>
 </body>
 </html>

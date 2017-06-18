@@ -1,4 +1,3 @@
-var currentPerson;
 
 function editPerson() {
 
@@ -18,12 +17,19 @@ function editPerson() {
 				$.mobile.activePage.find(".ui-header [data-rel=back]").click(function () {
 
 					if(currentPerson.hasChanges()) {
+						if(currentPerson.type == null) {
+							askForGroup("Gruppen definieren");
+						}
 						currentPerson.update(function (person) {
 							currentPerson = person;
 						});
 					}
 				});
 			});
+}
+
+function askForGroup() {
+	
 }
 
 function updatePersonView() {
@@ -42,25 +48,39 @@ function updatePersonView() {
 
 	datepicker.val(bday);
 
-	$("#personDetailPersonEdit").append(
-			$("<label></label>").attr("for", "prename").text(
-					"Vorname:")).append(
-			$("<input />").attr("type", "text").attr("name",
-					"prename").attr("id", "prename").attr("value",
-					currentPerson.prename).on('input',function(e){
-						currentPerson.prename = $("#prename").val();
-						currentPerson.hasChanged();
-				    })).append(
-			$("<label></label>").attr("for", "surname").text(
-					"Nachname:")).append(
-			$("<input />").attr("type", "text").attr("name",
-					"surname").attr("id", "surname").attr("value",
-					currentPerson.surname).on('input',function(e){
+	$("#personDetailPersonEdit")
+		.append($("<label></label>").attr("for", "prename").text("Vorname:"))
+		.append($("<input />")
+				.attr("type", "text")
+				.attr("name", "prename")
+				.attr("id", "prename")
+				.attr("value",currentPerson.prename)
+				.on('input',
+							function(e) {
+								currentPerson.prename = $("#prename")
+										.val();
+								currentPerson.hasChanged();
+							}))
+		.append($("<label></label>")
+				.attr("for", "surname")
+				.text("Nachname:"))
+		.append($("<input />")
+				.attr("type", "text")
+				.attr("name", "surname")
+				.attr("id", "surname")
+				.attr("value",currentPerson.surname)
+				.on('input', function(e) {
 						currentPerson.surname = $("#surname").val();
 						currentPerson.hasChanged();
-				    })).append(
-			$("<label></label>").attr("for", "birthday").text(
-					"Geburtstag:")).append(datepicker);
+					}))
+		.append($("<label></label>")
+				.attr("for", "birthday")
+				.text("Geburtstag:"))
+		.append(datepicker)
+		.append("<br />")
+		.append($("<button></button>")
+				.text("Gruppen")
+				.on('click', function(e){showGroups(true);}));
 
 	$("#personDetailPerson").trigger("create");
 
@@ -135,7 +155,6 @@ function deletePerson() {
 }
 
 function addContact() {
-
 
 		var headText = unescape("Kontakt hinzufügen für " + currentPerson.prename + " " + currentPerson.surname);
 		var con = {id:-1, personId:currentPersonId, type:"", value:""};
@@ -245,37 +264,6 @@ function renderEditContact(contact) {
 
 	return group;
 
-}
-
-function showDialog(headText, contentText, action) {
-
-	var editDialog = $("#editDialog");
-	editDialog.empty();
-	editDialog.append($("<div data-role=\"header\"></div>")
-			.append($("<H2></H2>").text(headText)))
-			.append($("<div data-role=\"main\" class=\"ui-content\"></div>")
-			.append($("<P></P>").append(contentText)));
-
-	editDialog.append($("<a></a>")
-			.attr("href", "#")
-			.attr("data-role", "button")
-			.click(function() {
-				editDialog.dialog("close");
-				action();
-			})
-			.attr("data-icon", "ok").text("OK"));
-	editDialog.append($("<a></a>")
-			.attr("href", "#")
-			.attr("data-role", "button")
-			.click(function() {
-				editDialog.dialog( "close" );
-			})
-			.attr("data-icon", "cancel")
-			.text("Abbrechen"));
-	editDialog.trigger("create");
-	$.mobile.changePage("#editDialog", {
-		role : "dialog"
-	});
 }
 
 function editRelation(relativeId) {
@@ -395,5 +383,6 @@ function changeContact(contactId) {
 }
 
 function addPerson() {
-	alert("addPerson clicked!");
+	currentPersonId = -1;
+	editPerson();
 }
