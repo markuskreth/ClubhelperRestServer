@@ -24,11 +24,17 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public class ClubhelperAuthenticationProvider implements AuthenticationProvider, UserDetailsService {
 
-	private Logger log = LoggerFactory.getLogger(ClubhelperAuthenticationProvider.class);
+	private final Logger log = LoggerFactory.getLogger(ClubhelperAuthenticationProvider.class);
+	private final DataSource dataSource;
 	private PreparedStatement stmGroups;
 	private PreparedStatement stmUser;
 
 	public ClubhelperAuthenticationProvider(DataSource dataSource) throws SQLException {
+		this.dataSource = dataSource;
+		reinitStm();
+	}
+
+	private void reinitStm() throws SQLException {
 		stmGroups = dataSource.getConnection()
 				.prepareStatement("select groupDef.name groupname from person \n"
 						+ "	left join persongroup on persongroup.person_id = person._id\n"
@@ -61,6 +67,14 @@ public class ClubhelperAuthenticationProvider implements AuthenticationProvider,
 			}
 
 		} catch (SQLException e) {
+			try {
+				reinitStm();
+			} catch (SQLException e2) {
+
+				log.error("Sql error on reinitialization of statements", e2);
+				throw new AuthenticationCredentialsNotFoundException("Sql error on reinitialization of statements", e2);
+			}
+			log.error("Sql error on authentication", e);
 			throw new AuthenticationCredentialsNotFoundException("Sql error on authentication", e);
 		}
 	}
