@@ -254,6 +254,11 @@
 			<artifactId>commons-codec</artifactId>
 			<version>1.9</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.2.1</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -287,6 +292,7 @@
 					<url>http://spallek.com:8080/manager/text</url>
 					<server>SpellakTomcat</server>
 					<path>/ClubHelperBackend</path>
+					<update>true</update>
 				</configuration>
 			</plugin>
 <!-- 			<plugin> -->

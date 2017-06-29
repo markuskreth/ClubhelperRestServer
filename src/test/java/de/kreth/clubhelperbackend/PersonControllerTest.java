@@ -1,12 +1,14 @@
 package de.kreth.clubhelperbackend;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +18,9 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import de.kreth.clubhelperbackend.controller.PersonController;
+import de.kreth.clubhelperbackend.controller.RelativeController;
 import de.kreth.clubhelperbackend.pojo.Person;
+import de.kreth.clubhelperbackend.pojo.Relative;
 
 public class PersonControllerTest {
 
@@ -25,11 +29,22 @@ public class PersonControllerTest {
 
 	private PersonController controller;
 	private StubDao<Person> dao;
+	private StubDao<Relative> relativeDao;
 
 	@Before
 	public void setUp() {
 		dao = new StubDao<Person>();
+		relativeDao = new StubDao<Relative>();
 		controller = new PersonController(dao);
+		controller.setRelativeController(new RelativeController(relativeDao));
+	}
+
+	@Test
+	public void testPersonProperties() throws Exception {
+		List<Person> persons = controller.getAll();
+		assertNotNull(persons);
+		assertEquals(0, persons.size());
+
 	}
 
 	@Test

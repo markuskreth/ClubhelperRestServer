@@ -1,6 +1,6 @@
 package de.kreth.clubhelperbackend.dao;
 
-import static de.kreth.clubhelperbackend.string.String.join;
+import static org.apache.commons.lang3.StringUtils.join;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -13,6 +13,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -130,7 +131,7 @@ public class AbstractDaoTest {
 		long personId = 1L;
 		Contact obj = new Contact(512L, type, value, personId, now, now);
 
-		String regex = "(?iu)insert\\s+into\\s+`tablename`\\s*\\(\\s*_id\\s*,\\s*" + join("\\s*,\\s*", columnNames)
+		String regex = "(?iu)insert\\s+into\\s+`tablename`\\s*\\(\\s*_id\\s*,\\s*" + join(columnNames, "\\s*,\\s*")
 				+ "\\s*,\\s*changed\\s*,\\s*created\\s*\\)\\s*values\\s*\\(\\s*"
 				+ countToQuestionmarkList(columnNames.length + 3) + "\\s*\\)";
 
@@ -209,7 +210,7 @@ public class AbstractDaoTest {
 		long personId = 1L;
 		Contact obj = new Contact(null, type, value, personId, now, now);
 
-		String regex = "(?iu)insert\\s+into\\s+`tablename`\\s*\\(\\s*" + join("\\s*,\\s*", columnNames)
+		String regex = "(?iu)insert\\s+into\\s+`tablename`\\s*\\(\\s*" + join(columnNames, "\\s*,\\s*")
 				+ "\\s*,\\s*changed\\s*,\\s*created\\s*\\)\\s*values\\s*\\(\\s*"
 				+ countToQuestionmarkList(columnNames.length + 2) + "\\s*\\)";
 
@@ -226,6 +227,8 @@ public class AbstractDaoTest {
 		when(jdbcTemplate.update(Matchers.anyString(), Matchers.argThat(new ObjectArrayMatcher(null)))).thenReturn(1);
 
 		Contact insert = dao.insert(obj);
+
+		Pattern.compile(regex);
 
 		verify(jdbcTemplate).update(Matchers.matches(regex), Matchers.argThat(new ObjectArrayMatcher(values)));
 		verify(sqlDialect).queryForIdentity(tableName);
@@ -245,8 +248,10 @@ public class AbstractDaoTest {
 		long personId = 1L;
 		Contact obj = new Contact(personId, type, value, personId, now, calendar.getTime());
 
-		String regex = "(?iu)update\\s+`tablename`\\s+set\\s+" + join("\\s*=\\s*\\?\\s*,\\s*", columnNames)
+		String regex = "(?iu)update\\s+`tablename`\\s+set\\s+" + join(columnNames, "\\s*=\\s*\\?\\s*,\\s*")
 				+ "\\s*=\\s*\\?\\s*,\\s*changed\\s*=\\s*\\?\\s+where\\s+_id\\s*=\\s*\\?\\s*";
+
+		Pattern.compile(regex);
 
 		when(jdbcTemplate.update(Matchers.anyString(), Matchers.argThat(new ObjectArrayMatcher(null)))).thenReturn(1);
 
