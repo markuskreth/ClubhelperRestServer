@@ -1,6 +1,6 @@
 package de.kreth.clubhelperbackend.dao.abstr;
 
-import static de.kreth.clubhelperbackend.string.String.join;
+import static org.apache.commons.lang3.StringUtils.join;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,14 +62,14 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 
 		List<String> columnNames = new ArrayList<String>(Arrays.asList(config.columnNames));
 		columnNames.add("changed");
-		this.SQL_UPDATE = "update `" + config.tableName + "` set " + join("=?, ", columnNames) + "=? WHERE _id=?";
+		this.SQL_UPDATE = "update `" + config.tableName + "` set " + join(columnNames, "=?, ") + "=? WHERE _id=?";
 
 		columnNames.add("created");
-		SQL_INSERTWithoutId = "insert into `" + config.tableName + "` (" + join(", ", columnNames) + ") values ("
+		SQL_INSERTWithoutId = "insert into `" + config.tableName + "` (" + join(columnNames, ", ") + ") values ("
 				+ generateQuestionMarkList(config.columnNames.length + 2) + ")";
 
 		columnNames.add(0, "_id");
-		this.SQL_INSERTWithId = "insert into `" + config.tableName + "` (" + join(", ", columnNames) + ") values ("
+		this.SQL_INSERTWithId = "insert into `" + config.tableName + "` (" + join(columnNames, ", ") + ") values ("
 				+ generateQuestionMarkList(config.columnNames.length + 3) + ")";
 
 		this.SQL_DELETE = "update `" + config.tableName + "` set deleted=? where _id=?";
@@ -231,19 +231,19 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 
 	@Override
 	public boolean update(T obj) {
-		
+
 		Collection<Object> values = mapper.mapObject(obj);
-		
+
 		values.add(obj.getChanged());
 		values.add(obj.getId());
 
 		log.debug("sql=" + SQL_UPDATE + "; ValueSize=" + values.size() + "; Values=" + values);
-		
+
 		int updateCount = getJdbcTemplate().update(SQL_UPDATE, values.toArray());
 		if (updateCount != 1) {
 			log.warn("UpdateCount for " + obj + " was " + updateCount + ". Created: " + obj.getCreated());
 		}
-		
+
 		return updateCount == 1;
 	}
 
@@ -281,7 +281,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 
 		if (updated == 1) {
 			List<DeletedEntries> deleted = deletedEntriesDao.getByWhere("");
-			if(deleted.size() == 1) {
+			if (deleted.size() == 1) {
 				deletedEntriesDao.delete(deleted.get(0));
 				return true;
 			} else {
@@ -291,7 +291,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 			return false;
 		}
 	}
-	
+
 	@Override
 	public List<T> getAll() {
 		return getJdbcTemplate().query(SQL_QUERY_ALL, mapper);
