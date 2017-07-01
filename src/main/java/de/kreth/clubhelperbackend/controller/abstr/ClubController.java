@@ -50,7 +50,6 @@ public interface ClubController<T> {
 	 * 
 	 * @param id
 	 * @param toUpdate
-	 * @param m
 	 */
 	// @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces =
 	// "application/json")
@@ -109,7 +108,7 @@ public interface ClubController<T> {
 
 	/**
 	 * Rest: GET - return List of object having the (parent object) id as
-	 * property. <br />
+	 * property. <br>
 	 * Which property is meant is implementation dependant. Most likely its
 	 * personId
 	 * <p>
