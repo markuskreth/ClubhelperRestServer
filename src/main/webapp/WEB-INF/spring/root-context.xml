@@ -23,7 +23,7 @@
 	</bean>
 	    
 	<bean id="sqlForDialect" class="de.kreth.clubhelperbackend.config.SqlForMysql">
-		<constructor-arg ref="jdbcTemplate" />
+		<constructor-arg ref="dataSource" />
 	</bean>
 	    
 </beans>
