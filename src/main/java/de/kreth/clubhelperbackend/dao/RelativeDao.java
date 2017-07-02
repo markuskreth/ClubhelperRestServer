@@ -19,7 +19,7 @@ public class RelativeDao extends AbstractDao<Relative> implements Dao<Relative> 
 	private static final String columnNames[] = { "person1", "person2", "TO_PERSON1_RELATION", "TO_PERSON2_RELATION" };
 
 	private static final DaoConfig<Relative> daoConfig = new DaoConfig<Relative>("relative", columnNames,
-			new RelativeRowMapper());
+			new RelativeRowMapper(), null);
 
 	public RelativeDao() {
 		super(daoConfig);

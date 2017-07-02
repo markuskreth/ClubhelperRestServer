@@ -21,7 +21,7 @@ public class ContactDao extends AbstractDao<Contact> implements Dao<Contact> {
 	private static final String columnNames[] = { "type", "value", "person_id" };
 
 	private static AbstractDao.DaoConfig<Contact> daoConfig = new DaoConfig<Contact>(tableName, columnNames,
-			new ContactRowMapper());
+			new ContactRowMapper(), null);
 
 	public ContactDao() {
 		super(daoConfig);

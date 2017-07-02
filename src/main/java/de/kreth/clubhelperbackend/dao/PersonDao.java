@@ -14,11 +14,12 @@ import de.kreth.clubhelperbackend.dao.abstr.Dao;
 import de.kreth.clubhelperbackend.pojo.Person;
 
 @Repository
-public class PersonDao extends AbstractDao<Person>implements Dao<Person> {
+public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 
 	private final static String columnNames[] = { "prename", "surname", "type", "birth" };
 
-	private final static DaoConfig<Person> config = new DaoConfig<Person>("person", columnNames, new PersonRowMapper());
+	private final static DaoConfig<Person> config = new DaoConfig<Person>("person", columnNames, new PersonRowMapper(),
+			new String[] { "surname", "prename" });
 
 	public PersonDao() {
 		super(config);

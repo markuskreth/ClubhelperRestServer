@@ -48,7 +48,7 @@ public class DeleteTest {
 
 		deletedEnriesDao = new DeletedEntriesDao();
 		deletedEnriesDao.setJdbcTemplate(jdbcTemplate);
-		SqlForMysql sqlDialect = new SqlForMysql(jdbcTemplate);
+		SqlForMysql sqlDialect = new SqlForMysql(dataSource);
 		deletedEnriesDao.setSqlDialect(sqlDialect);
 		deletedEnriesDao.setPlatformTransactionManager(man);
 

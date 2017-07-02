@@ -12,16 +12,20 @@ import de.kreth.clubhelperbackend.pojo.Data;
 public class StubDao<T extends Data> implements Dao<T> {
 
 	/**
-	 * Used to deliver Testobjects in {@link #getById(long)} and {@link #getAll()}
+	 * Used to deliver Testobjects in {@link #getById(long)} and
+	 * {@link #getAll()}
 	 */
-	public Map<Long, T> byId = new HashMap<Long, T>();
-	public List<T> inserted = new ArrayList<T>();
-	public List<T> updated = new ArrayList<T>();
-	public List<Long> deleted = new ArrayList<Long>();
+	public final Map<Long, T> byId = new HashMap<Long, T>();
+	public final List<T> inserted = new ArrayList<T>();
+	public final List<T> updated = new ArrayList<T>();
+
+	public List<T> toGetByWhere = null;
+
+	public final List<Long> deleted = new ArrayList<Long>();
 	public Long lastInsertId = 0L;
-	public List<String> getByWhere = new ArrayList<String>();
-	public List<Date> changedSince = new ArrayList<Date>();
-	
+	public final List<String> getByWhere = new ArrayList<String>();
+	public final List<Date> changedSince = new ArrayList<Date>();
+
 	@Override
 	public T getById(long id) {
 		return byId.get(id);
@@ -63,7 +67,7 @@ public class StubDao<T extends Data> implements Dao<T> {
 		deleted.remove(id);
 		return true;
 	}
-	
+
 	@Override
 	public boolean update(long id, T obj) {
 		updated.add(obj);
@@ -73,7 +77,11 @@ public class StubDao<T extends Data> implements Dao<T> {
 	@Override
 	public List<T> getByWhere(String where) {
 		getByWhere.add(where);
-		return new ArrayList<T>();
+		if (toGetByWhere == null) {
+			return new ArrayList<T>();
+		} else {
+			return toGetByWhere;
+		}
 	}
 
 	@Override

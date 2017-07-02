@@ -17,7 +17,7 @@ public class PersonGroupDao extends AbstractDao<PersonGroup> {
 	private final static String columnNames[] = { "person_id", "group_id" };
 
 	private final static DaoConfig<PersonGroup> config = new DaoConfig<PersonGroup>("persongroup", columnNames,
-			new PersonGroupRowMapper());
+			new PersonGroupRowMapper(), null);
 
 	public PersonGroupDao() {
 		super(config);
