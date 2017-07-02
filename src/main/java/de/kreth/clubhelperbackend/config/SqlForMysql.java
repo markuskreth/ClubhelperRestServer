@@ -4,13 +4,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.springframework.jdbc.core.JdbcTemplate;
+import javax.sql.DataSource;
 
 public class SqlForMysql implements SqlForDialect {
 
-	private JdbcTemplate dataSource;
+	private DataSource dataSource;
 
-	public SqlForMysql(JdbcTemplate dataSource) {
+	public SqlForMysql(DataSource dataSource) {
 		super();
 		this.dataSource = dataSource;
 	}
@@ -26,7 +26,7 @@ public class SqlForMysql implements SqlForDialect {
 		Statement stm = null;
 		ResultSet rs = null;
 		try {
-			stm = dataSource.getDataSource().getConnection().createStatement();
+			stm = dataSource.getConnection().createStatement();
 			rs = stm.executeQuery("SHOW TABLES LIKE '" + tableName + "'");
 			exists = rs.next();
 		} catch (SQLException e) {
