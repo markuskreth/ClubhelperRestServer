@@ -27,6 +27,8 @@ public interface Dao<T extends Data> {
 	 * Delivers List of objects matching the Where clause. No where Statement is
 	 * needed.
 	 * 
+	 * @param where
+	 *            null OR Where string exclusive WHERE clause
 	 * @return List of Objects matching the where clause.
 	 */
 	public abstract List<T> getByWhere(String where);
@@ -34,6 +36,8 @@ public interface Dao<T extends Data> {
 	/**
 	 * Delivers List of objects that changed since provided Date
 	 * 
+	 * @param changed
+	 *            date of
 	 * @return List of Objects changed since Date
 	 */
 	public abstract List<T> getChangedSince(Date changed);
@@ -66,6 +70,8 @@ public interface Dao<T extends Data> {
 	 * <br>
 	 * changed muss vor aufruf gesetzt sein!
 	 * 
+	 * @param id
+	 *            id des zu ändernden Objekts.
 	 * @param obj
 	 *            Zu aktualiserendes Objekt mit aktualisiertem Changed-Eintrag.
 	 * @return true, wenn update erfolgreich.
@@ -95,7 +101,8 @@ public interface Dao<T extends Data> {
 	 * Macht einen gelöschten Datensatz wieder aktiv.
 	 * 
 	 * @param id
-	 * @return
+	 *            object id to be undeleted
+	 * @return undelete successfull?
 	 */
 	public abstract boolean undelete(long id);
 }

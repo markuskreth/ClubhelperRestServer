@@ -23,6 +23,7 @@ import de.kreth.clubhelperbackend.pojo.Data;
  * Default Controller implementing all functionality for all {@link Data} types.
  * 
  * @param <T>
+ *            Data type
  */
 public abstract class AbstractController<T extends Data> implements ClubController<T> {
 
@@ -38,7 +39,8 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 	@Override
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'STAFF')")
-	public String getAsView(@PathVariable("id") long id, @RequestParam(required = false) boolean ajax, Device device, Model m) {
+	public String getAsView(@PathVariable("id") long id, @RequestParam(required = false) boolean ajax, Device device,
+			Model m) {
 		String mapping = elementClass.getSimpleName();
 		m.addAttribute(mapping, getById(id));
 		return mapping + "Get" + (ajax ? "Ajax" : "");
