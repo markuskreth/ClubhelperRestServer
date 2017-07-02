@@ -34,6 +34,7 @@ import de.kreth.clubhelperbackend.pojo.DeletedEntries;
  * @author markus
  *
  * @param <T>
+ *            object type this dao is used for.
  */
 public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport implements Dao<T> {
 
@@ -55,6 +56,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 	 * Constructs this {@link Dao} implemetation.
 	 * 
 	 * @param config
+	 *            configuration for this dao.
 	 */
 	public AbstractDao(DaoConfig<T> config) {
 		super();
@@ -114,6 +116,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 	 * @author markus
 	 *
 	 * @param <Y>
+	 *            object type this dao config is for.
 	 */
 	public static class DaoConfig<Y extends Data> {
 		private String tableName;
@@ -131,6 +134,8 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		 *            automatically)
 		 * @param mapper
 		 *            maps the object from ResultSet and do a value object.
+		 * @param orderBy
+		 *            column names for ordering list. null for no order clause
 		 */
 		public DaoConfig(String tableName, String[] columnNames, RowMapper<Y> mapper, String[] orderBy) {
 			super();
@@ -147,6 +152,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 	 * 
 	 * @author markus
 	 * @param <X>
+	 *            Obect type to be mapped
 	 */
 	public interface RowMapper<X extends Data> extends org.springframework.jdbc.core.RowMapper<X> {
 

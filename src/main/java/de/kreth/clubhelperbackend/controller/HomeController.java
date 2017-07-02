@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,10 +42,19 @@ public class HomeController {
 
 	/**
 	 * Simply selects the home view to render by returning its name.
+	 * 
+	 * @param response
+	 *            response Object for redirection.
+	 * @param device
+	 *            device Type to decide redirection target.
+	 * @param locale
+	 *            locale for language
+	 * @param model
+	 *            model to set response data
+	 * @return Name of View
 	 */
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String home(HttpServletRequest request, HttpServletResponse response, Device device, Locale locale,
-			Model model) {
+	public String home(HttpServletResponse response, Device device, Locale locale, Model model) {
 
 		logger.info("Welcome home! The client locale is {}.", locale);
 		logger.info("Client Device is running " + device.getDevicePlatform() + ": " + device);
@@ -75,13 +85,14 @@ public class HomeController {
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public String showLogin(Device device) {
-//		if(device.isNormal() == false) {
-//			return "mobile/login";
-//		} else {
-//			return "login";
-//		}
-		return "login";
+	public String showLogin(HttpServletResponse response, Authentication auth) throws IOException {
+
+		if (auth == null) {
+			return "login";
+		} else {
+			response.sendRedirect("person");
+			return null;
+		}
 	}
 
 	@RequestMapping(value = "/downloadJnlp/**", method = RequestMethod.GET)

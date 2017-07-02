@@ -17,13 +17,16 @@ public interface ClubController<T> {
 	 * <p>
 	 * Mapping: /{id}
 	 * 
+	 * @param device
+	 *            device type to determine view name.
+	 * @param ajax
+	 *            to determine view name, is request ajax or normal http?
 	 * @param id
 	 *            Id of desired Object
 	 * @param m
 	 *            Model to insert object into.
 	 * @return Name of View
 	 */
-	// @RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public abstract String getAsView(@PathVariable("id") long id, @RequestParam boolean ajax, Device device, Model m);
 
 	/**
@@ -32,11 +35,14 @@ public interface ClubController<T> {
 	 * <p>
 	 * Mapping: /
 	 * 
+	 * @param device
+	 *            device type to determine view name.
+	 * @param ajax
+	 *            to determine view name, is request ajax or normal http?
 	 * @param m
 	 *            Model to insert the result list into.
 	 * @return Name of View
 	 */
-	// @RequestMapping(value = { "/", "" }, method = RequestMethod.GET)
 	public abstract String getAllAsView(@RequestParam boolean ajax, Device device, Model m);
 
 	/*
@@ -49,22 +55,20 @@ public interface ClubController<T> {
 	 * Mapping: /{id}
 	 * 
 	 * @param id
+	 *            Id of updated object
 	 * @param toUpdate
+	 *            Object with updated data.
+	 * @return updated object
 	 */
-	// @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces =
-	// "application/json")
-	// @ResponseBody
 	T put(@PathVariable("id") long id, @RequestBody T toUpdate);
 
 	/**
 	 * Rest: POST - Create Object without Id.
 	 * 
 	 * @param toCreate
-	 * @return
+	 *            object with data to insert.
+	 * @return created and corrected object
 	 */
-	// @RequestMapping(value = "/", method = RequestMethod.POST, produces =
-	// "application/json")
-	// @ResponseBody
 	T post(@RequestBody T toCreate);
 
 	/**
@@ -76,9 +80,6 @@ public interface ClubController<T> {
 	 *            Object to create.
 	 * @return created object with updated id and dates.
 	 */
-	// @RequestMapping(value = "/{id}", method = RequestMethod.POST, produces =
-	// "application/json")
-	// @ResponseBody
 	T post(@PathVariable("id") long id, @RequestBody T toCreate);
 
 	/**
@@ -87,11 +88,9 @@ public interface ClubController<T> {
 	 * Mapping: /{id}
 	 * 
 	 * @param id
-	 * @return
+	 *            id to find object for.
+	 * @return Object for matching id
 	 */
-	// @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces =
-	// "application/json")
-	// @ResponseBody
 	T getById(@PathVariable("id") long id);
 
 	/**
@@ -99,11 +98,8 @@ public interface ClubController<T> {
 	 * <p>
 	 * Mapping: /
 	 * 
-	 * @return
+	 * @return List of all Objects - sorted if configured.
 	 */
-	// @RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces
-	// = "application/json")
-	// @ResponseBody
 	List<T> getAll();
 
 	/**
@@ -118,9 +114,6 @@ public interface ClubController<T> {
 	 *            Id matching all objects property.
 	 * @return List of object with certain property matching id.
 	 */
-	// @RequestMapping(value = "/for/{id}", method = RequestMethod.GET, produces
-	// = "application/json")
-	// @ResponseBody
 	List<T> getByParentId(@PathVariable("id") long id);
 
 	/**
@@ -137,11 +130,9 @@ public interface ClubController<T> {
 	/**
 	 * 
 	 * @param changed
-	 * @return
+	 *            date of last change included
+	 * @return list of objects changed since changed date.
 	 */
-	// @RequestMapping(value = "/changed/{changed}", method = RequestMethod.GET,
-	// produces = "application/json")
-	// @ResponseBody
 	List<T> getChangedSince(long changed);
 
 }
