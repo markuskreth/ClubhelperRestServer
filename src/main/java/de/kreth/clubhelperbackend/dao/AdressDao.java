@@ -15,11 +15,10 @@ import de.kreth.clubhelperbackend.pojo.Adress;
 @Repository
 public class AdressDao extends AbstractDao<Adress> {
 
-	private static final String columnNames[] = { "adress1", "adress2", "plz",
-			"city", "person_id" };
+	private static final String columnNames[] = { "adress1", "adress2", "plz", "city", "person_id" };
 
-	private static DaoConfig<Adress> daoConfig = new DaoConfig<Adress>(
-			"adress", columnNames, new AdressRowMapper());
+	private static DaoConfig<Adress> daoConfig = new DaoConfig<Adress>("adress", columnNames, new AdressRowMapper(),
+			null);
 
 	public AdressDao() {
 		super(daoConfig);
@@ -29,10 +28,8 @@ public class AdressDao extends AbstractDao<Adress> {
 
 		@Override
 		public Adress mapRow(ResultSet rs, int rowNr) throws SQLException {
-			Adress a = new AdressWrapper(rs.getLong("_id"),
-					rs.getString("adress1"), rs.getString("adress2"),
-					rs.getString("plz"), rs.getString("city"),
-					rs.getLong("person_id"), rs.getTimestamp("changed"),
+			Adress a = new AdressWrapper(rs.getLong("_id"), rs.getString("adress1"), rs.getString("adress2"),
+					rs.getString("plz"), rs.getString("city"), rs.getLong("person_id"), rs.getTimestamp("changed"),
 					rs.getTimestamp("created"));
 			return a;
 		}
@@ -53,17 +50,15 @@ public class AdressDao extends AbstractDao<Adress> {
 
 		private static final long serialVersionUID = -1443368978470854581L;
 
-		public AdressWrapper(Long id, String adress1, String adress2,
-				String plz, String city, long personId, Date changed,
-				Date created) {
+		public AdressWrapper(Long id, String adress1, String adress2, String plz, String city, long personId,
+				Date changed, Date created) {
 			super(id, adress1, adress2, plz, city, personId, changed, created);
 		}
 
 		@Override
 		public String toString() {
 			StringBuilder bld = new StringBuilder();
-			bld.append(getAdress1()).append(", ").append(getAdress2())
-					.append(", ").append(getPlz()).append(" ")
+			bld.append(getAdress1()).append(", ").append(getAdress2()).append(", ").append(getPlz()).append(" ")
 					.append(getCity());
 			return bld.toString();
 		}

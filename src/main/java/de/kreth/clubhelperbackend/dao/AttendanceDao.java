@@ -15,10 +15,11 @@ import de.kreth.clubhelperbackend.pojo.Attendance;
 @Repository
 public class AttendanceDao extends AbstractDao<Attendance> implements Dao<Attendance> {
 
-	private static final String columnNames[] 		= {"on_date", "person_id"};
+	private static final String columnNames[] = { "on_date", "person_id" };
 
-	private static DaoConfig<Attendance> daoConfig = new DaoConfig<Attendance>("attendance", columnNames, new RowMapper());
-	
+	private static DaoConfig<Attendance> daoConfig = new DaoConfig<Attendance>("attendance", columnNames,
+			new RowMapper(), null);
+
 	public AttendanceDao() {
 		super(daoConfig);
 	}
@@ -27,7 +28,8 @@ public class AttendanceDao extends AbstractDao<Attendance> implements Dao<Attend
 
 		@Override
 		public Attendance mapRow(ResultSet rs, int rowNr) throws SQLException {
-			Attendance a = new Attendance(rs.getLong("_id"), rs.getTimestamp("on_date"), rs.getLong("person_id"), rs.getTimestamp("changed"), rs.getTimestamp("created"));
+			Attendance a = new Attendance(rs.getLong("_id"), rs.getTimestamp("on_date"), rs.getLong("person_id"),
+					rs.getTimestamp("changed"), rs.getTimestamp("created"));
 			return a;
 		}
 

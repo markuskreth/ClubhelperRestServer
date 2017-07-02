@@ -62,7 +62,13 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 
 		List<String> columnNames = new ArrayList<String>(Arrays.asList(config.columnNames));
 		columnNames.add("changed");
-		this.SQL_UPDATE = "update `" + config.tableName + "` set " + join(columnNames, "=?, ") + "=? WHERE _id=?";
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("update `");
+		stringBuilder.append(config.tableName);
+		stringBuilder.append("` set ");
+		stringBuilder.append(join(columnNames, "=?, "));
+		stringBuilder.append("=? WHERE _id=?");
+		this.SQL_UPDATE = stringBuilder.toString();
 
 		columnNames.add("created");
 		SQL_INSERTWithoutId = "insert into `" + config.tableName + "` (" + join(columnNames, ", ") + ") values ("
@@ -79,6 +85,9 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		this.SQL_QUERY_CHANGED = SQL_QUERY_ALL + " AND changed>?";
 		this.mapper = config.mapper;
 		this.tableName = config.tableName;
+		if (config.orderBy != null) {
+			this.SQL_QUERY_ALL += " ORDER BY " + join(config.orderBy, ", ");
+		}
 	}
 
 	@Autowired
@@ -110,6 +119,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		private String tableName;
 		private String[] columnNames;
 		private RowMapper<Y> mapper;
+		private String[] orderBy;
 
 		/**
 		 * Defines table structure for this dao
@@ -122,11 +132,12 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		 * @param mapper
 		 *            maps the object from ResultSet and do a value object.
 		 */
-		public DaoConfig(String tableName, String[] columnNames, RowMapper<Y> mapper) {
+		public DaoConfig(String tableName, String[] columnNames, RowMapper<Y> mapper, String[] orderBy) {
 			super();
 			this.tableName = tableName;
 			this.columnNames = columnNames;
 			this.mapper = mapper;
+			this.orderBy = orderBy;
 		}
 
 	}

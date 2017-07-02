@@ -17,7 +17,8 @@ public class GroupDao extends AbstractDao<Group> implements Dao<Group> {
 
 	public static final String TABLE_NAME = "groupDef";
 	private static final String[] columnNames = { "name" };
-	private static final DaoConfig<Group> config = new DaoConfig<Group>(TABLE_NAME, columnNames, new GroupRowMapper());
+	private static final DaoConfig<Group> config = new DaoConfig<Group>(TABLE_NAME, columnNames, new GroupRowMapper(),
+			null);
 
 	public GroupDao() {
 		super(config);

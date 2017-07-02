@@ -52,7 +52,8 @@ public class PersonController extends AbstractController<Person> {
 	@Override
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'STAFF')")
-	public String getAsView(@PathVariable("id") long id, @RequestParam(required = false) boolean ajax, Device device, Model m) {
+	public String getAsView(@PathVariable("id") long id, @RequestParam(required = false) boolean ajax, Device device,
+			Model m) {
 		List<Contact> contacts = contactController.getByParentId(id);
 		m.addAttribute(Contact.class.getSimpleName() + "List", contacts);
 

@@ -54,7 +54,7 @@ public class AbstractDaoTest {
 
 	private AbstractDao<Contact> configureDao(String[] columnNames2) {
 
-		DaoConfig<Contact> config = new DaoConfig<Contact>(tableName, columnNames, mapper);
+		DaoConfig<Contact> config = new DaoConfig<Contact>(tableName, columnNames, mapper, null);
 		AbstractDao<Contact> dao = new AbstractDao<Contact>(config) {
 		};
 		dao.setJdbcTemplate(jdbcTemplate);

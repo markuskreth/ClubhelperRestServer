@@ -18,10 +18,8 @@ public class DeletedEntriesDao extends AbstractDao<DeletedEntries> {
 
 	private static final String[] columnNames = { "tablename", "entryId" };
 
-	private static final DeletedEntriesRowMapper mapper = new DeletedEntriesRowMapper();
-
 	private static final DaoConfig<DeletedEntries> config = new DaoConfig<DeletedEntries>(TABLE_NAME, columnNames,
-			mapper);
+			new DeletedEntriesRowMapper(), null);
 
 	public DeletedEntriesDao() {
 		super(config);
@@ -49,13 +47,13 @@ public class DeletedEntriesDao extends AbstractDao<DeletedEntries> {
 	public void setDeletedEntriesDao(DeletedEntriesDao deletedEntriesDao) {
 		super.setDeletedEntriesDao(this);
 	}
-	
+
 	@Override
 	public boolean delete(DeletedEntries obj) {
 		getJdbcTemplate().execute("DELETE FROM " + TABLE_NAME + " WHERE _id=" + obj.getId());
 		return true;
 	}
-	
+
 	@Override
 	public boolean undelete(long id) {
 		throw new UnsupportedOperationException("Delete Entry cannot be undeleted!");

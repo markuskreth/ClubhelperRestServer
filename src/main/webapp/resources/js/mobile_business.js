@@ -33,7 +33,6 @@ function loadPersonList() {
 
 	repo(baseUrl + "person/", function(response) {
 
-		var ul = $("#personList");
 		for ( var index in response) {
 			var person = response[index];
 
@@ -45,9 +44,9 @@ function loadPersonList() {
 					showPerson(pId);
 				});
 			var item = $("<li></li>").append(link);
-			ul.append(item);
+			$("#personList").append(item);
 		}
-		ul.listview().listview('refresh');
+		$("#personList").listview('refresh');
 	});
 
 }
