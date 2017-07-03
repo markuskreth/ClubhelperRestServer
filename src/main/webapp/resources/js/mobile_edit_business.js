@@ -127,6 +127,13 @@ function updatePersonView() {
 			});	
 }
 
+function deletePerson() {
+	currentPerson.deletePerson(function() {
+		$.mobile.changePage("#personList");
+		loadPersonList();
+	});
+}
+
 function addContact() {
 
 

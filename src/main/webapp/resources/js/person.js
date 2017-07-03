@@ -6,7 +6,7 @@ function Person(personId, targetFunction, relationId){
 	if(person != null) {
 		targetFunction(new PersonInstance(personId, JSON.parse(person), relationId));
 	} else {
-		repo(baseUrl + "/person/" + personId, function(response) {
+		repo(baseUrl + "person/" + personId, function(response) {
 			sessionStorage.setItem("personId" + personId, JSON.stringify(response));
 			targetFunction(new PersonInstance(personId, response, relationId));
 		});
@@ -72,9 +72,18 @@ class PersonInstance {
 		this._changed = true;
 	}
 
+	deletePerson(targetFunction) {
+		ajax(baseUrl + "person/" + this.id, this, "delete", function(response) {
+			sessionStorage.removeItem("personId" + this.id);
+			if(targetFunction != null) {
+				targetFunction();
+			}
+		})
+	}
+	
 	update(targetFunction) {
 		this.changed = null;
-		ajax(baseUrl + "/person/" + this.id, this, "put", function(response) {
+		ajax(baseUrl + "person/" + this.id, this, "put", function(response) {
 			sessionStorage.setItem("personId" + this.id, JSON.stringify(response));
 			if(targetFunction != null) {
 				targetFunction(new PersonInstance(response.id, response, null));
@@ -95,7 +104,7 @@ class PersonInstance {
 	contacts(targetFunction) {
 		if (this._contacts == null) {
 			var me = this;
-			repo(baseUrl + "/contact/for/" + me.personId, function(response) {
+			repo(baseUrl + "contact/for/" + me.personId, function(response) {
 				me._contacts = response;
 				sessionStorage.setItem("personId" + me.personId, JSON.stringify(me));
 				targetFunction(me._contacts);	
@@ -113,7 +122,7 @@ class PersonInstance {
 		if(this._relatives == null) {
 			var me = this;
 
-			repo(baseUrl + "/relative/for/" + me.personId, function(response) {
+			repo(baseUrl + "relative/for/" + me.personId, function(response) {
 				me._relatives = response;
 				sessionStorage.setItem("personId" + me.personId, JSON.stringify(me));
 				me.processRelatives(targetFunction);
@@ -143,7 +152,7 @@ class PersonInstance {
 	}
 	
 	updateContact(contact, targetFunction) {
-		var url = baseUrl + "/contact/" + contact.id;
+		var url = baseUrl + "contact/" + contact.id;
 		var me = this;
 		ajax(url, contact, "put", function(con) {
 			var text = JSON.stringify(me);

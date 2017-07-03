@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -78,6 +79,23 @@ public class PersonController extends AbstractController<Person> {
 		m.addAttribute(PersonRelative.class.getSimpleName() + "List", rel);
 
 		return super.getAsView(id, ajax, device, m);
+	}
+
+	@Override
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json")
+	public ResponseEntity<Person> delete(@PathVariable("id") final long id) {
+
+		for (Contact c : contactController.getByParentId(id)) {
+			contactController.delete(c.getId());
+		}
+		for (Adress a : adressController.getByParentId(id)) {
+			adressController.delete(a.getId());
+		}
+		for (Relative r : relativeController.getByParentId(id)) {
+			relativeController.delete(r.getId());
+		}
+
+		return super.delete(id);
 	}
 
 	/**
