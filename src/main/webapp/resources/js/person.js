@@ -98,6 +98,15 @@ class PersonInstance {
 		this._changed = true;
 	}
 
+	deletePerson(targetFunction) {
+		ajax(baseUrl + "person/" + this.id, this, "delete", function(response) {
+			sessionStorage.removeItem("personId" + this.id);
+			if(targetFunction != null) {
+				targetFunction();
+			}
+		})
+	}
+	
 	update(targetFunction) {
 		this.changed = null;
 
@@ -127,7 +136,7 @@ class PersonInstance {
 	contacts(targetFunction) {
 		if (this._contacts == null) {
 			var me = this;
-			repo(baseUrl + "/contact/for/" + me.personId, function(response) {
+			repo(baseUrl + "contact/for/" + me.personId, function(response) {
 				me._contacts = response;
 				sessionStorage.setItem("personId" + me.personId, JSON.stringify(me));
 				targetFunction(me._contacts);	
@@ -145,7 +154,7 @@ class PersonInstance {
 		if(this._relatives == null) {
 			var me = this;
 
-			repo(baseUrl + "/relative/for/" + me.personId, function(response) {
+			repo(baseUrl + "relative/for/" + me.personId, function(response) {
 				me._relatives = response;
 				sessionStorage.setItem("personId" + me.personId, JSON.stringify(me));
 				me.processRelatives(targetFunction);
@@ -175,7 +184,7 @@ class PersonInstance {
 	}
 	
 	updateContact(contact, targetFunction) {
-		var url = baseUrl + "/contact/" + contact.id;
+		var url = baseUrl + "contact/" + contact.id;
 		var me = this;
 		ajax(url, contact, "put", function(con) {
 			var text = JSON.stringify(me);

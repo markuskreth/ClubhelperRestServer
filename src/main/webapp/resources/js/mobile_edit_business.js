@@ -147,6 +147,13 @@ function updatePersonView() {
 			});	
 }
 
+function deletePerson() {
+	currentPerson.deletePerson(function() {
+		$.mobile.changePage("#personList");
+		loadPersonList();
+	});
+}
+
 function addContact() {
 
 		var headText = unescape("Kontakt hinzufügen für " + currentPerson.prename + " " + currentPerson.surname);

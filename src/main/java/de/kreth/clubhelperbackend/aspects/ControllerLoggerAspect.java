@@ -16,7 +16,15 @@ public class ControllerLoggerAspect extends AbstractLoggerAspect {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
+	@Pointcut("execution (public * de.kreth.clubhelperbackend.controller..*.delete(..))")
+	private void deleteItem() {
+	}
+
 	@Pointcut("execution (public * de.kreth.clubhelperbackend.controller..*(..))")
+	private void callAny() {
+	}
+
+	@Pointcut("callAny() && (!deleteItem())")
 	private void invocation() {
 	}
 
@@ -26,12 +34,17 @@ public class ControllerLoggerAspect extends AbstractLoggerAspect {
 	}
 
 	@AfterThrowing(pointcut = "invocation()", throwing = "ex")
-	public void logDao(JoinPoint joinPoint, Exception ex) throws Throwable {
+	public void logCall(JoinPoint joinPoint, Exception ex) throws Throwable {
 		logger.error(generateLogMessage(joinPoint).toString(), ex);
 	}
 
 	@AfterReturning(pointcut = "invocation()", returning = "result")
-	public void logDao(JoinPoint joinPoint, Object result) throws Throwable {
+	public void logCall(JoinPoint joinPoint, Object result) throws Throwable {
 		logger.debug(generateLogMessage(joinPoint).append(" ==> ").append(result).toString());
+	}
+
+	@AfterReturning(pointcut = "deleteItem()", returning = "result")
+	public void logDelete(JoinPoint joinPoint, Object result) throws Throwable {
+		logger.warn(generateLogMessage(joinPoint).append(" ==> ").append(result).toString());
 	}
 }

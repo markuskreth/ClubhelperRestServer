@@ -47,7 +47,7 @@ function loadPersonList() {
 			var item = $("<li></li>").append(link);
 			$("#personList").append(item);
 		}
-		$("#personList").listview('refresh');
+		$("#personList").listview().listview('refresh');
 	});
 
 }

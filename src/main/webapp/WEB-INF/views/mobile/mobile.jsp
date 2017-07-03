@@ -66,10 +66,12 @@
 										class="ui-btn ui-icon-bulletes">Listen</a></li>
 								</ul>
 							</div>
-							<p>Personen</p>
+							<div>
+								<p>Personen</p>
 							<ul id="personList" data-role="listview" data-inset="true"
 								data-filter="true">
-							</ul>
+								</ul>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -185,6 +187,10 @@
 							</div>
 							<ul id="personDetailRelationsEdit" data-role="listview"
 								data-inset="true" data-filter="false">
+							</ul>
+							<ul>
+								<li><a href="#" onclick="deletePerson()"
+									class="ui-btn ui-icon-delete">Löschen</a></li>
 							</ul>
 						</div>
 					</div>
