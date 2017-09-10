@@ -38,50 +38,9 @@ function updatePersonView() {
 	$("#personDetailContactsEdit").empty();
 	$("#personDetailAdressesEdit").empty();
 	$("#personDetailRelationsEdit").empty();
-
-	var bday = currentPerson.birthday();
-	var datepicker = $("<input />")
-			.attr("data-role", "datebox")
-			.attr("type", "date")
-			.attr("name", "birthday")
-			.attr("id", "birthday");
-
-	datepicker.val(bday);
-
-	$("#personDetailPersonEdit")
-		.append($("<label></label>").attr("for", "prename").text("Vorname:"))
-		.append($("<input />")
-				.attr("type", "text")
-				.attr("name", "prename")
-				.attr("id", "prename")
-				.attr("value",currentPerson.prename)
-				.on('input',
-							function(e) {
-								currentPerson.prename = $("#prename")
-										.val();
-								currentPerson.hasChanged();
-							}))
-		.append($("<label></label>")
-				.attr("for", "surname")
-				.text("Nachname:"))
-		.append($("<input />")
-				.attr("type", "text")
-				.attr("name", "surname")
-				.attr("id", "surname")
-				.attr("value",currentPerson.surname)
-				.on('input', function(e) {
-						currentPerson.surname = $("#surname").val();
-						currentPerson.hasChanged();
-					}))
-		.append($("<label></label>")
-				.attr("for", "birthday")
-				.text("Geburtstag:"))
-		.append(datepicker)
-		.append("<br />")
-		.append($("<button></button>")
-				.text("Gruppen")
-				.on('click', function(e){showGroups(true);}));
-
+	
+	showPersonEditView($("#personDetailPersonEdit"));
+	
 	$("#personDetailPerson").trigger("create");
 
 	var obj = $("#personDetailContactsEdit");
@@ -145,6 +104,53 @@ function updatePersonView() {
 
 				obj.trigger("create");
 			});	
+}
+
+function showPersonEditView(viewElement) {
+
+	var bday = currentPerson.birthday();
+	var datepicker = $("<input />")
+			.attr("data-role", "datebox")
+			.attr("type", "date")
+			.attr("name", "birthday")
+			.attr("id", "birthday");
+
+	datepicker.val(bday);
+
+	viewElement
+		.append($("<label></label>").attr("for", "prename").text("Vorname:"))
+		.append($("<input />")
+				.attr("type", "text")
+				.attr("name", "prename")
+				.attr("id", "prename")
+				.attr("value",currentPerson.prename)
+				.on('input',
+							function(e) {
+								currentPerson.prename = $("#prename")
+										.val();
+								currentPerson.hasChanged();
+							}))
+		.append($("<label></label>")
+				.attr("for", "surname")
+				.text("Nachname:"))
+		.append($("<input />")
+				.attr("type", "text")
+				.attr("name", "surname")
+				.attr("id", "surname")
+				.attr("value",currentPerson.surname)
+				.on('input', function(e) {
+						currentPerson.surname = $("#surname").val();
+						currentPerson.hasChanged();
+					}))
+		.append($("<label></label>")
+				.attr("for", "birthday")
+				.text("Geburtstag:"))
+		.append(datepicker)
+		.append("<br />")
+		.append($("<button></button>")
+				.text("Gruppen")
+				.on('click', function(e){showGroups(true);}));
+	
 }
 
 function deletePerson() {
@@ -384,5 +390,16 @@ function changeContact(contactId) {
 
 function addPerson() {
 	currentPersonId = -1;
-	editPerson();
+	currentPerson = new PersonInstance(currentPersonId, null, null);
+	var editDialog = $("<div></div>");
+	showPersonEditView(editDialog);
+	showDialog("Person anlegen", editDialog, function(){
+			var prename = $("#prename").val();
+			var surname = $("#surname").val();
+			var birthday = $("birthday").val();
+			alert("Person muss noch gespeichert werden!");
+		});
+	$.mobile.changePage("#editDialog", {
+		role : "dialog"
+	});
 }
