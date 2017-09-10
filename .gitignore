@@ -20,3 +20,4 @@ README.html
 *.bak
 *.war
 src/main/webapp/resources/ClubHelperClient.jnlp
+doc/*
