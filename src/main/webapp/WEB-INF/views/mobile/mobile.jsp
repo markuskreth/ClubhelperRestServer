@@ -39,7 +39,7 @@
 </style>
 </head>
 <body>
-	<div data-role="page" id="personList">
+	<div data-role="page" id="personListPage">
 		<div data-role="header" data-position="fixed">
 			<h1>Clubhelper Mobile</h1>
 			<a href="#personListMenu" data-rel="popup" data-role="button"
@@ -88,7 +88,7 @@
 
 	<div data-role="page" id="personDetails">
 		<div data-role="header" data-position="fixed" data-add-back-btn="true"
-			data-back-btn-text="Zur\u00fcck">
+			data-back-btn-text="Zurück">
 			<h1>Clubhelper Mobile</h1>
 		</div>
 		<!-- /header -->
@@ -103,13 +103,14 @@
 									<li><a href="#" onclick="editPerson()"
 										id="showGroupButton" data-role="button" data-icon="edit"
 										data-theme="b" data-inline="true">Bearbeiten</a></li>
+									<li><a href="#" onclick="showGroups()" id="showGroupButton"
+										data-role="button" data-icon="edit" data-theme="b"
+										data-inline="true">Gruppen</a></li>
 								</ul>
 							</div>
 							<div id="personDetailPerson">
 								<p>
-									Name: <a href="#" onclick="showGroups()" id="showGroupButton"
-										data-role="button" data-icon="edit" data-theme="b"
-										data-inline="true">Gruppen</a>
+									Name:
 								</p>
 								<p>
 									<span id="personPrename">dummy1</span> <span id="personSurname">dummy2</span>
@@ -153,7 +154,7 @@
 
 	<div data-role="page" id="personEdit">
 		<div data-role="header" data-position="fixed" data-add-back-btn="true"
-			data-back-btn-text="Zur\u00fcck">
+			data-back-btn-text="Zurück">
 			<h1>Clubhelper Mobile</h1>
 		</div>
 		<!-- /header -->
@@ -188,10 +189,13 @@
 							<ul id="personDetailRelationsEdit" data-role="listview"
 								data-inset="true" data-filter="false">
 							</ul>
-							<ul>
-								<li><a href="#" onclick="deletePerson()"
-									class="ui-btn ui-icon-delete">L�schen</a></li>
-							</ul>
+							
+							<div data-role="navbar">
+								<ul>
+									<li><a href="#" onclick="deletePerson()"
+										class="ui-btn ui-icon-delete">Löschen</a></li>
+								</ul>
+							</div>
 						</div>
 					</div>
 				</div>
