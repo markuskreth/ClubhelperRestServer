@@ -16,7 +16,7 @@
 			always-use-default-target = "true"
 			/>
 			
-		<remember-me key="MtvTrampolin-GB" token-validity-seconds="86400" />
+		<remember-me key="MtvTrampolin-GB" />
 	</http>
 
 	<beans:bean id="clubLoginHandler"

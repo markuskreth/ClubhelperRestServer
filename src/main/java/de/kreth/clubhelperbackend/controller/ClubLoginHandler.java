@@ -35,8 +35,7 @@ public class ClubLoginHandler extends SavedRequestAwareAuthenticationSuccessHand
 
 		redirectStrategy.sendRedirect(request, response, "/");
 		log.trace("Redirected?" + response);
-//
-//		response.sendRedirect("/clubhelperbackend/");
+
 	}
 
 }
