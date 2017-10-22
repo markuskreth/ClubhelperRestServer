@@ -88,8 +88,10 @@ public class HomeController {
 	public String showLogin(HttpServletResponse response, Authentication auth) throws IOException {
 
 		if (auth == null) {
+			logger.debug("showing login view");
 			return "login";
 		} else {
+			logger.info("redirecting to person");
 			response.sendRedirect("person");
 			return null;
 		}
