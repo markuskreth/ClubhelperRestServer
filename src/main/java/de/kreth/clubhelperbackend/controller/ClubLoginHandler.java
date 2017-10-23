@@ -16,7 +16,7 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 public class ClubLoginHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
-	private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+	private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
 	public ClubLoginHandler() {
 		super();

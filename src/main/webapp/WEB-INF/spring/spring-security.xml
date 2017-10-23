@@ -16,13 +16,12 @@
 			always-use-default-target = "true"
 			/>
 			
-		<remember-me key="MtvTrampolin-GB" />
+		<remember-me key="MtvTrampolin-GB" token-validity-seconds="4838400" />
 	</http>
 
 	<beans:bean id="clubLoginHandler"
 		class="de.kreth.clubhelperbackend.controller.ClubLoginHandler" />
 
-	<!-- default-target-url="/welcome" -->
 	<!-- authentication-failure-url="/login?error" -->
 	<global-method-security secured-annotations="enabled"
 		pre-post-annotations="enabled" />
