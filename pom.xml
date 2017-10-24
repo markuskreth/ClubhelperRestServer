@@ -2,14 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>clubhelperbackend</artifactId>
-	<version>1.0.5.1</version>
 	<name>ClubHelperBackend</name>
 	<packaging>war</packaging>
 	<description>Clubhelper Rest Service</description>
 
 	<parent>
 		<groupId>de.kreth</groupId>
-		<version>1.0.5</version>
+		<version>1.0.6-SNAPSOT</version>
 		<artifactId>clubhelper-parent</artifactId>
 	</parent>
 
@@ -29,7 +28,7 @@
 		<dependency>
 			<groupId>de.kreth</groupId>
 			<artifactId>clubhelperdata</artifactId>
-			<version>1.0.5</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<!-- Spring -->
