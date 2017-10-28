@@ -3,7 +3,7 @@ var currentPersonId = null;
 var currentPerson = null;
 
 $(document).ready(function() {
-
+	
 	$("#collapsibleRelations").collapsible({
 		expand : function(event, ui) {
 			updateRelations();
@@ -31,26 +31,50 @@ $(document).ready(function() {
 });
 
 function loadPersonList() {
+	$("#personList").empty();
 
-	repo(baseUrl + "person/", function(response) {
+	var x = readCookie('DataRefreshNotNessessary');
+	if (!x || sessionStorage.length==0) {
+		sessionStorage.clear();
+		createCookie('DataRefreshNotNessessary','While existing, cached data is used.',1);
 
-		for ( var index in response) {
-			var person = response[index];
+		repo(baseUrl + "person/", function(response) {
 
-			sessionStorage.setItem("personId" + person.id, JSON.stringify(person));
-			var link = $("<a href='#'></a>").text(person.prename + " " + person.surname);
-			link.attr("personId", person.id);
-			link.click(function() {
-					var pId = $(this).attr("personId");
-					showPerson(pId);
-				});
-			var item = $("<li></li>").append(link);
-			$("#personList").append(item);
+			for ( var index in response) {
+				var person = response[index];
+				sessionStorage.setItem("personId" + person.id, JSON.stringify(person));
+				addPersonToList(person);
+			}
+		});
+
+	} else {
+		for (var i = 0; i < sessionStorage.length; i++){
+			var key = sessionStorage.key(i);
+			if(key.startsWith("personId")) {
+				var person = sessionStorage.getItem(key);
+				addPersonToList(JSON.parse(person));
+			}
 		}
-		$("#personList").listview().listview('refresh');
-	});
-
+	}
+	
+	$("#personList").listview().listview('refresh');
+	
 }
+
+function addPersonToList(person) {
+
+	if(!person) return;
+	
+	var link = $("<a href='#'></a>").text(person.prename + " " + person.surname);
+	link.attr("personId", person.id);
+	link.click(function() {
+			var pId = $(this).attr("personId");
+			showPerson(pId);
+		});
+	var item = $("<li></li>").append(link);
+	$("#personList").append(item);
+}
+
 
 function showPerson(personId) {
 	currentPersonId = personId;
@@ -122,7 +146,7 @@ function showGroups(withDelete) {
 				wrapper.append($("<button></button>")
 						.attr("data-mini","true")
 						.attr("data-icon","add")
-						.text(allGroupResult[i].name))
+						.text(allGroupResult[i].name)
 						.attr("Groupname", allGroupResult[i].name)
 						.attr("groupid", allGroupResult[i].id)
 						.on("click", function(e) {
@@ -135,9 +159,6 @@ function showGroups(withDelete) {
 								.attr("data-type","horizontal")
 								.append($("<button></button>")
 										.attr("data-mini","true")
-										.text(me.attr("Groupname")).trigger("create"))
-								.append($("<button></button>")
-										.attr("data-mini","true")
 										.attr("data-icon","delete")
 										.attr("data-iconpos","notext")
 										.attr("groupid", me.attr("groupid"))
@@ -148,18 +169,24 @@ function showGroups(withDelete) {
 										.text(me.attr("Groupname")).trigger("create"));
 							added.trigger("create");
 							$("#personGroups").append(added);
+							currentPerson.persGroups.push({"id":-1, "personId":currentPerson.id, "groupId":me.attr("groupid")});
+							if(!currentPerson.type) {
+								currentPerson.processGroups(function(groups, allGroups) {
+									currentPerson.type=groups[0].name;
+								});
+							}
 							me.attr("lastEventTimestamp", e.timeStamp);
-						});
+						}));
 
 			}
 		}
 
-		showDialog("Gruppen für " + currentPerson.prename + " " + currentPerson.surname, content, null);
+		showDialog("#editGroupDialog", "Gruppen für " + currentPerson.prename + " " + currentPerson.surname, content, function(){log.debug("Clicked ok for Persongroup.")});
 	});
 }
 
 function showPersonPerson(person) {
-	console.log("Showing " + person.prename + " " + person.surname);
+	log.info("Showing " + person.prename + " " + person.surname);
 	$('#personPrename').text(person.prename);
 	$("#personSurname").text(person.surname);
 	$("#personBirthday").text(person.birthday());
@@ -268,9 +295,13 @@ function renderContact(contact, withMiniAttr, iconAlign) {
 }
 
 
-function showDialog(headText, contentText, action) {
+function showDialog(dialogId, headText, contentText, action) {
 
-	var editDialog = $("#editDialog");
+	if(!dialogId) {
+		dialogId = "#editDialog";
+	}
+
+	var editDialog = $(dialogId);
 	editDialog.empty();
 	editDialog.append($("<div data-role=\"header\"></div>")
 			.append($("<H2></H2>").text(headText)))
@@ -296,7 +327,7 @@ function showDialog(headText, contentText, action) {
 			.attr("data-icon", "cancel")
 			.text("Abbrechen"));
 	editDialog.trigger("create");
-	$.mobile.changePage("#editDialog", {
+	$.mobile.changePage(dialogId, {
 		role : "dialog"
 	});
 }

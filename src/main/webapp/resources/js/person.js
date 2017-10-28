@@ -4,15 +4,17 @@ function Person(personId, targetFunction, relationId){
 	var person = sessionStorage.getItem("personId" + personId);
 	
 	if(person != null) {
+		log.debug("found " + person + " in Storage.")
 		targetFunction(new PersonInstance(personId, JSON.parse(person), relationId));
 	} else {
 		if(personId>=0) {
-
-			repo(baseUrl + "/person/" + personId, function(response) {
+			log.warn(personId + " not found in repo. Reloading...");
+			repo(baseUrl + "person/" + personId, function(response) {
 				sessionStorage.setItem("personId" + personId, JSON.stringify(response));
 				targetFunction(new PersonInstance(personId, response, relationId));
 			});
 		} else {
+			log.debug("Creating new Person");
 			targetFunction(new PersonInstance(personId, null, null));
 		}
 	}
@@ -20,6 +22,7 @@ function Person(personId, targetFunction, relationId){
 
 var repo = function (requestUrl, targetFunction) {
 
+	log.trace("requesting " + requestUrl);
 	$.ajax({
 		url : requestUrl,
 		dataType : "json",
@@ -35,6 +38,8 @@ var ajax = function (requestUrl, object, type, resultFunction) {
 	if(resultFunction == null) {
 		withResultFunction = false;
 	}
+
+	log.trace("requesting " + requestUrl);
 	
 	$.ajax(requestUrl,{
 	    'data': JSON.stringify(object), //{action:'x',params:['a','b','c']}
@@ -54,7 +59,7 @@ var allGroups = function(targetFunction) {
 	if(groups != null) {
 		targetFunction(JSON.parse(groups));
 	} else {
-		repo(baseUrl + "/group/", function(response) {
+		repo(baseUrl + "group/", function(response) {
 			sessionStorage.setItem("allGroups", JSON.stringify(response));
 			targetFunction(response);
 		});
@@ -64,7 +69,7 @@ var allGroups = function(targetFunction) {
 
 class PersonInstance {
 	constructor(personId, response, relation) {
-		this.personId = personId;
+		this.id = personId;
 		if(response!=null) {
 			this.id = response.id;
 			this.prename = response.prename;
@@ -79,9 +84,10 @@ class PersonInstance {
 			this._bday.locale('DE_de');
 			this._changed = false;
 		} else {
-			this.id = personId;
 			this.birth=null;
+			this.persGroups = [];
 			this._bday = moment(null, "DD/MM/YYYY HH:mm:ss.SSS ZZ");
+			this._bday.locale('DE_de');
 			this._changed = false;
 		}
 	}
@@ -106,22 +112,47 @@ class PersonInstance {
 			}
 		})
 	}
-	
+
 	update(targetFunction) {
 		this.changed = null;
 
 		var call="put";
 		if(this.id<0) {
 			call="post";
+
+			sessionStorage.removeItem("personId" + this.id);
 		}
-		
-		ajax(baseUrl + "/person/" + this.id, this, call, function(response) {
+		var me = this;
+		ajax(baseUrl + "person/" + this.id, this, call, function(response) {
+			log.debug("Updated Person: " + response);
+			if(me.id != response.id) {
+				log.info("Ids don't match after update - new person inserted? Overriding original with all answers in: " +response);
+				for(var key in response) {
+				    var value = response[key];
+				    me[key] = value;
+				}
+
+				response = me;
+			}
 			sessionStorage.setItem("personId" + response.id, JSON.stringify(response));
 			if(targetFunction != null) {
 				targetFunction(new PersonInstance(response.id, response, null));
 				
 			}
 		})
+		this._changed = false;
+	}
+
+	updateGroup(groupIndex) {
+		this.changed = null;
+
+		var group = this.persGroups[groupIndex];
+		var call="put";
+		if(group.id<0) {
+			call="post";
+		}
+		log.debug("Updating persongroup: id=" + group.id + ", personId=" + group.personId  + ", groupId=" + group.groupId);
+		ajax(baseUrl + "persongroup/" + group.id, group, call, null);
 		this._changed = false;
 	}
 	
@@ -136,9 +167,9 @@ class PersonInstance {
 	contacts(targetFunction) {
 		if (this._contacts == null) {
 			var me = this;
-			repo(baseUrl + "contact/for/" + me.personId, function(response) {
+			repo(baseUrl + "contact/for/" + me.id, function(response) {
 				me._contacts = response;
-				sessionStorage.setItem("personId" + me.personId, JSON.stringify(me));
+				sessionStorage.setItem("personId" + me.id, JSON.stringify(me));
 				targetFunction(me._contacts);	
 			});
 		} else {
@@ -154,9 +185,9 @@ class PersonInstance {
 		if(this._relatives == null) {
 			var me = this;
 
-			repo(baseUrl + "relative/for/" + me.personId, function(response) {
+			repo(baseUrl + "relative/for/" + me.id, function(response) {
 				me._relatives = response;
-				sessionStorage.setItem("personId" + me.personId, JSON.stringify(me));
+				sessionStorage.setItem("personId" + me.id, JSON.stringify(me));
 				me.processRelatives(targetFunction);
 			});
 		} else {
@@ -171,7 +202,7 @@ class PersonInstance {
 			var rel = this._relatives[index];
 			var relId = -1;
 			
-			if (rel.person1 == this.personId) {
+			if (rel.person1 == this.id) {
 				relId = rel.person2;
 				rel.name = rel.toPerson1Relation;
 			} else {
@@ -188,7 +219,7 @@ class PersonInstance {
 		var me = this;
 		ajax(url, contact, "put", function(con) {
 			var text = JSON.stringify(me);
-			sessionStorage.setItem("personId" + me.personId, text);
+			sessionStorage.setItem("personId" + me.id, text);
 			targetFunction(contact);
 		});
 	}
@@ -196,10 +227,10 @@ class PersonInstance {
 	groups (targetFunction) {
 		if(this.persGroups == null) {
 			var me = this;
-			repo(baseUrl + "/persongroup/for/" + me.personId, function(response) {
+			repo(baseUrl + "persongroup/for/" + me.id, function(response) {
 				me.persGroups = response;
 				var text = JSON.stringify(me);
-				sessionStorage.setItem("personId" + me.personId, text);
+				sessionStorage.setItem("personId" + me.id, text);
 				me.processGroups(targetFunction);
 			});
 		} else {
@@ -212,13 +243,16 @@ class PersonInstance {
 		allGroups(function(allGroupResult){
 			var personGroups = [];
 			var ids = [];
-			
-			for (var j = 0, allLen = allGroupResult.length; j < allLen; j++) {
+
+			if(me.persGroups) {
 				for (var i = 0, len = me.persGroups.length; i < len; i++) {
-					if (me.persGroups[i].groupId==allGroupResult[j].id) {
-						if(ids[allGroupResult[j].id]) continue;
-						ids[allGroupResult[j].id] = true;
-						personGroups.push(allGroupResult[j]);
+					for (var j = 0, allLen = allGroupResult.length; j < allLen; j++) {
+						if (me.persGroups[i].groupId==allGroupResult[j].id) {
+							if(ids[allGroupResult[j].id]) break;
+							ids[allGroupResult[j].id] = true;
+							personGroups.push(allGroupResult[j]);
+							break;
+						}
 					}
 				}
 			}
@@ -231,9 +265,9 @@ class PersonInstance {
 		for (var i = 0, len = me.persGroups.length; i < len; i++) {
 			if (me.persGroups[i].groupId==groupId) {
 				var index = i;
-				ajax(baseUrl + "/persongroup/" + me.persGroups[i].id, me.persGroups[i], "delete", function(response) {
+				ajax(baseUrl + "persongroup/" + me.persGroups[i].id, me.persGroups[i], "delete", function(response) {
 					me.persGroups.splice(index, 1);
-					sessionStorage.setItem("personId" + me.personId, JSON.stringify(me));
+					sessionStorage.setItem("personId" + me.id, JSON.stringify(me));
 				});
 				break;
 			}
