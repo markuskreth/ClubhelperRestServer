@@ -3,11 +3,6 @@ var currentPersonId = null;
 var currentPerson = null;
 
 $(document).ready(function() {
-	var x = readCookie('DataRefreshNotNessessary')
-	if (!x) {
-		sessionStorage.clear();
-		createCookie('DataRefreshNotNessessary','While existing, cached data is used.',1);
-	}
 	
 	$("#collapsibleRelations").collapsible({
 		expand : function(event, ui) {
@@ -36,26 +31,50 @@ $(document).ready(function() {
 });
 
 function loadPersonList() {
+	$("#personList").empty();
 
-	repo(baseUrl + "person/", function(response) {
+	var x = readCookie('DataRefreshNotNessessary');
+	if (!x || sessionStorage.length==0) {
+		sessionStorage.clear();
+		createCookie('DataRefreshNotNessessary','While existing, cached data is used.',1);
 
-		for ( var index in response) {
-			var person = response[index];
+		repo(baseUrl + "person/", function(response) {
 
-			sessionStorage.setItem("personId" + person.id, JSON.stringify(person));
-			var link = $("<a href='#'></a>").text(person.prename + " " + person.surname);
-			link.attr("personId", person.id);
-			link.click(function() {
-					var pId = $(this).attr("personId");
-					showPerson(pId);
-				});
-			var item = $("<li></li>").append(link);
-			$("#personList").append(item);
+			for ( var index in response) {
+				var person = response[index];
+				sessionStorage.setItem("personId" + person.id, JSON.stringify(person));
+				addPersonToList(person);
+			}
+		});
+
+	} else {
+		for (var i = 0; i < sessionStorage.length; i++){
+			var key = sessionStorage.key(i);
+			if(key.startsWith("personId")) {
+				var person = sessionStorage.getItem(key);
+				addPersonToList(JSON.parse(person));
+			}
 		}
-		$("#personList").listview().listview('refresh');
-	});
-
+	}
+	
+	$("#personList").listview().listview('refresh');
+	
 }
+
+function addPersonToList(person) {
+
+	if(!person) return;
+	
+	var link = $("<a href='#'></a>").text(person.prename + " " + person.surname);
+	link.attr("personId", person.id);
+	link.click(function() {
+			var pId = $(this).attr("personId");
+			showPerson(pId);
+		});
+	var item = $("<li></li>").append(link);
+	$("#personList").append(item);
+}
+
 
 function showPerson(personId) {
 	currentPersonId = personId;
