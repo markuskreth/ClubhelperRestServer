@@ -221,6 +221,7 @@
 	</div>
 
 	<div id="editDialog" data-role="page" data-dialog="true"></div>
+	<div id="editGroupDialog" data-role="page" data-dialog="true"></div>
 	
 </body>
 </html>

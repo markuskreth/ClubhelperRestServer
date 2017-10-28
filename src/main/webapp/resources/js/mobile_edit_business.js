@@ -181,7 +181,7 @@ function addContact() {
 					});
 			
 		};
-		showDialog(headText, content, action);
+		showDialog(null, headText, content, action);
 }
 
 function addRelation() {
@@ -219,7 +219,7 @@ function deleteRelation(relativeId) {
 								updatePersonView();
 							});
 				};
-				showDialog(headText, contentText, action);
+				showDialog(null, headText, contentText, action);
 			}
 		})
 
@@ -300,7 +300,7 @@ function deleteContact(contactId) {
 								});
 					}
 
-					showDialog(headText, contentText, action);
+					showDialog(null, headText, contentText, action);
 				}
 			}
 
@@ -333,7 +333,7 @@ function editContact(contactId) {
 									updatePersonView();
 								});
 					};
-					showDialog(headText, content, action);
+					showDialog(null, headText, content, action);
 					break;
 				}
 			}
@@ -393,11 +393,31 @@ function addPerson() {
 	currentPerson = new PersonInstance(currentPersonId, null, null);
 	var editDialog = $("<div></div>");
 	showPersonEditView(editDialog);
-	showDialog("Person anlegen", editDialog, function(){
+	showDialog(null, "Person anlegen", editDialog, function(){
 			var prename = $("#prename").val();
 			var surname = $("#surname").val();
-			var birthday = $("birthday").val();
-			alert("Person muss noch gespeichert werden!");
+			var birthday = moment($("#birthday").val(), "YYYY/MM/DD");
+			log.info("New Person: prename=" + prename + ", surname="+surname + ", birthday="+birthday.format("DD/MM/YYYY HH:mm:ss.SSS ZZ"));
+			currentPerson.prename = prename;
+			currentPerson.surname = surname;
+			currentPerson.birth = birthday.format("DD/MM/YYYY HH:mm:ss.SSS ZZ");
+			if(!currentPerson.type) {
+				log.error("New person has no type. Restart dialog.");
+				sessionStorage.setItem("personId" + currentPerson.id, JSON.stringify(currentPerson));
+				alert("Bitte mind. eine Gruppe angeben. Die erste gewählte ist die Hauptgruppe.");
+				showPerson(currentPerson.id);
+				return;
+			}
+			currentPerson.update(function(createdPerson){
+				for ( var index in createdPerson.persGroups) {
+					createdPerson.persGroups[index].personId = createdPerson.id;
+				}
+
+				createdPerson.processGroups(function(createdPerson) {
+					showPerson(createdPerson.id);
+				});
+				
+			});
 		});
 	$.mobile.changePage("#editDialog", {
 		role : "dialog"

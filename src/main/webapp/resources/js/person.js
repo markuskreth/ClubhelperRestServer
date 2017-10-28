@@ -86,7 +86,9 @@ class PersonInstance {
 		} else {
 			this.id = personId;
 			this.birth=null;
+			this.persGroups = [];
 			this._bday = moment(null, "DD/MM/YYYY HH:mm:ss.SSS ZZ");
+			this._bday.locale('DE_de');
 			this._changed = false;
 		}
 	}
@@ -111,13 +113,15 @@ class PersonInstance {
 			}
 		})
 	}
-	
+
 	update(targetFunction) {
 		this.changed = null;
 
 		var call="put";
 		if(this.id<0) {
 			call="post";
+
+			sessionStorage.removeItem("personId" + this.id);
 		}
 		
 		ajax(baseUrl + "/person/" + this.id, this, call, function(response) {
@@ -127,6 +131,18 @@ class PersonInstance {
 				
 			}
 		})
+		this._changed = false;
+	}
+
+	updateGroup(groupIndex, targetFunction) {
+		this.changed = null;
+
+		var call="put";
+		if(createdPerson.persGroups[groupIndex].id<0) {
+			call="post";
+		}
+		
+		ajax(baseUrl + "/persongroup/" + createdPerson.persGroups[groupIndex].id, createdPerson.persGroups[groupIndex], call, null);
 		this._changed = false;
 	}
 	
@@ -217,16 +233,18 @@ class PersonInstance {
 		allGroups(function(allGroupResult){
 			var personGroups = [];
 			var ids = [];
-			
-			for (var j = 0, allLen = allGroupResult.length; j < allLen; j++) {
-				for (var i = 0, len = me.persGroups.length; i < len; i++) {
+
+			for (var i = 0, len = me.persGroups.length; i < len; i++) {
+				for (var j = 0, allLen = allGroupResult.length; j < allLen; j++) {
 					if (me.persGroups[i].groupId==allGroupResult[j].id) {
-						if(ids[allGroupResult[j].id]) continue;
+						if(ids[allGroupResult[j].id]) break;
 						ids[allGroupResult[j].id] = true;
 						personGroups.push(allGroupResult[j]);
+						break;
 					}
 				}
 			}
+
 			targetFunction(personGroups, allGroupResult);
 		});
 	}

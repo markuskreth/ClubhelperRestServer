@@ -169,14 +169,19 @@ function showGroups(withDelete) {
 										.text(me.attr("Groupname")).trigger("create"));
 							added.trigger("create");
 							$("#personGroups").append(added);
-							currentPerson.persGroups.push(me.attr("groupid"));
+							currentPerson.persGroups.push({"id":-1, "personId":currentPerson.id, "groupId":me.attr("groupid")});
+							if(!currentPerson.type) {
+								currentPerson.processGroups(function(groups, allGroups) {
+									currentPerson.type=groups[0].name;
+								});
+							}
 							me.attr("lastEventTimestamp", e.timeStamp);
 						}));
 
 			}
 		}
 
-		showDialog("Gruppen für " + currentPerson.prename + " " + currentPerson.surname, content, function(){log.debug("Clicked ok for Persongroup.")});
+		showDialog("#editGroupDialog", "Gruppen für " + currentPerson.prename + " " + currentPerson.surname, content, function(){log.debug("Clicked ok for Persongroup.")});
 	});
 }
 
@@ -290,9 +295,13 @@ function renderContact(contact, withMiniAttr, iconAlign) {
 }
 
 
-function showDialog(headText, contentText, action) {
+function showDialog(dialogId, headText, contentText, action) {
 
-	var editDialog = $("#editDialog");
+	if(!dialogId) {
+		dialogId = "#editDialog";
+	}
+
+	var editDialog = $(dialogId);
 	editDialog.empty();
 	editDialog.append($("<div data-role=\"header\"></div>")
 			.append($("<H2></H2>").text(headText)))
@@ -318,7 +327,7 @@ function showDialog(headText, contentText, action) {
 			.attr("data-icon", "cancel")
 			.text("Abbrechen"));
 	editDialog.trigger("create");
-	$.mobile.changePage("#editDialog", {
+	$.mobile.changePage(dialogId, {
 		role : "dialog"
 	});
 }
