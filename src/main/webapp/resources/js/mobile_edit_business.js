@@ -409,12 +409,16 @@ function addPerson() {
 				return;
 			}
 			currentPerson.update(function(createdPerson){
+				currentPersonId = createdPerson.id;
+				createdPerson.persGroups = currentPerson.persGroups
+				currentPerson = createdPerson;
 				for ( var index in createdPerson.persGroups) {
 					createdPerson.persGroups[index].personId = createdPerson.id;
+					createdPerson.updateGroup(index);
 				}
 
-				createdPerson.processGroups(function(createdPerson) {
-					showPerson(createdPerson.id);
+				createdPerson.processGroups(function(pgroup, allGroups) {
+					showPerson(currentPerson);
 				});
 				
 			});

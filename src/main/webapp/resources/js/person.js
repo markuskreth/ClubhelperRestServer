@@ -122,6 +122,18 @@ class PersonInstance {
 
 			sessionStorage.removeItem("personId" + this.id);
 		}
+		var me = this;
+		ajax(baseUrl + "person/" + this.id, this, call, function(response) {
+			log.debug("Updated Person: " + response);
+			if(me.id != response.id) {
+				log.info("Ids don't match after update - new person inserted? Overriding original with all answers in: " +response);
+				for(var key in response) {
+				    var value = response[key];
+				    me[key] = value;
+				}
+
+				response = me;
+			}
 			sessionStorage.setItem("personId" + response.id, JSON.stringify(response));
 			if(targetFunction != null) {
 				targetFunction(new PersonInstance(response.id, response, null));
@@ -131,15 +143,16 @@ class PersonInstance {
 		this._changed = false;
 	}
 
-	updateGroup(groupIndex, targetFunction) {
+	updateGroup(groupIndex) {
 		this.changed = null;
 
+		var group = this.persGroups[groupIndex];
 		var call="put";
-		if(createdPerson.persGroups[groupIndex].id<0) {
+		if(group.id<0) {
 			call="post";
 		}
-		
-		ajax(baseUrl + "/persongroup/" + createdPerson.persGroups[groupIndex].id, createdPerson.persGroups[groupIndex], call, null);
+		log.debug("Updating persongroup: id=" + group.id + ", personId=" + group.personId  + ", groupId=" + group.groupId);
+		ajax(baseUrl + "persongroup/" + group.id, group, call, null);
 		this._changed = false;
 	}
 	
@@ -231,17 +244,18 @@ class PersonInstance {
 			var personGroups = [];
 			var ids = [];
 
-			for (var i = 0, len = me.persGroups.length; i < len; i++) {
-				for (var j = 0, allLen = allGroupResult.length; j < allLen; j++) {
-					if (me.persGroups[i].groupId==allGroupResult[j].id) {
-						if(ids[allGroupResult[j].id]) break;
-						ids[allGroupResult[j].id] = true;
-						personGroups.push(allGroupResult[j]);
-						break;
+			if(me.persGroups) {
+				for (var i = 0, len = me.persGroups.length; i < len; i++) {
+					for (var j = 0, allLen = allGroupResult.length; j < allLen; j++) {
+						if (me.persGroups[i].groupId==allGroupResult[j].id) {
+							if(ids[allGroupResult[j].id]) break;
+							ids[allGroupResult[j].id] = true;
+							personGroups.push(allGroupResult[j]);
+							break;
+						}
 					}
 				}
 			}
-
 			targetFunction(personGroups, allGroupResult);
 		});
 	}
