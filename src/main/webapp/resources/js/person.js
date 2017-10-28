@@ -9,7 +9,7 @@ function Person(personId, targetFunction, relationId){
 	} else {
 		if(personId>=0) {
 			log.warn(personId + " not found in repo. Reloading...");
-			repo(baseUrl + "/person/" + personId, function(response) {
+			repo(baseUrl + "person/" + personId, function(response) {
 				sessionStorage.setItem("personId" + personId, JSON.stringify(response));
 				targetFunction(new PersonInstance(personId, response, relationId));
 			});
@@ -59,7 +59,7 @@ var allGroups = function(targetFunction) {
 	if(groups != null) {
 		targetFunction(JSON.parse(groups));
 	} else {
-		repo(baseUrl + "/group/", function(response) {
+		repo(baseUrl + "group/", function(response) {
 			sessionStorage.setItem("allGroups", JSON.stringify(response));
 			targetFunction(response);
 		});
@@ -69,7 +69,7 @@ var allGroups = function(targetFunction) {
 
 class PersonInstance {
 	constructor(personId, response, relation) {
-		this.personId = personId;
+		this.id = personId;
 		if(response!=null) {
 			this.id = response.id;
 			this.prename = response.prename;
@@ -84,7 +84,6 @@ class PersonInstance {
 			this._bday.locale('DE_de');
 			this._changed = false;
 		} else {
-			this.id = personId;
 			this.birth=null;
 			this.persGroups = [];
 			this._bday = moment(null, "DD/MM/YYYY HH:mm:ss.SSS ZZ");
@@ -123,8 +122,6 @@ class PersonInstance {
 
 			sessionStorage.removeItem("personId" + this.id);
 		}
-		
-		ajax(baseUrl + "/person/" + this.id, this, call, function(response) {
 			sessionStorage.setItem("personId" + response.id, JSON.stringify(response));
 			if(targetFunction != null) {
 				targetFunction(new PersonInstance(response.id, response, null));
@@ -157,9 +154,9 @@ class PersonInstance {
 	contacts(targetFunction) {
 		if (this._contacts == null) {
 			var me = this;
-			repo(baseUrl + "contact/for/" + me.personId, function(response) {
+			repo(baseUrl + "contact/for/" + me.id, function(response) {
 				me._contacts = response;
-				sessionStorage.setItem("personId" + me.personId, JSON.stringify(me));
+				sessionStorage.setItem("personId" + me.id, JSON.stringify(me));
 				targetFunction(me._contacts);	
 			});
 		} else {
@@ -175,9 +172,9 @@ class PersonInstance {
 		if(this._relatives == null) {
 			var me = this;
 
-			repo(baseUrl + "relative/for/" + me.personId, function(response) {
+			repo(baseUrl + "relative/for/" + me.id, function(response) {
 				me._relatives = response;
-				sessionStorage.setItem("personId" + me.personId, JSON.stringify(me));
+				sessionStorage.setItem("personId" + me.id, JSON.stringify(me));
 				me.processRelatives(targetFunction);
 			});
 		} else {
@@ -192,7 +189,7 @@ class PersonInstance {
 			var rel = this._relatives[index];
 			var relId = -1;
 			
-			if (rel.person1 == this.personId) {
+			if (rel.person1 == this.id) {
 				relId = rel.person2;
 				rel.name = rel.toPerson1Relation;
 			} else {
@@ -209,7 +206,7 @@ class PersonInstance {
 		var me = this;
 		ajax(url, contact, "put", function(con) {
 			var text = JSON.stringify(me);
-			sessionStorage.setItem("personId" + me.personId, text);
+			sessionStorage.setItem("personId" + me.id, text);
 			targetFunction(contact);
 		});
 	}
@@ -217,10 +214,10 @@ class PersonInstance {
 	groups (targetFunction) {
 		if(this.persGroups == null) {
 			var me = this;
-			repo(baseUrl + "/persongroup/for/" + me.personId, function(response) {
+			repo(baseUrl + "persongroup/for/" + me.id, function(response) {
 				me.persGroups = response;
 				var text = JSON.stringify(me);
-				sessionStorage.setItem("personId" + me.personId, text);
+				sessionStorage.setItem("personId" + me.id, text);
 				me.processGroups(targetFunction);
 			});
 		} else {
@@ -254,9 +251,9 @@ class PersonInstance {
 		for (var i = 0, len = me.persGroups.length; i < len; i++) {
 			if (me.persGroups[i].groupId==groupId) {
 				var index = i;
-				ajax(baseUrl + "/persongroup/" + me.persGroups[i].id, me.persGroups[i], "delete", function(response) {
+				ajax(baseUrl + "persongroup/" + me.persGroups[i].id, me.persGroups[i], "delete", function(response) {
 					me.persGroups.splice(index, 1);
-					sessionStorage.setItem("personId" + me.personId, JSON.stringify(me));
+					sessionStorage.setItem("personId" + me.id, JSON.stringify(me));
 				});
 				break;
 			}
