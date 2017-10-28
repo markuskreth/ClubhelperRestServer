@@ -3,7 +3,12 @@ var currentPersonId = null;
 var currentPerson = null;
 
 $(document).ready(function() {
-
+	var x = readCookie('DataRefreshNotNessessary')
+	if (!x) {
+		sessionStorage.clear();
+		createCookie('DataRefreshNotNessessary','While existing, cached data is used.',1);
+	}
+	
 	$("#collapsibleRelations").collapsible({
 		expand : function(event, ui) {
 			updateRelations();
@@ -135,9 +140,6 @@ function showGroups(withDelete) {
 								.attr("data-type","horizontal")
 								.append($("<button></button>")
 										.attr("data-mini","true")
-										.text(me.attr("Groupname")).trigger("create"))
-								.append($("<button></button>")
-										.attr("data-mini","true")
 										.attr("data-icon","delete")
 										.attr("data-iconpos","notext")
 										.attr("groupid", me.attr("groupid"))
@@ -148,18 +150,19 @@ function showGroups(withDelete) {
 										.text(me.attr("Groupname")).trigger("create"));
 							added.trigger("create");
 							$("#personGroups").append(added);
+							currentPerson.persGroups.push(me.attr("groupid"));
 							me.attr("lastEventTimestamp", e.timeStamp);
 						}));
 
 			}
 		}
 
-		showDialog("Gruppen für " + currentPerson.prename + " " + currentPerson.surname, content, null);
+		showDialog("Gruppen für " + currentPerson.prename + " " + currentPerson.surname, content, function(){log.debug("Clicked ok for Persongroup.")});
 	});
 }
 
 function showPersonPerson(person) {
-	console.log("Showing " + person.prename + " " + person.surname);
+	log.info("Showing " + person.prename + " " + person.surname);
 	$('#personPrename').text(person.prename);
 	$("#personSurname").text(person.surname);
 	$("#personBirthday").text(person.birthday());

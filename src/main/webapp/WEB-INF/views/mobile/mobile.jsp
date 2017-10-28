@@ -19,12 +19,17 @@
 <script src=<c:url value='/resources/js/moment-with-locales.min.js' />></script>
 <script src=<c:url value='/resources/js/jquery.mobile-1.4.5.min.js' />></script>
 <script src=<c:url value='/resources/js/jquery.mobile.datepicker.js' />></script>
+<script charset="utf-8" src=<c:url value='/resources/js/log4javascript.js' />></script>
+<script charset="utf-8" src=<c:url value='/resources/js/general.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/person.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/mobile_business.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/mobile_edit_business.js' />></script>
 <script type="text/javascript">
 	var baseUrl = location.protocol + '//' + location.host
 			+ <c:url value='/' />;
+	var log = log4javascript.getDefaultLogger();
+	log4javascript.setEnabled(true);
+	
 </script>
 <style>
 .ui-icon-person {
@@ -215,7 +220,7 @@
 		<a href="#" data-role="button" onclick="printPhoneList2">Telefonliste</a>
 	</div>
 
-	<div id="editDialog" data-role="page"></div>
+	<div id="editDialog" data-role="page" data-dialog="true"></div>
 	
 </body>
 </html>

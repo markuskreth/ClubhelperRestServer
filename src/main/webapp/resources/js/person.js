@@ -4,15 +4,17 @@ function Person(personId, targetFunction, relationId){
 	var person = sessionStorage.getItem("personId" + personId);
 	
 	if(person != null) {
+		log.debug("found " + person + " in Storage.")
 		targetFunction(new PersonInstance(personId, JSON.parse(person), relationId));
 	} else {
 		if(personId>=0) {
-
+			log.warn(personId + " not found in repo. Reloading...");
 			repo(baseUrl + "/person/" + personId, function(response) {
 				sessionStorage.setItem("personId" + personId, JSON.stringify(response));
 				targetFunction(new PersonInstance(personId, response, relationId));
 			});
 		} else {
+			log.debug("Creating new Person");
 			targetFunction(new PersonInstance(personId, null, null));
 		}
 	}
@@ -20,6 +22,7 @@ function Person(personId, targetFunction, relationId){
 
 var repo = function (requestUrl, targetFunction) {
 
+	log.trace("requesting " + requestUrl);
 	$.ajax({
 		url : requestUrl,
 		dataType : "json",
@@ -35,6 +38,8 @@ var ajax = function (requestUrl, object, type, resultFunction) {
 	if(resultFunction == null) {
 		withResultFunction = false;
 	}
+
+	log.trace("requesting " + requestUrl);
 	
 	$.ajax(requestUrl,{
 	    'data': JSON.stringify(object), //{action:'x',params:['a','b','c']}

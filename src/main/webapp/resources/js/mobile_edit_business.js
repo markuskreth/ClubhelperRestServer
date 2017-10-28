@@ -38,7 +38,7 @@ function updatePersonView() {
 	$("#personDetailContactsEdit").empty();
 	$("#personDetailAdressesEdit").empty();
 	$("#personDetailRelationsEdit").empty();
-	
+	log.info("Updating person data with " + currentPerson.prename + " " + currentPerson.surname);
 	showPersonEditView($("#personDetailPersonEdit"));
 	
 	$("#personDetailPerson").trigger("create");
