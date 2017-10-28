@@ -116,13 +116,16 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 	@RequestMapping(value = "/", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
 	public T post(@RequestBody T toCreate) {
-		return post(-1, toCreate);
+		return post(-1L, toCreate);
 	}
 
 	@Override
 	@RequestMapping(value = "/{id}", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
-	public T post(@PathVariable("id") long id, @RequestBody T toCreate) {
+	public T post(@PathVariable("id") Long id, @RequestBody T toCreate) {
+		if(id == null) {
+			id = -1L;
+		}
 		toCreate.setId(id);
 		Date now = new Date();
 

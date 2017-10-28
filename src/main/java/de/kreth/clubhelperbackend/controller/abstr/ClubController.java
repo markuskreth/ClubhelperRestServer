@@ -80,7 +80,7 @@ public interface ClubController<T> {
 	 *            Object to create.
 	 * @return created object with updated id and dates.
 	 */
-	T post(@PathVariable("id") long id, @RequestBody T toCreate);
+	T post(@PathVariable("id") Long id, @RequestBody T toCreate);
 
 	/**
 	 * Rest: GET - return object
