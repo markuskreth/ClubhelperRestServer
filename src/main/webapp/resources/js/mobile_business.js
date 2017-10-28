@@ -122,7 +122,7 @@ function showGroups(withDelete) {
 				wrapper.append($("<button></button>")
 						.attr("data-mini","true")
 						.attr("data-icon","add")
-						.text(allGroupResult[i].name))
+						.text(allGroupResult[i].name)
 						.attr("Groupname", allGroupResult[i].name)
 						.attr("groupid", allGroupResult[i].id)
 						.on("click", function(e) {
@@ -149,7 +149,7 @@ function showGroups(withDelete) {
 							added.trigger("create");
 							$("#personGroups").append(added);
 							me.attr("lastEventTimestamp", e.timeStamp);
-						});
+						}));
 
 			}
 		}
