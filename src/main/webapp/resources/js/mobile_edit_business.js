@@ -418,7 +418,7 @@ function addPerson() {
 				}
 
 				createdPerson.processGroups(function(pgroup, allGroups) {
-					showPerson(currentPerson);
+					showPerson(currentPersonId);
 				});
 				
 			});
