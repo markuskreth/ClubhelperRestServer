@@ -21,3 +21,4 @@ README.html
 *.war
 src/main/webapp/resources/ClubHelperClient.jnlp
 doc/*
+/src/main/resources/client_secret.json
