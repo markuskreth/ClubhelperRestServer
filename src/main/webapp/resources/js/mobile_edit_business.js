@@ -38,11 +38,12 @@ function updatePersonView() {
 	$("#personDetailContactsEdit").empty();
 	$("#personDetailAdressesEdit").empty();
 	$("#personDetailRelationsEdit").empty();
-	log.info("Updating person data with " + currentPerson.prename + " " + currentPerson.surname);
 	showPersonEditView($("#personDetailPersonEdit"));
 	log.info("Updating person data with " + currentPerson.prename + " " + currentPerson.surname + " " + currentPerson.birthday());
 	
-	$("#personDetailPerson").trigger("create");
+	var bday = $("#birthday");
+	bday.val(currentPerson.birthdayAsDate());
+	bday.text(currentPerson.birthday());
 
 	currentPerson.contacts(function(items) {
 

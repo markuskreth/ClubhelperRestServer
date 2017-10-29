@@ -160,6 +160,10 @@ class PersonInstance {
 		return this._bday.format('L');
 	}
 	
+	birthdayAsDate() {
+		return this._bday.toDate();
+	}
+	
 	setContacts(response) {
 		this._contacts = response;
 	}
