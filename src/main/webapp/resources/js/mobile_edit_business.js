@@ -40,10 +40,10 @@ function updatePersonView() {
 	$("#personDetailRelationsEdit").empty();
 	log.info("Updating person data with " + currentPerson.prename + " " + currentPerson.surname);
 	showPersonEditView($("#personDetailPersonEdit"));
+	log.info("Updating person data with " + currentPerson.prename + " " + currentPerson.surname + " " + currentPerson.birthday());
 	
 	$("#personDetailPerson").trigger("create");
 
-	var obj = $("#personDetailContactsEdit");
 	currentPerson.contacts(function(items) {
 
 		for ( var index in items) {
@@ -58,7 +58,6 @@ function updatePersonView() {
 
 			obj.append(element);
 		}
-		obj.trigger("create");
 	})
 
 	currentPerson
@@ -99,7 +98,6 @@ function updatePersonView() {
 										.text("edit"));
 
 				var obj = $("#personDetailRelationsEdit");
-
 				obj.append(group);
 
 				obj.trigger("create");
@@ -108,14 +106,9 @@ function updatePersonView() {
 
 function showPersonEditView(viewElement) {
 
-	var bday = currentPerson.birthday();
-	var datepicker = $("<input />")
-			.attr("data-role", "datebox")
-			.attr("type", "date")
-			.attr("name", "birthday")
-			.attr("id", "birthday");
-
-	datepicker.val(bday);
+	var datepicker = $("#templates .datepicker").clone();
+	datepicker.attr("id", "birthday");
+	datepicker.attr("name", "birthday");
 
 	viewElement
 		.append($("<label></label>").attr("for", "prename").text("Vorname:"))
@@ -147,10 +140,12 @@ function showPersonEditView(viewElement) {
 				.text("Geburtstag:"))
 		.append(datepicker)
 		.append("<br />")
-		.append($("<button></button>")
+		.append($("<a></a>")
 				.text("Gruppen")
-				.on('click', function(e){showGroups(true);}));
-	
+				.attr("data-role", "button")
+				.attr("href", "#")
+				.on('click', function(e){showGroups(true);}))
+		.trigger("create");
 }
 
 function deletePerson() {

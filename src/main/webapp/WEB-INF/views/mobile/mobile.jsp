@@ -12,13 +12,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet"
 	href=<c:url value='/resources/css/jquery.mobile-1.4.5.min.css' /> />
-<link rel="stylesheet"
-	href=<c:url value='/resources/css/jquery.mobile.datepicker.css' /> />
 <link rel="stylesheet" href=<c:url value='/resources/css/custom.css' /> />
 <script src=<c:url value='/resources/js/jquery-1.11.1.min.js' />></script>
 <script src=<c:url value='/resources/js/moment-with-locales.min.js' />></script>
 <script src=<c:url value='/resources/js/jquery.mobile-1.4.5.min.js' />></script>
-<script src=<c:url value='/resources/js/jquery.mobile.datepicker.js' />></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
 <script charset="utf-8" src=<c:url value='/resources/js/log4javascript.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/general.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/person.js' />></script>
@@ -222,6 +220,9 @@
 
 	<div id="editDialog" data-role="page" data-dialog="true"></div>
 	<div id="editGroupDialog" data-role="page" data-dialog="true"></div>
+	<div id="templates">
+		<input class="datepicker" type="date" data-role="datebox" />
+	</div>
 	
 </body>
 </html>
