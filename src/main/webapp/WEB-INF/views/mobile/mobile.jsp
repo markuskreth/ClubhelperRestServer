@@ -221,7 +221,7 @@
 	<div id="editDialog" data-role="page" data-dialog="true"></div>
 	<div id="editGroupDialog" data-role="page" data-dialog="true"></div>
 	<div id="templates">
-		<input class="datepicker" type="date" data-role="datebox" />
+		<input class="datepicker" type="date" data-role="datebox" data-options='{"mode": "datebox", "useNewStyle":true,"zindex":1200}' />
 	</div>
 	
 </body>

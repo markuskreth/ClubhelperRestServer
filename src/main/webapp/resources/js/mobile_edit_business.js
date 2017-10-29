@@ -45,6 +45,16 @@ function updatePersonView() {
 	bday.val(currentPerson.birthdayAsDate());
 	bday.text(currentPerson.birthday());
 
+    $(document).ready(function() {
+
+        $('#birthday').trigger('datebox', {
+            'method': 'set',
+            'value': currentPerson.birthdayAsDate()
+        }).trigger('datebox', {
+            'method': 'doset'
+        });
+
+    });
 	currentPerson.contacts(function(items) {
 
 		for ( var index in items) {
