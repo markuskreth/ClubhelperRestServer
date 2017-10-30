@@ -3,6 +3,7 @@ package de.kreth.clubhelperbackend.spreadsheet;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,12 +19,18 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.Sheets.Spreadsheets;
+import com.google.api.services.sheets.v4.Sheets.Spreadsheets.BatchUpdate;
 import com.google.api.services.sheets.v4.SheetsScopes;
+import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
+import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetResponse;
+import com.google.api.services.sheets.v4.model.DeleteSheetRequest;
+import com.google.api.services.sheets.v4.model.DuplicateSheetRequest;
+import com.google.api.services.sheets.v4.model.Request;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
-class Quickstart {
+class GoogleSpreadsheetsAdapter {
 
     private static final String SPREADSHEET_ID = "1clDEc9NakRJTM-onxrjsuyB2Vby8P1j6NINdWelOrwg";
     
@@ -65,7 +72,7 @@ class Quickstart {
 
     private final Sheets service;
 
-    public Quickstart() throws IOException {
+    public GoogleSpreadsheetsAdapter() throws IOException {
     	service = getSheetsService();
 	}
     /**
@@ -73,10 +80,10 @@ class Quickstart {
      * @return an authorized Credential object.
      * @throws IOException
      */
-    public static Credential authorize() throws IOException {
+    private static Credential authorize() throws IOException {
         // Load client secrets.
         InputStream in =
-            Quickstart.class.getResourceAsStream("/client_secret.json");
+            GoogleSpreadsheetsAdapter.class.getResourceAsStream("/client_secret.json");
         GoogleClientSecrets clientSecrets =
             GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
@@ -99,22 +106,37 @@ class Quickstart {
      * @return an authorized Sheets API client service
      * @throws IOException
      */
-    public static Sheets getSheetsService() throws IOException {
+    private static Sheets getSheetsService() throws IOException {
         Credential credential = authorize();
         return new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
                 .setApplicationName(APPLICATION_NAME)
                 .build();
     }
 
+	private BatchUpdateSpreadsheetResponse sendRequest(Request request, Boolean includeSpreadsheetInResponse) throws IOException {
+		BatchUpdateSpreadsheetRequest content = new BatchUpdateSpreadsheetRequest();
+		List<Request> requests = new ArrayList<>();
+		requests.add(request);
+		content.setRequests(requests );
+		content.setIncludeSpreadsheetInResponse(includeSpreadsheetInResponse);
+		BatchUpdate batch = service.spreadsheets().batchUpdate(SPREADSHEET_ID, content );
+		BatchUpdateSpreadsheetResponse response = batch.execute();
+		return response;
+	}
+    
     public List<Sheet> getSheets() throws IOException {
-
-        Spreadsheets spreadsheets = service.spreadsheets();
-        Spreadsheet sheet = spreadsheets.get(SPREADSHEET_ID).setIncludeGridData(true).execute();
+        Spreadsheet sheet = loadSheet();
         return sheet.getSheets();
     }
     
+	private Spreadsheet loadSheet() throws IOException {
+		Spreadsheets spreadsheets = service.spreadsheets();
+        Spreadsheet sheet = spreadsheets.get(SPREADSHEET_ID).setIncludeGridData(true).execute();
+		return sheet;
+	}
+    
     public static void main(String[] args) throws IOException {
-    	new Quickstart().test();
+    	new GoogleSpreadsheetsAdapter().test();
     }
 
 	private void test() throws IOException {
@@ -140,6 +162,54 @@ class Quickstart {
           }
         }
 		
+	}
+	
+	public Sheet dublicateTo(String originalTitle, String title) throws IOException {
+        Spreadsheet sheet = loadSheet();
+        List<Sheet> sheets=sheet.getSheets();
+        Integer sourceSheetId = null;
+        
+        for(Sheet s : sheets) {
+        	if(s.getProperties().getTitle().equals(originalTitle)) {
+        		sourceSheetId = s.getProperties().getSheetId();
+        		break;
+        	}
+        }
+
+        if(sourceSheetId == null) {
+        	throw new IllegalStateException("Source Sheet with name \"" + originalTitle + "\" not found!");
+        }
+        
+		DuplicateSheetRequest ds = new DuplicateSheetRequest();
+		ds.setSourceSheetId(sourceSheetId);
+		ds.setNewSheetName(title);
+		
+		Request request = new Request();
+		request.setDuplicateSheet(ds);
+		
+		sendRequest(request, false);
+		sheets = getSheets();
+		
+        for(Sheet s : sheets) {
+        
+        	System.out.println(s.getProperties().getTitle());
+
+        	if(s.getProperties().getTitle().equals(title)) {
+        		return s;
+        	}
+        }
+
+		return null;
+	}
+	
+	public void delete(Sheet sheet) throws IOException {
+
+		DeleteSheetRequest ds = new DeleteSheetRequest();
+		ds.setSheetId(sheet.getProperties().getSheetId());
+		
+		Request request = new Request();
+		request.setDeleteSheet(ds);
+		sendRequest(request, false);
 	}
 
 

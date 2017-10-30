@@ -1,27 +1,24 @@
 package de.kreth.clubhelperbackend.spreadsheet;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.api.services.sheets.v4.model.GridData;
 import com.google.api.services.sheets.v4.model.Sheet;
-import com.google.api.services.sheets.v4.model.SheetProperties;
 
 public enum SheetService {
 
 	INSTANCE;
 
 	Logger log = LoggerFactory.getLogger(getClass());
-	private final Quickstart service;
+	private final GoogleSpreadsheetsAdapter service;
 	
 	private SheetService() {
-		Quickstart s = null;
+		GoogleSpreadsheetsAdapter s = null;
 		try {
-			s = new Quickstart();
+			s = new GoogleSpreadsheetsAdapter();
 		} catch (IOException e) {
 			log.error("unable to init " + getClass().getName() + ", Service won't work.");
 		}
@@ -50,13 +47,14 @@ public enum SheetService {
 	}
 
 	public JumpHeightSheet create(String title) throws IOException {
-		Sheet e = getForName("Vorlage").clone();
-		e.getProperties().setTitle(title);
 		try {
-			service.getSheets().add(e);
-			return new JumpHeightSheet(e);
+			return new JumpHeightSheet(service.dublicateTo("Vorlage", title));
 		} catch (Exception ex) {
 			return JumpHeightSheet.INVALID;
 		}
+	}
+
+	public void delete(JumpHeightSheet test) throws IOException {
+		service.delete(test.sheet);
 	}
 }

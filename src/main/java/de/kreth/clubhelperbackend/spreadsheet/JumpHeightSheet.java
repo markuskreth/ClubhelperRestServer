@@ -18,8 +18,10 @@ public class JumpHeightSheet {
 
 	DateFormat defaultDf = new SimpleDateFormat("dd.MM.yyyy");
 	DateFormat invalidDf = new SimpleDateFormat("dd.MM.yy");
+	
 	public static final JumpHeightSheet INVALID = new InvalidSheet();
-	private final Sheet sheet;
+	
+	final Sheet sheet;
 	private final List<GridData> data;
 
 	private JumpHeightSheet() {
@@ -44,14 +46,13 @@ public class JumpHeightSheet {
 	public List<Date> getDates() {
 		List<Date> dates = new ArrayList<>();
 		for (GridData data: data) {
-			RowData row = data.getRowData().get(1);
+			RowData row = data.getRowData().get(2);
 			for (CellData cell : row.getValues()) {
 				ExtendedValue value = cell.getEffectiveValue();
 				if(value != null) {
 					
 					String text = value.getStringValue();
 					if(text != null) {
-						System.out.println(text);
 						try {
 							dates.add(defaultDf.parse(text));
 						} catch (ParseException e) {
