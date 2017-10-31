@@ -5,7 +5,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -15,14 +17,14 @@ import org.junit.Test;
 
 public class JumpHeightSheetTest {
 	
-	AtomicInteger testCount = new AtomicInteger(0);
-	
-	static final String annasTitle = "Anna";
+	static AtomicInteger testCount = new AtomicInteger(0);
+	private static final Calendar testDate = new GregorianCalendar(2017, Calendar.OCTOBER, 30);
 	private JumpHeightSheet test;
 
 	@Before
 	public void createTestSheet() throws IOException {
-		test = SheetService.INSTANCE.create(nextTitle());
+		test = SheetService.create(nextTitle());
+		assertNotSame(JumpHeightSheet.INVALID, test);
 	}
 
 	private String nextTitle() {
@@ -31,13 +33,13 @@ public class JumpHeightSheetTest {
 	
 	@After
 	public void deleteTestSheet() throws IOException {
-		SheetService.INSTANCE.delete(test);
+		SheetService.delete(test);
 	}
 	
 	@Test
-	public void testAnnasSheetAndTitle() throws Exception {
+	public void testGetSheetAndTitle() throws Exception {
 		String title = test.getTitle();
-		JumpHeightSheet clone = SheetService.INSTANCE.get(title);
+		JumpHeightSheet clone = SheetService.get(title);
 		assertNotNull(clone);
 		assertEquals(title, clone.getTitle());
 
@@ -51,13 +53,32 @@ public class JumpHeightSheetTest {
 	}
 	
 	@Test
+	public void testDefaultTasks() {
+		List<String> tasks = test.getTasks();
+		assertEquals(6, tasks.size());
+		assertEquals("10Sprünge", tasks.get(0));
+		assertEquals("10Hocken", tasks.get(1));
+		assertEquals("P3", tasks.get(2));
+		assertEquals("P4", tasks.get(3));
+		assertEquals("P5", tasks.get(4));
+		assertEquals("P6", tasks.get(5));
+	}
+	
+	@Test
+	public void addTaskValue() throws Exception {
+		CellValue value = test.add("10Sprünge", testDate, 13.1);
+		assertNotNull(value);
+		assertEquals(13.1, value.getDouble(), .01);
+	}
+	
+	@Test
 	public void testCreateAndDeleteSheet() throws Exception {
 		String nextTi = nextTitle();
-		JumpHeightSheet test = SheetService.INSTANCE.create(nextTi);
+		JumpHeightSheet test = SheetService.create(nextTi);
 		assertNotNull(test);
 		assertNotSame(JumpHeightSheet.INVALID, test);
 		assertEquals(nextTi, test.getTitle());
 		
-		SheetService.INSTANCE.delete(test);
+		SheetService.delete(test);
 	}
 }

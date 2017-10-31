@@ -1,6 +1,6 @@
 package de.kreth.clubhelperbackend.spreadsheet;
 
-public class SheetDataException extends Exception {
+public class SheetDataException extends RuntimeException {
 
 	/**
 	 * 

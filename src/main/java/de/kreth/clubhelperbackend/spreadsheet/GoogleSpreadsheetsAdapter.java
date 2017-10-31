@@ -1,11 +1,15 @@
 package de.kreth.clubhelperbackend.spreadsheet;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -20,6 +24,7 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.Sheets.Spreadsheets;
 import com.google.api.services.sheets.v4.Sheets.Spreadsheets.BatchUpdate;
+import com.google.api.services.sheets.v4.Sheets.Spreadsheets.Values.Update;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetResponse;
@@ -28,6 +33,7 @@ import com.google.api.services.sheets.v4.model.DuplicateSheetRequest;
 import com.google.api.services.sheets.v4.model.Request;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
+import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
 class GoogleSpreadsheetsAdapter {
@@ -39,7 +45,7 @@ class GoogleSpreadsheetsAdapter {
         "Google Sheets API Java Quickstart";
 
     /** Directory to store user credentials for this application. */
-    private static final java.io.File DATA_STORE_DIR = new java.io.File(
+    private static final File DATA_STORE_DIR = new File(
         System.getProperty("user.home"), ".credentials/sheets.googleapis.com-java-quickstart");
 
     /** Global instance of the {@link FileDataStoreFactory}. */
@@ -70,10 +76,14 @@ class GoogleSpreadsheetsAdapter {
         }
     }
 
+    private static final Logger log = LoggerFactory.getLogger(GoogleSpreadsheetsAdapter.class);
     private final Sheets service;
 
     public GoogleSpreadsheetsAdapter() throws IOException {
     	service = getSheetsService();
+    	if(log.isDebugEnabled()) {
+    		log.debug("Initialized " + getClass().getName());
+    	}
 	}
     /**
      * Creates an authorized Credential object.
@@ -96,8 +106,9 @@ class GoogleSpreadsheetsAdapter {
                 .build();
         Credential credential = new AuthorizationCodeInstalledApp(
             flow, new LocalServerReceiver()).authorize("user");
-        System.out.println(
-                "Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
+        if(log.isDebugEnabled()) {
+        	log.debug("Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
+        }
         return credential;
     }
 
@@ -125,6 +136,9 @@ class GoogleSpreadsheetsAdapter {
 	}
     
     public List<Sheet> getSheets() throws IOException {
+    	if(log.isTraceEnabled()) {
+    		log.trace("Loading Sheets");
+    	}
         Spreadsheet sheet = loadSheet();
         return sheet.getSheets();
     }
@@ -168,7 +182,9 @@ class GoogleSpreadsheetsAdapter {
         Spreadsheet sheet = loadSheet();
         List<Sheet> sheets=sheet.getSheets();
         Integer sourceSheetId = null;
-        
+        if(log.isTraceEnabled()) {
+        	log.trace("Changing Title from " + originalTitle + " to " + title);
+        }
         for(Sheet s : sheets) {
         	if(s.getProperties().getTitle().equals(originalTitle)) {
         		sourceSheetId = s.getProperties().getSheetId();
@@ -186,14 +202,10 @@ class GoogleSpreadsheetsAdapter {
 		
 		Request request = new Request();
 		request.setDuplicateSheet(ds);
-		
 		sendRequest(request, false);
 		sheets = getSheets();
 		
         for(Sheet s : sheets) {
-        
-        	System.out.println(s.getProperties().getTitle());
-
         	if(s.getProperties().getTitle().equals(title)) {
         		return s;
         	}
@@ -201,7 +213,7 @@ class GoogleSpreadsheetsAdapter {
 
 		return null;
 	}
-	
+
 	public void delete(Sheet sheet) throws IOException {
 
 		DeleteSheetRequest ds = new DeleteSheetRequest();
@@ -212,5 +224,19 @@ class GoogleSpreadsheetsAdapter {
 		sendRequest(request, false);
 	}
 
-
+	public ValueRange setValue(String sheetTitle, int column, int row, ValueRange content) throws IOException {
+		StringBuilder range = new StringBuilder();
+		range.append(sheetTitle).append("!");
+		range.append((char)(column+64)).append(row);
+		return setValue(range.toString(), content);
+	}
+	
+	public ValueRange setValue(String range, ValueRange content) throws IOException {
+		if(log.isDebugEnabled()) {
+			log.debug("Setting value of " + range + " to " + content);
+		}
+		Update updateExecutor = service.spreadsheets().values().update(SPREADSHEET_ID, range, content);
+		UpdateValuesResponse response = updateExecutor.setValueInputOption("RAW").execute();
+		return response.getUpdatedData();
+	}
 }
