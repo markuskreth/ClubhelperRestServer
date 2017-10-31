@@ -2,6 +2,7 @@ package de.kreth.clubhelperbackend.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -77,7 +78,15 @@ public class JumpHeightSheetController {
 	@ResponseBody
 	public List<String> getTitles() throws IOException {
 		List<String> result = new ArrayList<>();
-		for(JumpHeightSheet s: SheetService.getSheets()) {
+		List<JumpHeightSheet> sheets = SheetService.getSheets();
+		sheets.sort(new Comparator<JumpHeightSheet>() {
+
+			@Override
+			public int compare(JumpHeightSheet o1, JumpHeightSheet o2) {
+				return o1.getTitle().compareTo(o2.getTitle());
+			}
+		});
+		for(JumpHeightSheet s: sheets) {
 			result.add(s.getTitle());
 		}
 		return result;

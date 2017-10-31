@@ -32,7 +32,9 @@ import com.google.api.services.sheets.v4.model.DeleteSheetRequest;
 import com.google.api.services.sheets.v4.model.DuplicateSheetRequest;
 import com.google.api.services.sheets.v4.model.Request;
 import com.google.api.services.sheets.v4.model.Sheet;
+import com.google.api.services.sheets.v4.model.SheetProperties;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
+import com.google.api.services.sheets.v4.model.UpdateSheetPropertiesRequest;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
@@ -238,5 +240,19 @@ class GoogleSpreadsheetsAdapter {
 		Update updateExecutor = service.spreadsheets().values().update(SPREADSHEET_ID, range, content);
 		UpdateValuesResponse response = updateExecutor.setValueInputOption("RAW").execute();
 		return response.getUpdatedData();
+	}
+	
+	public void setSheetTitle(Sheet sheet, String name) throws IOException {		
+		SheetProperties properties  = new SheetProperties();
+		properties.setTitle(name);
+		properties.setSheetId(sheet.getProperties().getSheetId());
+		
+		UpdateSheetPropertiesRequest ur = new UpdateSheetPropertiesRequest();
+		ur.setProperties(properties);
+		ur.setFields("title");
+		Request request = new Request();
+		request.setUpdateSheetProperties(ur);
+		sendRequest(request, false);
+		
 	}
 }

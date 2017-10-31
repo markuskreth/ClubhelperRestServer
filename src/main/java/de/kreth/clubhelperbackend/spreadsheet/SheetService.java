@@ -91,4 +91,9 @@ public enum SheetService {
 		res.setStringValue(value);
 		return res;
 	}
+
+	public static JumpHeightSheet changeTitle(Sheet sheet, String name) throws IOException {
+		INSTANCE.service.setSheetTitle(sheet, name);
+		return get(name);
+	}
 }

@@ -147,11 +147,20 @@ public class JumpHeightSheet {
 		int row = getTasks().size() + taskIndexIncrementor;
 		SheetService.set(getTitle(), 1, row, taskName);
 		JumpHeightSheet next = SheetService.get(getTitle());
-		this.sheet = next.sheet;
-		this.data = next.data;
+		update(next);
 		return getTasks();
 	}
 
+	private void update(JumpHeightSheet next) {
+		this.sheet = next.sheet;
+		this.data = next.data;
+	}
+
+	public void setTitle(String name) throws IOException {
+		JumpHeightSheet result = SheetService.changeTitle(sheet, name);
+		update(result);
+	}
+	
 	private static class InvalidSheet extends JumpHeightSheet {
 
 		@Override
@@ -168,5 +177,6 @@ public class JumpHeightSheet {
 			return getTitle();
 		}
 	}
+
 
 }

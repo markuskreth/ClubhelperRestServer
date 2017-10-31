@@ -77,6 +77,12 @@ public class JumpHeightSheetTest {
 		assertNotNull(value);
 		assertEquals(13.1, value.getDouble(), .01);
 	}
+	@Test
+	public void renameSheet() throws Exception {
+		String name = "Renamed Sheet";
+		test.setTitle(name);
+		assertEquals(name, test.getTitle());
+	}
 	
 	@Test
 	public void testCreateAndDeleteSheet() throws Exception {
