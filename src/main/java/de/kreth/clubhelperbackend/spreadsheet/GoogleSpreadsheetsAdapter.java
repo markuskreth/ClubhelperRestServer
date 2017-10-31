@@ -218,6 +218,9 @@ class GoogleSpreadsheetsAdapter {
 
 	public void delete(Sheet sheet) throws IOException {
 
+		if(sheet == null || sheet.getProperties() == null) {
+			return;
+		}
 		DeleteSheetRequest ds = new DeleteSheetRequest();
 		ds.setSheetId(sheet.getProperties().getSheetId());
 		
@@ -229,8 +232,18 @@ class GoogleSpreadsheetsAdapter {
 	public ValueRange setValue(String sheetTitle, int column, int row, ValueRange content) throws IOException {
 		StringBuilder range = new StringBuilder();
 		range.append(sheetTitle).append("!");
-		range.append((char)(column+64)).append(row);
+		range.append(intToColumn(column)).append(row);
 		return setValue(range.toString(), content);
+	}
+	
+	static String intToColumn(int column) {
+	    StringBuilder name = new StringBuilder();
+	    while (column > 0) {
+	    	column--;
+	        name.insert(0, (char)('A' + column%26));
+	        column /= 26;
+	    }
+	    return name.toString();
 	}
 	
 	public ValueRange setValue(String range, ValueRange content) throws IOException {
