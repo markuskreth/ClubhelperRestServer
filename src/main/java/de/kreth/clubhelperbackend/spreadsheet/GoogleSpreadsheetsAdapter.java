@@ -255,6 +255,15 @@ class GoogleSpreadsheetsAdapter {
 		return response.getUpdatedData();
 	}
 	
+	public ValueRange getValues(String sheetTitle, String range) throws IOException {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(sheetTitle);
+		stringBuilder.append("!");
+		stringBuilder.append(range);
+		ValueRange result = service.spreadsheets().values().get(SPREADSHEET_ID, stringBuilder.toString()).execute();
+		return result;
+	}
+	
 	public void setSheetTitle(Sheet sheet, String name) throws IOException {		
 		SheetProperties properties  = new SheetProperties();
 		properties.setTitle(name);

@@ -13,11 +13,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.api.services.sheets.v4.model.CellData;
 import com.google.api.services.sheets.v4.model.ExtendedValue;
-import com.google.api.services.sheets.v4.model.GridData;
-import com.google.api.services.sheets.v4.model.RowData;
 import com.google.api.services.sheets.v4.model.Sheet;
+import com.google.api.services.sheets.v4.model.ValueRange;
 
 public class JumpHeightSheet {
 
@@ -31,50 +29,30 @@ public class JumpHeightSheet {
 	
 	private Logger log = LoggerFactory.getLogger(getClass());
 	Sheet sheet;
-	private List<GridData> data;
 
 	private JumpHeightSheet() {
 		sheet = null;
-		data = null;
 	}
 	
 	public JumpHeightSheet(Sheet sheet) throws SheetDataException {
-
-		this.data = sheet.getData();
-		if(data == null) {
-			throw new SheetDataException("Unable to get Data from Sheet.");
-		} else {
-			this.sheet = sheet;
-		}
+		this.sheet = sheet;
 	}
 	
 	public String getTitle() {
 		return sheet.getProperties().getTitle();
 	}
 
-	public List<Date> getDates() {
+	public List<Date> getDates() throws IOException {
 		List<Date> dates = new ArrayList<>();
-		for (GridData data: data) {
-			RowData row = data.getRowData().get(rowIndexDate);
-			List<CellData> values = row.getValues();
-			values.remove(0);
-			for (CellData cell : values) {
-				ExtendedValue value = cell.getEffectiveValue();
-				if(value != null) {
-					
-					final String text = value.getStringValue();
-					if(text != null) {
-						try {
-							dates.add(defaultDf.parse(text));
-						} catch (ParseException e) {
-							try {
-								Date d = invalidDf.parse(text);
-								value.setStringValue(defaultDf.format(d));
-								dates.add(d);
-							} catch (ParseException e1) {
-								log.warn("Not a date: " + text, e1);
-							}
-						}
+		ValueRange values = SheetService.getRange(getTitle(), "3:3");
+		for (List<Object> l: values.getValues()) {
+			for (Object o : l) {
+				String text = o.toString();
+				if(text != null && "Datum".equals(text) == false) {
+					try {
+						dates.add(defaultDf.parse(text));
+					} catch (ParseException e) {
+						log.warn("Not a date: " + text, e);
 					}
 				}
 			}
@@ -120,25 +98,19 @@ public class JumpHeightSheet {
 		return column;
 	}
 	
-	public List<String> getTasks() {
+	public List<String> getTasks() throws IOException {
 		List<String> tasks = new ArrayList<>();
 
-		for (GridData d: data) {
-			for (RowData row : d.getRowData()) {
-				if(row.getValues() != null && row.getValues().size()>0) {
-					CellData cell = row.getValues().get(0);
-					ExtendedValue effectiveValue = cell.getEffectiveValue();
-					
-					if(effectiveValue != null) {
-						String task = effectiveValue.getStringValue();
-						if("Datum".equals(task) == false && task.trim().isEmpty() == false) {
-							tasks.add(task);
-						}
-					}
-					
+		ValueRange values = SheetService.getRange(getTitle(), "A:A");
+		for (List<Object> l: values.getValues()) {
+			for (Object o : l) {
+				String task = o.toString();
+				if("Datum".equals(task) == false && task.trim().isEmpty() == false) {
+					tasks.add(task);
 				}
 			}
 		}
+		
 		return tasks;
 	}
 
@@ -153,7 +125,6 @@ public class JumpHeightSheet {
 
 	private void update(JumpHeightSheet next) {
 		this.sheet = next.sheet;
-		this.data = next.data;
 	}
 
 	public void setTitle(String name) throws IOException {
@@ -175,6 +146,16 @@ public class JumpHeightSheet {
 		@Override
 		public String toString() {
 			return getTitle();
+		}
+		
+		@Override
+		public int hashCode() {
+			return getClass().getName().hashCode();
+		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			return this == obj;
 		}
 	}
 

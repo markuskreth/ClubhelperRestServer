@@ -96,4 +96,8 @@ public enum SheetService {
 		INSTANCE.service.setSheetTitle(sheet, name);
 		return get(name);
 	}
+
+	public static ValueRange getRange(String sheetTitle, String range) throws IOException {
+		return INSTANCE.service.getValues(sheetTitle, range);
+	}
 }

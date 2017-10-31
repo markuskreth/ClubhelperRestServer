@@ -60,7 +60,7 @@ public class JumpHeightSheetTest {
 	}
 	
 	@Test
-	public void testDefaultTasks() {
+	public void testDefaultTasks() throws Exception {
 		List<String> tasks = test.getTasks();
 		assertEquals(6, tasks.size());
 		assertEquals("10Sprünge", tasks.get(0));
