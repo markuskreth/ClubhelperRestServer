@@ -17,7 +17,6 @@
 		<connection>scm:git:https://github.com/markuskreth/ClubhelperRestServer.git</connection>
 		<developerConnection>scm:git:https://github.com/markuskreth/ClubhelperRestServer.git</developerConnection>
 		<url>http://github.com/markuskreth/ClubhelperRestServer</url>
-		<tag>clubhelperbackend-1.0.5</tag>
 	</scm>
 
 	<dependencies>
@@ -225,11 +224,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.google.api-client</groupId>
-			<artifactId>google-api-client-appengine</artifactId>
-			<version>1.23.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.api-client</groupId>
 			<artifactId>google-api-client-gson</artifactId>
 			<version>1.23.0</version>
 		</dependency>
@@ -325,6 +319,15 @@
 					<server>SpellakTomcat</server>
 					<path>/ClubHelperBackend</path>
 					<update>true</update>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 			<!-- <plugin> -->
