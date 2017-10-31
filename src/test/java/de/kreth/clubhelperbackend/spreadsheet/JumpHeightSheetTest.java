@@ -46,6 +46,13 @@ public class JumpHeightSheetTest {
 	}
 
 	@Test
+	public void addTask() throws Exception {
+		String taskName = "TestTask";
+		List<String> tasks = test.addTask(taskName);
+		assertEquals(taskName, tasks.get(tasks.size() - 1));
+	}
+
+	@Test
 	public void testDateList() throws Exception {
 		List<Date> dates = test.getDates();
 		assertNotNull(dates);

@@ -8,13 +8,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.google.api.services.sheets.v4.model.CellData;
 import com.google.api.services.sheets.v4.model.ExtendedValue;
 import com.google.api.services.sheets.v4.model.GridData;
@@ -29,9 +27,11 @@ public class JumpHeightSheet {
 	public static final JumpHeightSheet INVALID = new InvalidSheet();
 	
 	private static final int rowIndexDate = 2;
+	private static final int taskIndexIncrementor = 4;
+	
 	private Logger log = LoggerFactory.getLogger(getClass());
-	final Sheet sheet;
-	private final List<GridData> data;
+	Sheet sheet;
+	private List<GridData> data;
 
 	private JumpHeightSheet() {
 		sheet = null;
@@ -94,7 +94,6 @@ public class JumpHeightSheet {
 	}
 
 	private int getIndexOf(String taskName) throws IOException {
-		int taskIndexIncrementor = 4;
 		int row;
 		List<String> tasks = getTasks();
 		row = tasks.indexOf(taskName);
@@ -142,7 +141,17 @@ public class JumpHeightSheet {
 		}
 		return tasks;
 	}
-	
+
+	public List<String> addTask(String taskName) throws IOException {
+		
+		int row = getTasks().size() + taskIndexIncrementor;
+		SheetService.set(getTitle(), 1, row, taskName);
+		JumpHeightSheet next = SheetService.get(getTitle());
+		this.sheet = next.sheet;
+		this.data = next.data;
+		return getTasks();
+	}
+
 	private static class InvalidSheet extends JumpHeightSheet {
 
 		@Override

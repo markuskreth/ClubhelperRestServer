@@ -36,18 +36,18 @@ public class JumpHeightSheetController {
 		return null;
 	}
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json")
+	@RequestMapping(value = "/tasks/{title}/{taskName}", method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
-	public JumpHeightSheet put(long id, JumpHeightSheet toUpdate) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<String> put(@PathVariable("title") String title, @PathVariable("taskName") String taskName) throws IOException {
+		return SheetService.get(title).addTask(taskName);
 	}
 
-	@RequestMapping(value = "/", method = RequestMethod.POST, produces = "application/json")
+	@RequestMapping(value = "/{title}", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
-	public JumpHeightSheet post(JumpHeightSheet toCreate) {
-		// TODO Auto-generated method stub
-		return null;
+	public Map<String, List<?>> post(@PathVariable("title") String title) throws IOException {
+		JumpHeightSheet sheet = SheetService.create(title);
+		Map<String, List<?>> result = createTaskValues(sheet);
+		return result;
 	}
 
 	@RequestMapping(value = "/tasks/{title}", method = RequestMethod.GET, produces = "application/json")
@@ -60,6 +60,11 @@ public class JumpHeightSheetController {
 	@ResponseBody
 	public Map<String, List<?>> getByTitle(@PathVariable("title") String title) throws IOException {
 		JumpHeightSheet sheet = SheetService.get(title);
+		Map<String, List<?>> result = createTaskValues(sheet);
+		return result;
+	}
+
+	private Map<String, List<?>> createTaskValues(JumpHeightSheet sheet) {
 		List<Date> dates = sheet.getDates();
 		List<String> tasks = sheet.getTasks();
 		Map<String, List<?>> result = new HashMap<>();
