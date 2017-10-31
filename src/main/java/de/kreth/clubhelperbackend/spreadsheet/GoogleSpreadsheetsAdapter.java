@@ -147,7 +147,7 @@ class GoogleSpreadsheetsAdapter {
     
 	private Spreadsheet loadSheet() throws IOException {
 		Spreadsheets spreadsheets = service.spreadsheets();
-        Spreadsheet sheet = spreadsheets.get(SPREADSHEET_ID).setIncludeGridData(true).execute();
+        Spreadsheet sheet = spreadsheets.get(SPREADSHEET_ID).setIncludeGridData(false).execute();
 		return sheet;
 	}
     

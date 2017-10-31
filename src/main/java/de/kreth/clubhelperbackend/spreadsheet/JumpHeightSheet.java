@@ -17,6 +17,8 @@ import com.google.api.services.sheets.v4.model.ExtendedValue;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
+import de.kreth.clubhelperbackend.spreadsheetdata.CellValue;
+
 public class JumpHeightSheet {
 
 	DateFormat defaultDf = new SimpleDateFormat("dd.MM.yyyy");
@@ -42,15 +44,17 @@ public class JumpHeightSheet {
 		return sheet.getProperties().getTitle();
 	}
 
-	public List<Date> getDates() throws IOException {
-		List<Date> dates = new ArrayList<>();
+	public List<CellValue<Date>> getDates() throws IOException {
+		List<CellValue<Date>> dates = new ArrayList<>();
 		ValueRange values = SheetService.getRange(getTitle(), "3:3");
+		int column = 0;
 		for (List<Object> l: values.getValues()) {
 			for (Object o : l) {
 				String text = o.toString();
 				if(text != null && "Datum".equals(text) == false) {
+					column++;
 					try {
-						dates.add(defaultDf.parse(text));
+						dates.add(new CellValue<Date>(defaultDf.parse(text), column, 3));
 					} catch (ParseException e) {
 						log.warn("Not a date: " + text, e);
 					}
@@ -61,14 +65,14 @@ public class JumpHeightSheet {
 		return dates;
 	}
 
-	public CellValue add(String taskName, Calendar date, double value) throws IOException {
+	public CellValue<Double> add(String taskName, Calendar date, double value) throws IOException {
 		
 		int column = getIndexOf(date);
 		int row = getIndexOf(taskName);
 		
 		ExtendedValue res = SheetService.set(getTitle(), column , row, value);
-		CellValue cellValue = new CellValue(res);
-		return cellValue;
+		
+		return new CellValue<Double>(res.getNumberValue().doubleValue(), column, row);
 	}
 
 	private int getIndexOf(String taskName) throws IOException {
@@ -85,9 +89,14 @@ public class JumpHeightSheet {
 	}
 
 	private int getIndexOf(Calendar date) throws IOException {
-		int column;
-		List<Date> dates = getDates();
-		column = dates.indexOf(date.getTime());
+		int column = -1;
+		List<CellValue<Date>> dates = getDates();
+		for(CellValue<Date> d: dates) {
+			if(d.getObject().equals(date.getTime())) {
+				column = d.getColumn();
+				break;
+			}
+		}
 		
 		if(column<0) {
 			column = dates.size() + 2;
