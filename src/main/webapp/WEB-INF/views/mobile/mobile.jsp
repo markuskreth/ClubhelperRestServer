@@ -19,6 +19,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
 <script charset="utf-8" src=<c:url value='/resources/js/log4javascript.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/general.js' />></script>
+<script charset="utf-8" src=<c:url value='/resources/js/jumpheights.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/person.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/mobile_business.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/mobile_edit_business.js' />></script>
@@ -98,17 +99,20 @@
 
 		<div role="main" class="ui-content">
 			<div>
-				<div id="content" class="width25 floatRight leftColumn">
+				<div id="contentDetail" class="width25 floatRight leftColumn">
 					<div class="width75 floatLeft">
 						<div class="gradient">
 							<div data-role="navbar">
 								<ul>
 									<li><a href="#" onclick="editPerson()"
 										id="showGroupButton" data-role="button" data-icon="edit"
-										data-theme="b" data-inline="true">Bearbeiten</a></li>
+										data-theme="b" data-transition="flip" data-inline="true">Bearbeiten</a></li>
 									<li><a href="#" onclick="showGroups()" id="showGroupButton"
-										data-role="button" data-icon="edit" data-theme="b"
+										data-role="button" data-transition="flip" data-icon="edit" data-theme="b"
 										data-inline="true">Gruppen</a></li>
+									<li><a href="#" onclick="showJumpHeights()" id="showJumpHeights"
+										data-role="button" data-transition="flip" data-icon="edit" data-theme="b"
+										data-inline="true">Höhenmessung</a></li>
 								</ul>
 							</div>
 							<div id="personDetailPerson">
@@ -116,7 +120,7 @@
 									Name:
 								</p>
 								<p>
-									<span id="personPrename">dummy1</span> <span id="personSurname">dummy2</span>
+									<span class="personPrename">dummy1</span> <span class="personSurname">dummy2</span>
 								</p>
 								<p>
 									Geburtstag:<span id="personBirthday"></span> Alter: <span
@@ -213,16 +217,77 @@
 	</div>
 	<!-- /page -->
 
+	<div data-role="page" id="personJumpHeight">
+		<div data-role="header" data-position="fixed" data-add-back-btn="true"
+			data-back-btn-text="Zurück">
+			<h1>Clubhelper Mobile</h1>
+		</div>
+		<!-- /header -->
 
-	<div id="printLists" data-role="popup">
-		<a href="#" data-role="button" onclick="printPhoneList2">Telefonliste</a>
+		<div role="main" class="ui-content">
+			<div>
+			
+				<div id="contentDetail" class="width25 floatRight leftColumn">
+					<div class="width75 floatLeft">
+						<div class="gradient">
+							<div data-role="navbar">
+								<ul>
+									<li><a href="#" onclick="addFlightTime()"
+										data-role="button" data-icon="edit"
+										data-theme="b" data-inline="true">Neuer Wert</a></li>
+<!-- 									<li><a href="#" onclick=""  -->
+<!-- 										data-role="button" data-icon="edit" data-theme="b" -->
+<!-- 										data-inline="true">???</a></li> -->
+								</ul>
+							</div>
+							<div id="personJumpHeights">
+								<p>
+									Name: <span class="personPrename">dummy1</span> <span class="personSurname">dummy2</span>
+								</p>
+							</div>
+							<div data-collapsed="false" data-role="collapsible">
+								<h4>Übungen:</h4>
+								<ul id="personJumpHeightTasks" data-role="listview"
+									data-inset="true" data-filter="false">
+								</ul>
+							</div>
+<!-- 							<div data-collapsed="false" data-role="collapsible"> -->
+<!-- 								<h4>Daten:</h4> -->
+<!-- 								<ul id="personDetailAdresses" data-role="listview" -->
+<!-- 									data-inset="true" data-filter="false"> -->
+<!-- 								</ul> -->
+<!-- 							</div> -->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- /content -->
+
+		<div data-role="footer" data-position="fixed" data-mini="true">
+			Copyright Markus Kreth - MTV Groß-Buchholz</div>
+		<!-- /footer -->
+
 	</div>
+	<!-- /page -->
+
+<!-- 	<div id="printLists" data-role="popup"> -->
+<!-- 		<a href="#" data-role="button" onclick="printPhoneList2">Telefonliste</a> -->
+<!-- 	</div> -->
 
 	<div id="editDialog" data-role="page" data-dialog="true"></div>
 	<div id="editGroupDialog" data-role="page" data-dialog="true"></div>
-	<div id="templates">
+	<div id="templates" style="display:none;">
 		<input class="datepicker" type="date" data-role="datebox" data-options='{"mode": "datebox", "useNewStyle":true,"zindex":1200}' />
 	</div>
-	
+	<div id="chooseTaskDialog" data-role="page" data-dialog="true">
+		<div data-role="header">
+			<H2 id="headText"></H2>
+		</div>
+		<div id="contentText" data-role="main" class="ui-content">
+		</div>
+		<a id="okbutton" href="#" data-role="button" data-icon="ok">OK</a>
+		<a id="cancelbutton" href="#" data-role="button" data-icon="cancel">Abbrechen</a>
+	</div>
 </body>
 </html>
