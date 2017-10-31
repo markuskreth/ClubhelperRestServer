@@ -7,48 +7,45 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
-import org.springframework.mobile.device.Device;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import de.kreth.clubhelperbackend.spreadsheet.JumpHeightSheet;
+import de.kreth.clubhelperbackend.spreadsheet.SheetDataException;
 import de.kreth.clubhelperbackend.spreadsheet.SheetService;
+import de.kreth.clubhelperbackend.spreadsheetdata.CellValue;
 
 @Controller
 @RequestMapping("/jumpheights")
-//@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'STAFF')")
+@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'STAFF')")
 public class JumpHeightSheetController {
-
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	public String getAsView(long id, boolean ajax, Device device, Model m) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET)
-	public String getAllAsView(boolean ajax, Device device, Model m) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@RequestMapping(value = "/tasks/{title}/{taskName}", method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
-	public List<String> put(@PathVariable("title") String title, @PathVariable("taskName") String taskName) throws IOException {
+	public List<String> addTask(@PathVariable("title") String title, @PathVariable("taskName") String taskName) throws IOException {
 		return SheetService.get(title).addTask(taskName);
 	}
 
 	@RequestMapping(value = "/{title}", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
-	public Map<String, List<?>> post(@PathVariable("title") String title) throws IOException {
+	public Map<String, List<?>> createCompetitor(@PathVariable("title") String title) throws IOException, InterruptedException {
 		JumpHeightSheet sheet = SheetService.create(title);
 		Map<String, List<?>> result = createTaskValues(sheet);
 		return result;
+	}
+
+	@RequestMapping(value = "/{prename}/{surname}", method = RequestMethod.POST, produces = "application/json")
+	@ResponseBody
+	public Map<String, List<?>> createCompetitor(@PathVariable("prename") String prename, @PathVariable("surname") String surname) throws IOException, InterruptedException {
+		return createCompetitor(new StringBuilder(surname).append(",").append(prename).toString());
 	}
 
 	@RequestMapping(value = "/tasks/{title}", method = RequestMethod.GET, produces = "application/json")
@@ -57,20 +54,52 @@ public class JumpHeightSheetController {
 		return SheetService.get(title).getTasks();
 	}
 
+
+	@RequestMapping(value = "/{prename}/{surname}", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public Map<String, List<?>> getByName(@PathVariable("prename") String prename, @PathVariable("surname") String surname) throws IOException, InterruptedException {
+		return getByTitle(new StringBuilder(surname).append(",").append(prename).toString());
+	}
+	
 	@RequestMapping(value = "/{title}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public Map<String, List<?>> getByTitle(@PathVariable("title") String title) throws IOException {
+	public Map<String, List<?>> getByTitle(@PathVariable("title") String title) throws IOException, InterruptedException {
 		JumpHeightSheet sheet = SheetService.get(title);
 		Map<String, List<?>> result = createTaskValues(sheet);
 		return result;
 	}
 
-	private Map<String, List<?>> createTaskValues(JumpHeightSheet sheet) {
-		List<Date> dates = sheet.getDates();
-		List<String> tasks = sheet.getTasks();
-		Map<String, List<?>> result = new HashMap<>();
-		result.put("dates", dates);
-		result.put("tasks", tasks);
+	private Map<String, List<?>> createTaskValues(JumpHeightSheet sheet) throws IOException, InterruptedException {
+
+		final Map<String, List<?>> result = new HashMap<>();
+		ExecutorService exec = Executors.newFixedThreadPool(2);
+		exec.execute(new Runnable() {
+			
+			@Override
+			public void run() {
+
+				try {
+					List<CellValue<Date>> dates = sheet.getDates();
+					result.put("dates", dates);
+				} catch (IOException e) {
+					throw new SheetDataException("cannot load Dates for " + sheet.getTitle(), e);
+				}
+			}
+		});
+		exec.execute(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					List<String> tasks = sheet.getTasks();
+					result.put("tasks", tasks);
+				} catch (IOException e) {
+					throw new SheetDataException("cannot load Tasks for " + sheet.getTitle(), e);
+				}
+			}
+		});
+		exec.shutdown();
+		exec.awaitTermination(30, TimeUnit.SECONDS);
 		return result;
 	}
 

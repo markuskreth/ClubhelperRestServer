@@ -6,7 +6,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -24,19 +23,14 @@ public class JumpHeightSheet {
 	DateFormat defaultDf = new SimpleDateFormat("dd.MM.yyyy");
 	DateFormat invalidDf = new SimpleDateFormat("dd.MM.yy");
 	
-	public static final JumpHeightSheet INVALID = new InvalidSheet();
-	
 	private static final int rowIndexDate = 2;
 	private static final int taskIndexIncrementor = 4;
 	
 	private Logger log = LoggerFactory.getLogger(getClass());
 	Sheet sheet;
-
-	private JumpHeightSheet() {
-		sheet = null;
-	}
 	
 	public JumpHeightSheet(Sheet sheet) throws SheetDataException {
+		assert(sheet != null);
 		this.sheet = sheet;
 	}
 	
@@ -141,32 +135,4 @@ public class JumpHeightSheet {
 		update(result);
 	}
 	
-	private static class InvalidSheet extends JumpHeightSheet {
-
-		@Override
-		public String getTitle() {
-			return "INVALID";
-		}
-		
-		@Override
-		public List<Date> getDates() {
-			return Collections.emptyList();
-		}
-		@Override
-		public String toString() {
-			return getTitle();
-		}
-		
-		@Override
-		public int hashCode() {
-			return getClass().getName().hashCode();
-		}
-		
-		@Override
-		public boolean equals(Object obj) {
-			return this == obj;
-		}
-	}
-
-
 }

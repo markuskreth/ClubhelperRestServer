@@ -34,7 +34,7 @@ public enum SheetService {
 		try {
 			return new JumpHeightSheet(result);
 		} catch (Exception e) {
-			return JumpHeightSheet.INVALID;
+			throw new IOException(e);
 		}
 	}
 
@@ -52,21 +52,22 @@ public enum SheetService {
 	
 	private static Sheet getForName(String title) throws IOException {
 		List<Sheet> all = INSTANCE.service.getSheets();
-		Sheet result = null;
+
 		for (Sheet s: all) {
+			INSTANCE.log.trace("found Sheet: " + s.getProperties().getTitle());
 			if(s.getProperties().getTitle().equals(title)) {
-				result = s;
-				break;
+				INSTANCE.log.trace("returning Sheet: " + s);
+				return s;
 			}
 		}
-		return result;
+		throw new IOException("Sheet with title \"" + title + "\" not found.");
 	}
 
 	public static JumpHeightSheet create(String title) throws IOException {
 		try {
 			return new JumpHeightSheet(INSTANCE.service.dublicateTo("Vorlage", title));
 		} catch (Exception ex) {
-			return JumpHeightSheet.INVALID;
+			throw new IOException(ex);
 		}
 	}
 

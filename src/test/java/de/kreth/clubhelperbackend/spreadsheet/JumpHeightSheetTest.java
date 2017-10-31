@@ -2,7 +2,6 @@ package de.kreth.clubhelperbackend.spreadsheet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -15,27 +14,29 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.kreth.clubhelperbackend.spreadsheetdata.CellValue;
+
 public class JumpHeightSheetTest {
-	
+
 	static AtomicInteger testCount = new AtomicInteger(0);
 	private static final Calendar testDate = new GregorianCalendar(2017, Calendar.OCTOBER, 30);
 	private JumpHeightSheet test;
 
 	@Before
 	public void createTestSheet() throws IOException {
-		test = SheetService.create(nextTitle());
-		assertNotSame(JumpHeightSheet.INVALID, test);
+		String nextTitle = nextTitle();
+		test = SheetService.create(nextTitle);
 	}
 
 	private String nextTitle() {
 		return "Tempöräres Test Sheet " + testCount.incrementAndGet();
 	}
-	
+
 	@After
 	public void deleteTestSheet() throws IOException {
 		SheetService.delete(test);
 	}
-	
+
 	@Test
 	public void testGetSheetAndTitle() throws Exception {
 		String title = test.getTitle();
@@ -54,11 +55,11 @@ public class JumpHeightSheetTest {
 
 	@Test
 	public void testDateList() throws Exception {
-		List<Date> dates = test.getDates();
+		List<CellValue<Date>> dates = test.getDates();
 		assertNotNull(dates);
 		assertEquals(0, dates.size());
 	}
-	
+
 	@Test
 	public void testDefaultTasks() throws Exception {
 		List<String> tasks = test.getTasks();
@@ -70,28 +71,28 @@ public class JumpHeightSheetTest {
 		assertEquals("P5", tasks.get(4));
 		assertEquals("P6", tasks.get(5));
 	}
-	
+
 	@Test
 	public void addTaskValue() throws Exception {
-		CellValue value = test.add("10Sprünge", testDate, 13.1);
+		CellValue<Double> value = test.add("10Sprünge", testDate, 13.1);
 		assertNotNull(value);
-		assertEquals(13.1, value.getDouble(), .01);
+		assertEquals(13.1, value.getObject().doubleValue(), .01);
 	}
+
 	@Test
 	public void renameSheet() throws Exception {
 		String name = "Renamed Sheet";
 		test.setTitle(name);
 		assertEquals(name, test.getTitle());
 	}
-	
+
 	@Test
 	public void testCreateAndDeleteSheet() throws Exception {
 		String nextTi = nextTitle();
 		JumpHeightSheet test = SheetService.create(nextTi);
 		assertNotNull(test);
-		assertNotSame(JumpHeightSheet.INVALID, test);
 		assertEquals(nextTi, test.getTitle());
-		
+
 		SheetService.delete(test);
 	}
 }
