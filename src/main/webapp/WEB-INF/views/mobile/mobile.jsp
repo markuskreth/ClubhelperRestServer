@@ -226,7 +226,6 @@
 
 		<div role="main" class="ui-content">
 			<div>
-			
 				<div id="contentDetail" class="width25 floatRight leftColumn">
 					<div class="width75 floatLeft">
 						<div class="gradient">
@@ -261,8 +260,7 @@
 					</div>
 				</div>
 			</div>
-		</div>
-		<!-- /content -->
+		</div> <!-- /content -->
 
 		<div data-role="footer" data-position="fixed" data-mini="true">
 			Copyright Markus Kreth - MTV Groß-Buchholz</div>
@@ -280,7 +278,7 @@
 	<div id="templates" style="display:none;">
 		<input class="datepicker" type="date" data-role="datebox" data-options='{"mode": "datebox", "useNewStyle":true,"zindex":1200}' />
 	</div>
-	<div id="chooseTaskDialog" data-role="page" data-dialog="true">
+	<div id="chooseTaskDialog" data-role="page">
 		<div data-role="header">
 			<H2 id="headText"></H2>
 		</div>

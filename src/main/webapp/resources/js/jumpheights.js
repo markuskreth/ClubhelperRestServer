@@ -40,6 +40,7 @@ function addFlightTime() {
 		listView.append($("<li />").text($(this).text()).on('click', function() {
 			var task = $(this).text();
 			log.debug("Choosen Task: " + task);
+			$("#contentText").empty();
 			$("#chooseTaskDialog").dialog( "close" );
 			
 //			var dlg = $("#chooseTaskDialog");
@@ -53,11 +54,12 @@ function addFlightTime() {
 	
 	var dlg = $("#chooseTaskDialog");
 	dlg.find("#headText").text("Welche Übung?");
+	dlg.find("#contentText").empty();
 	dlg.find("#contentText").append(listView);
 	dlg.find("#okbutton").hide();
 	dlg.find("#cancelbutton").on('click', function() { $("#chooseTaskDialog").dialog( "close" ) });
 	dlg.trigger("create");
-	
+	dlg.dialog();
 	$.mobile.changePage("#chooseTaskDialog");
 	
 }
