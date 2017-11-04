@@ -161,7 +161,7 @@ class PersonInstance {
 	}
 	
 	birthdayAsDate() {
-		return this._bday.toDate();
+		return this._bday.format('YYYY-MM-DD');
 	}
 	
 	setContacts(response) {
