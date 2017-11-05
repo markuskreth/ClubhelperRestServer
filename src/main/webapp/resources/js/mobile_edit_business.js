@@ -1,4 +1,35 @@
 
+$(document).ready(function() {
+
+	$(document).on("pageshow", "#personEdit", function() {
+
+		if(currentPersonId == null) {
+			currentPersonId = readCookie('currentPersonId');
+
+			Person(
+				currentPersonId,
+				function(person) {
+					currentPerson = person;
+					updatePersonView();
+
+					$.mobile.activePage.find(".ui-header [data-rel=back]").click(function () {
+
+						if(currentPerson.hasChanges()) {
+							if(currentPerson.type == null) {
+								askForGroup("Gruppen definieren");
+							}
+							currentPerson.update(function (person) {
+								currentPerson = person;
+							});
+						}
+					});
+				});
+		}
+		
+	});
+
+});
+
 function editPerson() {
 
 	$("#personDetailPersonEdit").empty();
@@ -9,27 +40,26 @@ function editPerson() {
 	$.mobile.changePage("#personEdit");
 
 	Person(
-			currentPersonId,
-			function(person) {
-				currentPerson = person;
-				updatePersonView();
+		currentPersonId,
+		function(person) {
+			currentPerson = person;
+			updatePersonView();
 
-				$.mobile.activePage.find(".ui-header [data-rel=back]").click(function () {
+			$.mobile.activePage.find(".ui-header [data-rel=back]").click(function () {
 
-					if(currentPerson.hasChanges()) {
-						if(currentPerson.type == null) {
-							askForGroup("Gruppen definieren");
-						}
-						currentPerson.update(function (person) {
-							currentPerson = person;
-						});
+				if(currentPerson.hasChanges()) {
+					if(currentPerson.type == null) {
+						askForGroup("Gruppen definieren");
 					}
-				});
+					currentPerson.update(function (person) {
+						currentPerson = person;
+					});
+				}
 			});
+		});
 }
 
 function askForGroup() {
-	
 }
 
 function updatePersonView() {
