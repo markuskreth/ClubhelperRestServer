@@ -64,6 +64,7 @@ function updatePersonView() {
 
 			obj.append(element);
 		}
+		obj.trigger("create");
 	})
 
 	currentPerson
@@ -77,7 +78,9 @@ function updatePersonView() {
 				link.text(relativePerson.relation.name + ": "
 						+ relativePerson.prename + " "
 						+ relativePerson.surname);
-
+				link.click(function() {
+					showPerson(relativePerson.id);
+				});
 				var group = $("<div></div>")
 						.attr("data-role", "controlgroup")
 						.attr("data-type", "horizontal")
@@ -391,6 +394,8 @@ function changeContact(contactId) {
 
 function addPerson() {
 	currentPersonId = -1;
+	eraseCookie("currentPersonId");
+	
 	currentPerson = new PersonInstance(currentPersonId, null, null);
 	var editDialog = $("<div></div>");
 	showPersonEditView(editDialog);
@@ -410,7 +415,10 @@ function addPerson() {
 				return;
 			}
 			currentPerson.update(function(createdPerson){
+				
 				currentPersonId = createdPerson.id;
+				createCookie("currentPersonId", currentPersonId, 1); 
+				
 				createdPerson.persGroups = currentPerson.persGroups
 				currentPerson = createdPerson;
 				for ( var index in createdPerson.persGroups) {
