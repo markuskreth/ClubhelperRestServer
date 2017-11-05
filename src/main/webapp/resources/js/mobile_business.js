@@ -65,7 +65,7 @@ function addPersonToList(person) {
 
 	if(!person) return;
 	
-	var link = $("<a href='#'></a>").text(person.prename + " " + person.surname);
+	var link = $("<a href='#' data-transition=\"flip\" ></a>").text(person.prename + " " + person.surname);
 	link.attr("personId", person.id);
 	link.click(function() {
 			var pId = $(this).attr("personId");
@@ -93,8 +93,8 @@ function updateRelationsFor(person) {
 
 function updateAllPersonDetailData() {
 
-	$('#personPrename').text('');
-	$("#personSurname").text('');
+	$('.personPrename').text('');
+	$(".personSurname").text('');
 	$("#personBirthday").text('');
 	$("#personAge").text('');
 	
@@ -187,8 +187,8 @@ function showGroups(withDelete) {
 
 function showPersonPerson(person) {
 	log.info("Showing " + person.prename + " " + person.surname);
-	$('#personPrename').text(person.prename);
-	$("#personSurname").text(person.surname);
+	$('.personPrename').text(person.prename);
+	$(".personSurname").text(person.surname);
 	$("#personBirthday").text(person.birthday());
 	$("#personAge").text(person.age());
 	
@@ -339,4 +339,3 @@ function printPhoneList() {
 function printPhoneList2() {
 	alert("printPhoneList aus popup");
 }
-
