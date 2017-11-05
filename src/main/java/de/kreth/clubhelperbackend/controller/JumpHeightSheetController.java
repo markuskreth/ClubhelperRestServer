@@ -127,7 +127,7 @@ public class JumpHeightSheetController {
 										.divide(BigDecimal.valueOf(valuecount.doubleValue()), BigDecimal.ROUND_HALF_DOWN)
 										.setScale(2, BigDecimal.ROUND_HALF_DOWN)
 										.doubleValue();
-								task.setInfo(new StringBuilder("Max=").append(max.get()).append(",Avg=").append(average).toString());
+								task.setInfo(new StringBuilder("Max=").append(max.get()).append(" Avg=").append(average).toString());
 							}
 						} catch (Exception e) {
 							if(log.isInfoEnabled()) {

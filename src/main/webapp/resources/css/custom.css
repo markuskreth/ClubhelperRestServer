@@ -1,1 +1,7 @@
-.ui-controlgroup-horizontal .ui-controlgroup-controls { display: block !important; }
+.ui-controlgroup-horizontal .ui-controlgroup-controls {
+	display: block !important; 
+}
+
+.ui-listview>.ui-li-static, .ui-listview>.ui-li-divider {
+    white-space : normal !important;
+}

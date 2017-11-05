@@ -72,8 +72,7 @@ function addPersonToList(person) {
 	link.attr("personId", person.id);
 	link.click(function() {
 			var pId = $(this).attr("personId");
-			currentPersonId = pId;
-			createCookie("currentPersonId", currentPersonId, 1); 
+			showPerson(pId);
 		});
 	var item = $("<li></li>").append(link);
 	$("#personList").append(item);
