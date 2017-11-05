@@ -26,7 +26,7 @@ public enum SheetService {
 		try {
 			s = new GoogleSpreadsheetsAdapter();
 		} catch (IOException | GeneralSecurityException e) {
-			log.error("unable to init " + getClass().getName() + ", Service won't work.");
+			log.error("unable to init " + getClass().getName() + ", Service won't work.", e);
 		}
 		service = s;
 	}
