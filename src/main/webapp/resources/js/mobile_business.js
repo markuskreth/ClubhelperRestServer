@@ -13,12 +13,15 @@ $(document).ready(function() {
 	loadPersonList();
 
 	$(document).on("pageshow", "#personDetails", function() {
+		if(currentPersonId == null) {
+			currentPersonId = readCookie('currentPersonId');
+		}
 		updateAllPersonDetailData();
 	});
 
-	$(document).on("pageshow", "#personDetails", function() {
-		loadPersonList();
-	});
+//	$(document).on("pageshow", "#personDetails", function() {
+//		loadPersonList();
+//	});
 
 	var split = location.pathname.replace(/^\/|\/$/g, '').split('/');
 	var id = parseInt(split[split.length - 1]);
@@ -75,9 +78,9 @@ function addPersonToList(person) {
 	$("#personList").append(item);
 }
 
-
 function showPerson(personId) {
 	currentPersonId = personId;
+	createCookie("currentPersonId", currentPersonId, 1); 
 	$.mobile.changePage("#personDetails");
 }
 
@@ -216,7 +219,7 @@ function showPersonRelations(relativePerson) {
 		link.attr("data-iconpos", "right");
 		link.attr("data-icon", "info");
 		link.attr("href", "#");
-		var onCl = "switchToRelation(" + relativePerson.personId + ")";
+		var onCl = "switchToRelation(" + relativePerson.id + ")";
 
 		link.attr("onclick", onCl);
 		link.text(relativePerson.prename + " " + relativePerson.surname);
@@ -234,8 +237,9 @@ function showPersonRelations(relativePerson) {
 
 function switchToRelation(id) {
 	$("#collapsibleRelations").collapsible( "collapse" );
-	$.mobile.changePage("#personList");
-	showPerson(id);
+	currentPersonId = id;
+	createCookie("currentPersonId", id, 1); 
+	updateAllPersonDetailData();
 	updateRelations();
 }
 

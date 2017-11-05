@@ -1,4 +1,5 @@
- var tasks;
+var tasks;
+
 function showJumpHeights () {
 
 	tasks = null;
@@ -29,7 +30,7 @@ function showTaskPage() {
 		var element = $("<li></li>");
 		element.attr("index", index);
 		if(tasks[index].info) {
-			element.append(tasks[index].name + "<br />" + tasks[index].info);
+			element.append(tasks[index].name + " " + tasks[index].info.split(",").join(" "));
 		} else {
 			element.append(tasks[index].name);
 		}
@@ -64,7 +65,13 @@ function addFlightTime() {
 					popup.empty();
 					popup.append("Neuer Wert für " + task + " gespeichert.");
 					popup.popup().popup( "open" );
-					
+
+					$("#personJumpHeightTasks li").each(function() {
+						var index = $(this).attr("index");
+						if(tasks[index].name === task) {
+							$(this).text($(this).text() + " Heute=" + value);
+						}
+					});
 				});
 			});
 		}));

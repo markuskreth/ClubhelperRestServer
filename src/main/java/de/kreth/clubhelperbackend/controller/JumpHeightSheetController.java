@@ -16,6 +16,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.mutable.MutableDouble;
+import org.apache.commons.lang3.mutable.MutableInt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +40,8 @@ import de.kreth.clubhelperbackend.utils.ThreadPoolErrors;
 @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'STAFF')")
 public class JumpHeightSheetController {
 
+	private final Logger log = LoggerFactory.getLogger(getClass());
+	
 	@RequestMapping(value = "/tasks/{title}/{taskName}", method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
 	public List<String> addTask(@PathVariable("title") String title, @PathVariable("taskName") String taskName) throws IOException {
@@ -90,7 +95,7 @@ public class JumpHeightSheetController {
 	private List<JumpHightTask> buildTasks(JumpHeightSheet sheet) throws IOException, InterruptedException {
 		List<JumpHightTask> tasks = new ArrayList<>();
 		List<String> tasks2 = sheet.getTasks();
-		ThreadPoolErrors exec = new ThreadPoolErrors(tasks2.size()+2);
+		ThreadPoolErrors exec = new ThreadPoolErrors(Math.min(10, tasks2.size()+2));
 		for (String name: tasks2) {
 			exec.execute(new Runnable() {
 				
@@ -105,16 +110,30 @@ public class JumpHeightSheetController {
 					}
 					if(values2.size()>1) {
 						List<String> values = values2.get(1);
-						MutableDouble avg = new MutableDouble(0.0);
-						Optional<Double> max = values.stream().map(str->{
-							Double valueOf = Double.valueOf(str);
-							avg.add(valueOf.doubleValue());
-							return valueOf;
-							}).max((d1, d2) -> { return Double.compare(d1, d2);});
-						
-						if(max.isPresent()) {
-							double average = BigDecimal.valueOf(avg.doubleValue()).divide(BigDecimal.valueOf(values.size())).setScale(2, BigDecimal.ROUND_HALF_DOWN).doubleValue();
-							task.setInfo(new StringBuilder("Max=").append(max.get()).append(",Avg=").append(average).toString());
+						try {
+							MutableDouble avg = new MutableDouble(0.0);
+							MutableInt valuecount = new MutableInt(0);
+							Optional<Double> max = values.stream()
+									.filter(str->str.length()>1)
+									.map(str->{
+										Double valueOf = Double.valueOf(str.replace(',', '.'));
+										avg.add(valueOf.doubleValue());
+										valuecount.increment();
+										return valueOf;
+										})
+									.max((d1, d2) -> { return Double.compare(d1, d2);});
+							if(max.isPresent()) {
+								double average = BigDecimal.valueOf(avg.doubleValue())
+										.divide(BigDecimal.valueOf(valuecount.doubleValue()), BigDecimal.ROUND_HALF_DOWN)
+										.setScale(2, BigDecimal.ROUND_HALF_DOWN)
+										.doubleValue();
+								task.setInfo(new StringBuilder("Max=").append(max.get()).append(" Avg=").append(average).toString());
+							}
+						} catch (Exception e) {
+							if(log.isInfoEnabled()) {
+								log.info("Unable to generate statistics for Task " + name + ", ignoring. Size: " + values.stream()
+								.filter(str->str.length()>1).count(), e);
+							}
 						}
 					}
 					tasks.add(task.build());
@@ -124,13 +143,20 @@ public class JumpHeightSheetController {
 		exec.shutdown();
 		Throwable t = exec.myAwaitTermination();
 		if(t != null){
+
+			if(log.isInfoEnabled()) {
+				log.info("Exception while building tasks.", t);
+			}
 			if (t instanceof IOException){
 				throw (IOException)t;
 			} else {
 				throw new IOException(t);
 			}
 		}
-		System.out.println("Finished: " + tasks);
+
+		if(log.isDebugEnabled()) {
+			log.debug("Finisched Tasks: " + tasks);
+		}
 		return tasks;
 	}
 
@@ -156,6 +182,7 @@ public class JumpHeightSheetController {
 			sheet = SheetService.get(title);
 		} catch (IOException e) {
 			if(e.getMessage().equals("Sheet with title \"" + title + "\" not found.")) {
+				log.warn("Sheet load failed!", e);
 				sheet = SheetService.create(title);
 			} else {
 				throw e;

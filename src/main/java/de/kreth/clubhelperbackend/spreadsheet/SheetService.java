@@ -1,6 +1,7 @@
 package de.kreth.clubhelperbackend.spreadsheet;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +17,7 @@ public enum SheetService {
 
 	INSTANCE;
 
+	private static List<Sheet> sheets;
 	Logger log = LoggerFactory.getLogger(getClass());
 	private final GoogleSpreadsheetsAdapter service;
 	
@@ -23,8 +25,8 @@ public enum SheetService {
 		GoogleSpreadsheetsAdapter s = null;
 		try {
 			s = new GoogleSpreadsheetsAdapter();
-		} catch (IOException e) {
-			log.error("unable to init " + getClass().getName() + ", Service won't work.");
+		} catch (IOException | GeneralSecurityException e) {
+			log.error("unable to init " + getClass().getName() + ", Service won't work.", e);
 		}
 		service = s;
 	}
@@ -40,7 +42,7 @@ public enum SheetService {
 
 	public static List<JumpHeightSheet> getSheets() throws IOException {
 		List<JumpHeightSheet> result = new ArrayList<>();
-		for (Sheet s: INSTANCE.service.getSheets()) {
+		for (Sheet s: getAllSheets()) {
 			try {
 				result.add(new JumpHeightSheet(s));
 			} catch (SheetDataException e) {
@@ -51,7 +53,7 @@ public enum SheetService {
 	}
 	
 	private static Sheet getForName(String title) throws IOException {
-		List<Sheet> all = INSTANCE.service.getSheets();
+		List<Sheet> all = getAllSheets();
 
 		for (Sheet s: all) {
 			INSTANCE.log.trace("found Sheet: " + s.getProperties().getTitle());
@@ -63,15 +65,26 @@ public enum SheetService {
 		throw new IOException("Sheet with title \"" + title + "\" not found.");
 	}
 
+	private static List<Sheet> getAllSheets() throws IOException {
+		if(sheets != null && sheets.isEmpty() == false){
+			return sheets;
+		}
+		sheets = INSTANCE.service.getSheets();
+		return sheets;
+	}
+
 	public static JumpHeightSheet create(String title) throws IOException {
 		try {
-			return new JumpHeightSheet(INSTANCE.service.dublicateTo("Vorlage", title));
+			Sheet dublicateTo = INSTANCE.service.dublicateTo("Vorlage", title);
+			sheets.add(dublicateTo);
+			return new JumpHeightSheet(dublicateTo);
 		} catch (Exception ex) {
 			throw new IOException(ex);
 		}
 	}
 
 	public static void delete(JumpHeightSheet test) throws IOException {
+		sheets.remove(test.sheet);
 		INSTANCE.service.delete(test.sheet);
 	}
 
@@ -95,6 +108,7 @@ public enum SheetService {
 
 	public static JumpHeightSheet changeTitle(Sheet sheet, String name) throws IOException {
 		INSTANCE.service.setSheetTitle(sheet, name);
+		sheets = null;
 		return get(name);
 	}
 

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.slf4j.Logger;
@@ -31,6 +30,8 @@ public class JumpHeightSheet {
 	
 	private Logger log = LoggerFactory.getLogger(getClass());
 	Sheet sheet;
+	private ArrayList<String> tasks;
+	private List<CellValue<Date>> dates;
 	
 	public JumpHeightSheet(Sheet sheet) throws SheetDataException {
 		assert(sheet != null);
@@ -42,23 +43,25 @@ public class JumpHeightSheet {
 	}
 
 	public List<CellValue<Date>> getDates() throws IOException {
-		List<CellValue<Date>> dates = new ArrayList<>();
-		ValueRange values = SheetService.getRange(getTitle(), "3:3");
-		int column = 0;
-		for (List<Object> l: values.getValues()) {
-			for (Object o : l) {
-				String text = o.toString();
-				if(text != null && "Datum".equals(text) == false) {
-					column++;
-					try {
-						dates.add(new CellValue<Date>(defaultDf.parse(text), column, 3));
-					} catch (ParseException e) {
-						log.warn("Not a date: " + text, e);
+		if(dates == null) {
+			dates = new ArrayList<>();
+			ValueRange values = SheetService.getRange(getTitle(), "3:3");
+			int column = 0;
+			for (List<Object> l: values.getValues()) {
+				for (Object o : l) {
+					String text = o.toString();
+					if(text != null && "Datum".equals(text) == false) {
+						column++;
+						try {
+							dates.add(new CellValue<Date>(defaultDf.parse(text), column, 3));
+						} catch (ParseException e) {
+							log.warn("Not a date: " + text, e);
+						}
 					}
 				}
 			}
-		}
 
+		}
 		return dates;
 	}
 
@@ -100,6 +103,7 @@ public class JumpHeightSheet {
 		if(row<0) {
 			row = tasks.size() + taskIndexIncrementor;
 			SheetService.set(getTitle(), 1, row, taskName);
+			this.tasks.add(taskName);
 		} else {
 			row += taskIndexIncrementor;
 		}
@@ -119,6 +123,7 @@ public class JumpHeightSheet {
 		if(column<0) {
 			column = dates.size() + 2;
 			SheetService.set(getTitle(), column, rowIndexDate + 1, defaultDf.format(date.getTime()));
+			this.dates.add(new CellValue<Date>(date.getTime(), column, rowIndexDate + 1));
 		} else {
 			column += 2;
 		}
@@ -126,18 +131,19 @@ public class JumpHeightSheet {
 	}
 	
 	public List<String> getTasks() throws IOException {
-		List<String> tasks = new ArrayList<>();
-
-		ValueRange values = SheetService.getRange(getTitle(), "A:A");
-		for (List<Object> l: values.getValues()) {
-			for (Object o : l) {
-				String task = o.toString();
-				if("Datum".equals(task) == false && task.trim().isEmpty() == false) {
-					tasks.add(task);
+		if(tasks == null) {
+			tasks = new ArrayList<>();
+	
+			ValueRange values = SheetService.getRange(getTitle(), "A:A");
+			for (List<Object> l: values.getValues()) {
+				for (Object o : l) {
+					String task = o.toString();
+					if("Datum".equals(task) == false && task.trim().isEmpty() == false) {
+						tasks.add(task);
+					}
 				}
 			}
 		}
-		
 		return tasks;
 	}
 
@@ -145,13 +151,14 @@ public class JumpHeightSheet {
 		
 		int row = getTasks().size() + taskIndexIncrementor;
 		SheetService.set(getTitle(), 1, row, taskName);
-		JumpHeightSheet next = SheetService.get(getTitle());
-		update(next);
+		tasks.add(taskName);
 		return getTasks();
 	}
 
 	private void update(JumpHeightSheet next) {
 		this.sheet = next.sheet;
+		tasks = null;
+		dates = null;
 	}
 
 	public void setTitle(String name) throws IOException {

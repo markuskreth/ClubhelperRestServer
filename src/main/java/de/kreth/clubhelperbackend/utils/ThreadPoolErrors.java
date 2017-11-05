@@ -10,10 +10,10 @@ import java.util.concurrent.TimeUnit;
 public class ThreadPoolErrors extends ThreadPoolExecutor {
 	public final List<Throwable> exceptions = new ArrayList<>();
     public ThreadPoolErrors(int threadCount) {
-        super(  1, // core threads
+        super(  Math.min(3, threadCount), // core threads
         		threadCount, // max threads
-                1, // timeout
-                TimeUnit.MINUTES, // timeout units
+                30, // timeout
+                TimeUnit.SECONDS, // timeout units
                 new LinkedBlockingQueue<Runnable>() // work queue
         );
     }
