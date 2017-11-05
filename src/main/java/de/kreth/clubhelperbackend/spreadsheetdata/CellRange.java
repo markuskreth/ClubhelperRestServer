@@ -28,6 +28,9 @@ public class CellRange {
 			List<String> row;
 			if(rowIndex >= values.size()) {
 				row = new ArrayList<>();
+				while(rowIndex>values.size()) {
+					values.add(Collections.emptyList());
+				}
 				values.add(rowIndex, row);
 			} else {
 				row = values.get(rowIndex);

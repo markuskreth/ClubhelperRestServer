@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,22 +45,15 @@ class GoogleSpreadsheetsAdapter {
     private static final String SPREADSHEET_ID = "1clDEc9NakRJTM-onxrjsuyB2Vby8P1j6NINdWelOrwg";
     
     /** Application name. */
-    private static final String APPLICATION_NAME =
-        "Google Sheets API Java Quickstart";
+    private static final String APPLICATION_NAME = "Google Sheets API Java Quickstart";
 
     /** Directory to store user credentials for this application. */
     private static final File DATA_STORE_DIR = new File(
         System.getProperty("user.home"), ".credentials/sheets.googleapis.com-java-quickstart");
 
-    /** Global instance of the {@link FileDataStoreFactory}. */
-    private static FileDataStoreFactory DATA_STORE_FACTORY;
-
     /** Global instance of the JSON factory. */
     private static final JsonFactory JSON_FACTORY =
         JacksonFactory.getDefaultInstance();
-
-    /** Global instance of the HTTP transport. */
-    private static HttpTransport HTTP_TRANSPORT;
 
     /** Global instance of the scopes required by this quickstart.
      *
@@ -68,23 +63,27 @@ class GoogleSpreadsheetsAdapter {
     private static final List<String> SCOPES =
         Arrays.asList(SheetsScopes.SPREADSHEETS_READONLY, SheetsScopes.SPREADSHEETS);
 
-    static {
-        try {
-            HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-            DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
-        } catch (Throwable t) {
-            t.printStackTrace();
-            System.exit(1);
-        }
-    }
-
     private static final Logger log = LoggerFactory.getLogger(GoogleSpreadsheetsAdapter.class);
+    private static final AtomicInteger instanceCount = new AtomicInteger(0);
+    
+    /** Global instance of the {@link FileDataStoreFactory}. */
+    private final FileDataStoreFactory DATA_STORE_FACTORY;
+
+    /** Global instance of the HTTP transport. */
+    private final HttpTransport HTTP_TRANSPORT;
+
     private final Sheets service;
 
-    public GoogleSpreadsheetsAdapter() throws IOException {
+    public GoogleSpreadsheetsAdapter() throws IOException, GeneralSecurityException {
+
+        HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+        DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
     	service = getSheetsService();
+    	if(instanceCount.incrementAndGet() >1) {
+    		log.error("Initialized " + getClass().getName() + " #" + instanceCount.get() + ", may slow down system.");
+    	}
     	if(log.isDebugEnabled()) {
-    		log.debug("Initialized " + getClass().getName());
+    		log.debug("Initialized " + getClass().getName() + " #"+ instanceCount.get());
     	}
 	}
     /**
@@ -92,7 +91,7 @@ class GoogleSpreadsheetsAdapter {
      * @return an authorized Credential object.
      * @throws IOException
      */
-    private static Credential authorize() throws IOException {
+    private Credential authorize() throws IOException {
         // Load client secrets.
         InputStream in =
             GoogleSpreadsheetsAdapter.class.getResourceAsStream("/client_secret.json");
@@ -119,7 +118,7 @@ class GoogleSpreadsheetsAdapter {
      * @return an authorized Sheets API client service
      * @throws IOException
      */
-    private static Sheets getSheetsService() throws IOException {
+    private Sheets getSheetsService() throws IOException {
         Credential credential = authorize();
         return new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
                 .setApplicationName(APPLICATION_NAME)
@@ -151,35 +150,6 @@ class GoogleSpreadsheetsAdapter {
 		return sheet;
 	}
     
-    public static void main(String[] args) throws IOException {
-    	new GoogleSpreadsheetsAdapter().test();
-    }
-
-	private void test() throws IOException {
-
-        String range = "Anna!A2:E";
-        Spreadsheets spreadsheets = service.spreadsheets();
-        Spreadsheet sheet = spreadsheets.get(SPREADSHEET_ID).setIncludeGridData (false).execute();
-        List<Sheet> tabs = sheet.getSheets();
-        for(Sheet s: tabs) {
-        	System.out.println(s.getProperties().getTitle());
-        }
-		ValueRange response = spreadsheets.values()
-            .get(SPREADSHEET_ID, range)
-            .execute();
-        List<List<Object>> values = response.getValues();
-        if (values == null || values.size() == 0) {
-            System.out.println("No data found.");
-        } else {
-          System.out.println("Name, Major");
-          for (List<?> row : values) {
-            // Print columns A and E, which correspond to indices 0 and 4.
-            System.out.printf("%s, %s\n", row.get(0), row.get(4));
-          }
-        }
-		
-	}
-	
 	public Sheet dublicateTo(String originalTitle, String title) throws IOException {
         Spreadsheet sheet = loadSheet();
         List<Sheet> sheets=sheet.getSheets();
