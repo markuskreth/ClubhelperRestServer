@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,11 +18,12 @@ import com.google.api.services.sheets.v4.model.ExtendedValue;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
+import de.kreth.clubhelperbackend.spreadsheetdata.CellRange;
 import de.kreth.clubhelperbackend.spreadsheetdata.CellValue;
 
 public class JumpHeightSheet {
 
-	DateFormat defaultDf = new SimpleDateFormat("dd.MM.yyyy");
+	public static final DateFormat defaultDf = new SimpleDateFormat("dd.MM.yyyy");
 	DateFormat invalidDf = new SimpleDateFormat("dd.MM.yy");
 	
 	private static final int rowIndexDate = 2;
@@ -59,6 +62,27 @@ public class JumpHeightSheet {
 		return dates;
 	}
 
+	public CellRange getValues(String name) throws IOException {
+		CellRange.Builder builder = new CellRange.Builder();
+		List<CellValue<Date>> dates = getDates();
+
+		int columnIndex = 0;
+		for (CellValue<Date> date : dates) {
+			builder.add(columnIndex++, 0, defaultDf.format(date.getObject()));
+		}
+		int row = getIndexOf(name);
+		ValueRange values = SheetService.getRange(getTitle(), new StringBuilder().append(row).append(':').append(row).toString());
+		MutableInt count = new MutableInt(0);
+
+		values.getValues().get(0).stream().forEach(o -> {
+			if(count.intValue()>0) {
+				builder.add(count.intValue() - 1, 1, o.toString());
+			}
+			count.increment();
+			});
+		return builder.build();
+	}
+	
 	public CellValue<Double> add(String taskName, Calendar date, double value) throws IOException {
 		
 		int column = getIndexOf(date);
@@ -69,7 +93,7 @@ public class JumpHeightSheet {
 		return new CellValue<Double>(res.getNumberValue().doubleValue(), column, row);
 	}
 
-	private int getIndexOf(String taskName) throws IOException {
+	public int getIndexOf(String taskName) throws IOException {
 		int row;
 		List<String> tasks = getTasks();
 		row = tasks.indexOf(taskName);
@@ -134,5 +158,5 @@ public class JumpHeightSheet {
 		JumpHeightSheet result = SheetService.changeTitle(sheet, name);
 		update(result);
 	}
-	
+
 }

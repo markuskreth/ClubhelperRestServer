@@ -277,15 +277,16 @@
 	<div id="editGroupDialog" data-role="page" data-dialog="true"></div>
 	<div id="templates" style="display:none;">
 		<input class="datepicker" type="date" data-role="datebox" data-options='{"mode": "datebox", "useNewStyle":true,"zindex":1200}' />
+		<div data-role="popup" id="popupBasic"></div>
 	</div>
 	<div id="chooseTaskDialog" data-role="page">
 		<div data-role="header">
-			<H2 id="headText"></H2>
+			<H2 id="TaskHeadText"></H2>
 		</div>
-		<div id="contentText" data-role="main" class="ui-content">
+		<div id="TaskContentText" data-role="main" class="ui-content">
 		</div>
-		<a id="okbutton" href="#" data-role="button" data-icon="ok">OK</a>
-		<a id="cancelbutton" href="#" data-role="button" data-icon="cancel">Abbrechen</a>
+		<a id="TaskOkbutton" href="#" data-role="button" data-icon="ok">OK</a>
+		<a id="TaskCancelbutton" href="#" data-role="button" data-icon="cancel">Abbrechen</a>
 	</div>
 </body>
 </html>
