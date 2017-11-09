@@ -41,16 +41,18 @@ import de.kreth.clubhelperbackend.utils.ThreadPoolErrors;
 public class JumpHeightSheetController {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
-	
+
 	@RequestMapping(value = "/tasks/{title}/{taskName}", method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
-	public List<String> addTask(@PathVariable("title") String title, @PathVariable("taskName") String taskName) throws IOException {
+	public List<String> addTask(@PathVariable("title") String title, @PathVariable("taskName") String taskName)
+			throws IOException {
 		return SheetService.get(title).addTask(taskName);
 	}
 
 	@RequestMapping(value = "/{title}", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
-	public Map<String, List<?>> createCompetitor(@PathVariable("title") String title) throws IOException, InterruptedException {
+	public Map<String, List<?>> createCompetitor(@PathVariable("title") String title)
+			throws IOException, InterruptedException {
 		JumpHeightSheet sheet = SheetService.create(title);
 		Map<String, List<?>> result = createTaskValues(sheet);
 		return result;
@@ -58,13 +60,15 @@ public class JumpHeightSheetController {
 
 	@RequestMapping(value = "/{prename}/{surname}", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
-	public Map<String, List<?>> createCompetitor(@PathVariable("prename") String prename, @PathVariable("surname") String surname) throws IOException, InterruptedException {
+	public Map<String, List<?>> createCompetitor(@PathVariable("prename") String prename,
+			@PathVariable("surname") String surname) throws IOException, InterruptedException {
 		return createCompetitor(concatNameToTitle(prename, surname));
 	}
 
 	@RequestMapping(value = "/{prename}/{surname}/{task}", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
-	public boolean addValue(@PathVariable("prename") String prename, @PathVariable("surname") String surname, @PathVariable("task") String task, @RequestBody Double value) throws IOException, InterruptedException {
+	public boolean addValue(@PathVariable("prename") String prename, @PathVariable("surname") String surname,
+			@PathVariable("task") String task, @RequestBody Double value) throws IOException, InterruptedException {
 		String title = concatNameToTitle(prename, surname);
 		JumpHeightSheet sheet = SheetService.get(title);
 		CellValue<Double> result = sheet.add(task, getToday(), value);
@@ -95,10 +99,10 @@ public class JumpHeightSheetController {
 	private List<JumpHightTask> buildTasks(JumpHeightSheet sheet) throws IOException, InterruptedException {
 		List<JumpHightTask> tasks = new ArrayList<>();
 		List<String> tasks2 = sheet.getTasks();
-		ThreadPoolErrors exec = new ThreadPoolErrors(Math.min(10, tasks2.size()+2));
-		for (String name: tasks2) {
+		ThreadPoolErrors exec = new ThreadPoolErrors(Math.min(10, tasks2.size() + 2));
+		for (String name : tasks2) {
 			exec.execute(new Runnable() {
-				
+
 				@Override
 				public void run() {
 					Builder task = new JumpHightTask.Builder().setName(name);
@@ -108,31 +112,31 @@ public class JumpHeightSheetController {
 					} catch (IOException e) {
 						throw new RuntimeException(e);
 					}
-					if(values2.size()>1) {
+					if (values2.size() > 1) {
 						List<String> values = values2.get(1);
 						try {
 							MutableDouble avg = new MutableDouble(0.0);
 							MutableInt valuecount = new MutableInt(0);
-							Optional<Double> max = values.stream()
-									.filter(str->str.length()>1)
-									.map(str->{
-										Double valueOf = Double.valueOf(str.replace(',', '.'));
-										avg.add(valueOf.doubleValue());
-										valuecount.increment();
-										return valueOf;
-										})
-									.max((d1, d2) -> { return Double.compare(d1, d2);});
-							if(max.isPresent()) {
+							Optional<Double> max = values.stream().filter(str -> str.length() > 1).map(str -> {
+								Double valueOf = Double.valueOf(str.replace(',', '.'));
+								avg.add(valueOf.doubleValue());
+								valuecount.increment();
+								return valueOf;
+							}).max((d1, d2) -> {
+								return Double.compare(d1, d2);
+							});
+							if (max.isPresent()) {
 								double average = BigDecimal.valueOf(avg.doubleValue())
-										.divide(BigDecimal.valueOf(valuecount.doubleValue()), BigDecimal.ROUND_HALF_DOWN)
-										.setScale(2, BigDecimal.ROUND_HALF_DOWN)
-										.doubleValue();
-								task.setInfo(new StringBuilder("Max=").append(max.get()).append(" Avg=").append(average).toString());
+										.divide(BigDecimal.valueOf(valuecount.doubleValue()),
+												BigDecimal.ROUND_HALF_DOWN)
+										.setScale(2, BigDecimal.ROUND_HALF_DOWN).doubleValue();
+								task.setInfo(new StringBuilder("Max=").append(max.get()).append(" Avg=").append(average)
+										.toString());
 							}
 						} catch (Exception e) {
-							if(log.isInfoEnabled()) {
-								log.info("Unable to generate statistics for Task " + name + ", ignoring. Size: " + values.stream()
-								.filter(str->str.length()>1).count(), e);
+							if (log.isInfoEnabled()) {
+								log.info("Unable to generate statistics for Task " + name + ", ignoring. Size: "
+										+ values.stream().filter(str -> str.length() > 1).count(), e);
 							}
 						}
 					}
@@ -142,19 +146,19 @@ public class JumpHeightSheetController {
 		}
 		exec.shutdown();
 		Throwable t = exec.myAwaitTermination();
-		if(t != null){
+		if (t != null) {
 
-			if(log.isInfoEnabled()) {
+			if (log.isInfoEnabled()) {
 				log.info("Exception while building tasks.", t);
 			}
-			if (t instanceof IOException){
-				throw (IOException)t;
+			if (t instanceof IOException) {
+				throw (IOException) t;
 			} else {
 				throw new IOException(t);
 			}
 		}
 
-		if(log.isDebugEnabled()) {
+		if (log.isDebugEnabled()) {
 			log.debug("Finisched Tasks: " + tasks);
 		}
 		return tasks;
@@ -162,26 +166,32 @@ public class JumpHeightSheetController {
 
 	@RequestMapping(value = "/{prename}/{surname}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public Map<String, List<?>> getByName(@PathVariable("prename") String prename, @PathVariable("surname") String surname) throws IOException, InterruptedException {
+	public Map<String, List<?>> getByName(@PathVariable("prename") String prename,
+			@PathVariable("surname") String surname) throws IOException, InterruptedException {
 		return getByTitle(concatNameToTitle(prename, surname));
 	}
 
 	@RequestMapping(value = "/statistics/{prename}/{surname}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public Map<String, List<?>> getStatisticsFor(@PathVariable("prename") String prename, @PathVariable("surname") String surname) throws IOException, InterruptedException {
+	public Map<String, List<?>> getStatisticsFor(@PathVariable("prename") String prename,
+			@PathVariable("surname") String surname) throws IOException, InterruptedException {
 		String title = concatNameToTitle(prename, surname);
-		
+
 		return getByTitle(title);
 	}
-	
+
 	@RequestMapping(value = "/{title}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public Map<String, List<?>> getByTitle(@PathVariable("title") String title) throws IOException, InterruptedException {
+	public Map<String, List<?>> getByTitle(@PathVariable("title") String title)
+			throws IOException, InterruptedException {
 		JumpHeightSheet sheet;
 		try {
+			if (log.isDebugEnabled()) {
+				log.debug("Fetching " + JumpHeightSheet.class.getSimpleName() + " for " + title);
+			}
 			sheet = SheetService.get(title);
 		} catch (IOException e) {
-			if(e.getMessage().equals("Sheet with title \"" + title + "\" not found.")) {
+			if (e.getMessage().equals("Sheet with title \"" + title + "\" not found.")) {
 				log.warn("Sheet load failed!", e);
 				sheet = SheetService.create(title);
 			} else {
@@ -197,7 +207,7 @@ public class JumpHeightSheetController {
 		final Map<String, List<?>> result = new HashMap<>();
 		ExecutorService exec = Executors.newFixedThreadPool(2);
 		exec.execute(new Runnable() {
-			
+
 			@Override
 			public void run() {
 
@@ -210,7 +220,7 @@ public class JumpHeightSheetController {
 			}
 		});
 		exec.execute(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				try {
@@ -238,7 +248,7 @@ public class JumpHeightSheetController {
 				return o1.getTitle().compareTo(o2.getTitle());
 			}
 		});
-		for(JumpHeightSheet s: sheets) {
+		for (JumpHeightSheet s : sheets) {
 			result.add(s.getTitle());
 		}
 		return result;
