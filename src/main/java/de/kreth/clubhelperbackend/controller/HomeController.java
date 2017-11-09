@@ -1,11 +1,19 @@
 package de.kreth.clubhelperbackend.controller;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.security.GeneralSecurityException;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -16,6 +24,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.google.api.services.sheets.v4.model.Sheet;
+
+import de.kreth.clubhelperbackend.spreadsheet.GoogleInitAdapter;
 
 /**
  * Handles requests for the application home page.
@@ -83,4 +95,24 @@ public class HomeController {
 		}
 	}
 
+	@RequestMapping(value="/googleauth", method=RequestMethod.GET)
+	public void getHtmlUri(HttpServletRequest req, HttpServletResponse response) throws IOException, GeneralSecurityException, URISyntaxException {
+
+		URI uri = new URI(req.getRequestURL().toString());
+		GoogleInitAdapter adapter = new GoogleInitAdapter(uri);
+
+		List<String> titles = new ArrayList<>();
+		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
+		out.write("Gefundene Sheets:");
+		out.newLine();
+		for(Sheet s: adapter.getSheets()) {
+			out.write(s.getProperties().getTitle());
+			out.newLine();
+			titles.add(s.getProperties().getTitle());
+		}
+		if(logger.isDebugEnabled()) {
+			logger.debug("Gefundene Sheets: " + titles);
+		}
+	}
+	
 }

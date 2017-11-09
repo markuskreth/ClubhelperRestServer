@@ -40,6 +40,9 @@ public enum SheetService {
 	}
 	
 	public static JumpHeightSheet get(String title) throws IOException {
+		if(INSTANCE.log.isDebugEnabled()) {
+			INSTANCE.log.debug("Getting " + Sheet.class.getName() + " for " + title);
+		}
 		Sheet result = getForName(title);
 		try {
 			return new JumpHeightSheet(result);
@@ -64,9 +67,13 @@ public enum SheetService {
 		List<Sheet> all = getAllSheets();
 
 		for (Sheet s: all) {
-			INSTANCE.log.trace("found Sheet: " + s.getProperties().getTitle());
+			if(INSTANCE.log.isTraceEnabled()) {
+				INSTANCE.log.trace("found Sheet: " + s.getProperties().getTitle());
+			}
 			if(s.getProperties().getTitle().equals(title)) {
-				INSTANCE.log.trace("returning Sheet: " + s);
+				if(INSTANCE.log.isTraceEnabled()) {
+					INSTANCE.log.trace("returning Sheet: " + s);
+				}
 				return s;
 			}
 		}
@@ -130,4 +137,5 @@ public enum SheetService {
 		INSTANCE.createService();
 		return INSTANCE.service.getValues(sheetTitle, range);
 	}
+
 }
