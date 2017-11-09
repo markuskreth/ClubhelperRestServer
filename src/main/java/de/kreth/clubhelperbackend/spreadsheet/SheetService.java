@@ -19,19 +19,30 @@ public enum SheetService {
 
 	private static List<Sheet> sheets;
 	Logger log = LoggerFactory.getLogger(getClass());
-	private final GoogleSpreadsheetsAdapter service;
+	private GoogleSpreadsheetsAdapter service;
 	
 	private SheetService() {
-		GoogleSpreadsheetsAdapter s = null;
+		createService();
+	}
+
+	private void createService() {
+		if(service != null) {
+			return;
+		}
+		if(log.isInfoEnabled()) {
+			log.info(GoogleSpreadsheetsAdapter.class.getName() + " not initiated, creating...");
+		}
 		try {
-			s = new GoogleSpreadsheetsAdapter();
+			service = new GoogleSpreadsheetsAdapter();
 		} catch (IOException | GeneralSecurityException e) {
 			log.error("unable to init " + getClass().getName() + ", Service won't work.", e);
 		}
-		service = s;
 	}
 	
 	public static JumpHeightSheet get(String title) throws IOException {
+		if(INSTANCE.log.isDebugEnabled()) {
+			INSTANCE.log.debug("Getting " + Sheet.class.getName() + " for " + title);
+		}
 		Sheet result = getForName(title);
 		try {
 			return new JumpHeightSheet(result);
@@ -56,9 +67,13 @@ public enum SheetService {
 		List<Sheet> all = getAllSheets();
 
 		for (Sheet s: all) {
-			INSTANCE.log.trace("found Sheet: " + s.getProperties().getTitle());
+			if(INSTANCE.log.isTraceEnabled()) {
+				INSTANCE.log.trace("found Sheet: " + s.getProperties().getTitle());
+			}
 			if(s.getProperties().getTitle().equals(title)) {
-				INSTANCE.log.trace("returning Sheet: " + s);
+				if(INSTANCE.log.isTraceEnabled()) {
+					INSTANCE.log.trace("returning Sheet: " + s);
+				}
 				return s;
 			}
 		}
@@ -66,6 +81,7 @@ public enum SheetService {
 	}
 
 	private static List<Sheet> getAllSheets() throws IOException {
+		INSTANCE.createService();
 		if(sheets != null && sheets.isEmpty() == false){
 			return sheets;
 		}
@@ -74,6 +90,7 @@ public enum SheetService {
 	}
 
 	public static JumpHeightSheet create(String title) throws IOException {
+		INSTANCE.createService();
 		try {
 			Sheet dublicateTo = INSTANCE.service.dublicateTo("Vorlage", title);
 			sheets.add(dublicateTo);
@@ -84,11 +101,13 @@ public enum SheetService {
 	}
 
 	public static void delete(JumpHeightSheet test) throws IOException {
+		INSTANCE.createService();
 		sheets.remove(test.sheet);
 		INSTANCE.service.delete(test.sheet);
 	}
 
 	public static ExtendedValue set(String sheetTitle, int column, int row, double value) throws IOException {
+		INSTANCE.createService();
 		ValueRange content = new ValueRange();
 		content = content.setValues(Arrays.asList(Arrays.asList(value)));
 		INSTANCE.service.setValue(sheetTitle, column, row, content );
@@ -98,6 +117,7 @@ public enum SheetService {
 	}
 	
 	public static ExtendedValue set(String sheetTitle, int column, int row, String value) throws IOException {
+		INSTANCE.createService();
 		ValueRange content = new ValueRange();
 		content = content.setValues(Arrays.asList(Arrays.asList(value)));
 		INSTANCE.service.setValue(sheetTitle, column, row, content );
@@ -107,12 +127,15 @@ public enum SheetService {
 	}
 
 	public static JumpHeightSheet changeTitle(Sheet sheet, String name) throws IOException {
+		INSTANCE.createService();
 		INSTANCE.service.setSheetTitle(sheet, name);
 		sheets = null;
 		return get(name);
 	}
 
 	public static ValueRange getRange(String sheetTitle, String range) throws IOException {
+		INSTANCE.createService();
 		return INSTANCE.service.getValues(sheetTitle, range);
 	}
+
 }
