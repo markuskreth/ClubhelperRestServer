@@ -1,6 +1,9 @@
 package de.kreth.clubhelperbackend.spreadsheet;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,8 +36,13 @@ public enum SheetService {
 			log.info(GoogleSpreadsheetsAdapter.class.getName() + " not initiated, creating...");
 		}
 		try {
-			service = new GoogleSpreadsheetsAdapter();
-		} catch (IOException | GeneralSecurityException e) {
+			InetAddress localHost = InetAddress.getLocalHost();
+			String hostName = localHost.getHostName();
+
+			URI uri = new URI(new StringBuilder("http://").append(hostName).toString());
+			uri.getHost();
+			service = new GoogleSpreadsheetsAdapter(uri );
+		} catch (IOException | GeneralSecurityException | URISyntaxException e) {
 			log.error("unable to init " + getClass().getName() + ", Service won't work.", e);
 		}
 	}

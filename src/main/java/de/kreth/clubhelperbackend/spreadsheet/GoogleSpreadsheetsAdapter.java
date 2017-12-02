@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.annotation.Nonnull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,11 +77,7 @@ class GoogleSpreadsheetsAdapter {
 
     private final Sheets service;
 
-    public GoogleSpreadsheetsAdapter() throws IOException, GeneralSecurityException {
-    	this(null);
-	}
-    
-    public GoogleSpreadsheetsAdapter(URI uri) throws IOException, GeneralSecurityException {
+    public GoogleSpreadsheetsAdapter(@Nonnull URI uri) throws IOException, GeneralSecurityException {
 
         HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);

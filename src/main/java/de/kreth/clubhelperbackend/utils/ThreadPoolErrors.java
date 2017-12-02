@@ -1,6 +1,7 @@
 package de.kreth.clubhelperbackend.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -8,7 +9,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class ThreadPoolErrors extends ThreadPoolExecutor {
-	public final List<Throwable> exceptions = new ArrayList<>();
+	
+	public final List<Throwable> exceptions = Collections.synchronizedList(new ArrayList<>());
+	
     public ThreadPoolErrors(int threadCount) {
         super(  Math.min(3, threadCount), // core threads
         		threadCount, // max threads
