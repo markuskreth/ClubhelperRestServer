@@ -1,4 +1,4 @@
-package de.kreth.clubhelperbackend.spreadsheetdata;
+package de.kreth.clubhelperbackend.spreadsheet;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +20,17 @@ public class CellRange {
 		return values.get(row).get(column);
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder bld = new StringBuilder();
+		for (List<String> l: values) {
+			if(bld.length()>0) {
+				bld.append("\n");
+			}
+			bld.append(String.join(", ", l));
+		}
+		return bld.toString();
+	}
 	public static class Builder {
 
 		private List<List<String>> values = new ArrayList<>();

@@ -17,9 +17,6 @@ import com.google.api.services.sheets.v4.model.ExtendedValue;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
-import de.kreth.clubhelperbackend.spreadsheetdata.CellRange;
-import de.kreth.clubhelperbackend.spreadsheetdata.CellValue;
-
 public class JumpHeightSheet {
 
 	public static final DateFormat defaultDf = new SimpleDateFormat("dd.MM.yyyy");
@@ -82,7 +79,7 @@ public class JumpHeightSheet {
 				builder.add(count.intValue() - 1, 1, o.toString());
 			}
 			count.increment();
-			});
+		});
 		return builder.build();
 	}
 	
@@ -124,8 +121,6 @@ public class JumpHeightSheet {
 			column = dates.size() + 2;
 			SheetService.set(getTitle(), column, rowIndexDate + 1, defaultDf.format(date.getTime()));
 			this.dates.add(new CellValue<Date>(date.getTime(), column, rowIndexDate + 1));
-		} else {
-			column += 2;
 		}
 		return column;
 	}

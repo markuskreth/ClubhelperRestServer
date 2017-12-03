@@ -14,8 +14,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.kreth.clubhelperbackend.spreadsheetdata.CellValue;
-
 public class JumpHeightSheetTest {
 
 	static AtomicInteger testCount = new AtomicInteger(0);
@@ -77,6 +75,24 @@ public class JumpHeightSheetTest {
 		CellValue<Double> value = test.add("10Sprünge", testDate, 13.1);
 		assertNotNull(value);
 		assertEquals(13.1, value.getObject().doubleValue(), .01);
+	}
+
+	@Test
+	public void addTaskValues() throws Exception {
+		test.add("10Sprünge", testDate, 13.1);
+		test.add("10Sprünge", testDate, 13.2);
+		
+		test = SheetService.get(test.getTitle());
+		CellRange values = test.getValues("10Sprünge");
+		assertNotNull(values);
+		assertEquals(2, values.getValues().size());
+		List<String> dates = values.getValues().get(0);
+		assertEquals(1, dates.size());
+		assertEquals(JumpHeightSheet.defaultDf.format(testDate.getTime()), dates.get(0));
+		
+		List<String> spruenge = values.getValues().get(1);
+		assertEquals(1, spruenge.size());
+		assertEquals("13,2", spruenge.get(0).replace('.', ','));
 	}
 
 	@Test

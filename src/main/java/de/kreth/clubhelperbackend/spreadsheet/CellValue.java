@@ -1,4 +1,4 @@
-package de.kreth.clubhelperbackend.spreadsheetdata;
+package de.kreth.clubhelperbackend.spreadsheet;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -31,7 +31,14 @@ public class CellValue<T> {
 
 	@Override
 	public String toString() {
-		return "CellValue [object=" + (object instanceof Date?DateFormat.getDateTimeInstance().format(object):object) + ", column=" + column + ", row=" + row + "]";
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("CellValue ");
+		stringBuilder.append(GoogleSpreadsheetsAdapter.intToColumn(column));
+		stringBuilder.append(row);
+		stringBuilder.append("=");
+		stringBuilder.append((object instanceof Date?DateFormat.getDateTimeInstance().format(object):object));
+		stringBuilder.append("]");
+		return stringBuilder.toString();
 	}
 
 	@Override

@@ -41,7 +41,8 @@ public enum SheetService {
 
 			URI uri = new URI(new StringBuilder("http://").append(hostName).toString());
 			uri.getHost();
-			service = new GoogleSpreadsheetsAdapter(uri );
+			service = new GoogleSpreadsheetsAdapter(uri);
+			sheets = new ArrayList<>();
 		} catch (IOException | GeneralSecurityException | URISyntaxException e) {
 			log.error("unable to init " + getClass().getName() + ", Service won't work.", e);
 		}
