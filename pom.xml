@@ -23,6 +23,7 @@
 	<properties>
 		<google-api-version>1.23.0</google-api-version>
 		<google-api-sheets-version>v4-rev488-1.23.0</google-api-sheets-version>
+		<google-api-calendar-version>v3-rev271-1.23.0</google-api-calendar-version>
 	</properties>
 
 	<dependencies>
@@ -223,6 +224,12 @@
 			<artifactId>google-api-services-sheets</artifactId>
 			<version>${google-api-sheets-version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-calendar</artifactId>
+			<version>${google-api-calendar-version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.google.api-client</groupId>
 			<artifactId>google-api-client-appengine</artifactId>
