@@ -7,7 +7,7 @@ import java.security.GeneralSecurityException;
 public class GoogleInitAdapter extends GoogleSpreadsheetsAdapter {
 
 	public GoogleInitAdapter(URI uri) throws IOException, GeneralSecurityException {
-		super(uri);
+		super();
 	}
 
 }
