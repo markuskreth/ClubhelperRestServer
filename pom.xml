@@ -20,6 +20,11 @@
 		<url>http://github.com/markuskreth/ClubhelperRestServer</url>
 	</scm>
 
+	<properties>
+		<google-api-version>1.23.0</google-api-version>
+		<google-api-sheets-version>v4-rev488-1.23.0</google-api-sheets-version>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>de.kreth</groupId>
@@ -216,27 +221,27 @@
 		<dependency>
 			<groupId>com.google.apis</groupId>
 			<artifactId>google-api-services-sheets</artifactId>
-			<version>v4-rev488-1.23.0</version>
+			<version>${google-api-sheets-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.api-client</groupId>
 			<artifactId>google-api-client-appengine</artifactId>
-			<version>1.23.0</version>
+			<version>${google-api-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.api-client</groupId>
 			<artifactId>google-api-client-gson</artifactId>
-			<version>1.23.0</version>
+			<version>${google-api-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.oauth-client</groupId>
 			<artifactId>google-oauth-client-java6</artifactId>
-			<version>1.23.0</version>
+			<version>${google-api-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.oauth-client</groupId>
 			<artifactId>google-oauth-client-jetty</artifactId>
-			<version>1.23.0</version>
+			<version>${google-api-version}</version>
 		</dependency>
 
 		<dependency>
