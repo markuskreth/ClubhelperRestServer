@@ -13,6 +13,7 @@
 <link rel="stylesheet"
 	href=<c:url value='/resources/css/jquery.mobile-1.4.5.min.css' /> />
 <link rel="stylesheet" href=<c:url value='/resources/css/custom.css' /> />
+<link rel="stylesheet" href=<c:url value='/resources/css/clndr.css' /> />
 <script src=<c:url value='/resources/js/jquery-1.11.1.min.js' />></script>
 <script src=<c:url value='/resources/js/moment-with-locales.min.js' />></script>
 <script src=<c:url value='/resources/js/jquery.mobile-1.4.5.min.js' />></script>
@@ -21,7 +22,10 @@
 <script charset="utf-8" src=<c:url value='/resources/js/general.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/jumpheights.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/person.js' />></script>
+<script charset="utf-8" src=<c:url value='/resources/js/clndr.min.js' />></script>
+<script charset="utf-8" src=<c:url value='/resources/js/underscore-min.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/mobile_business.js' />></script>
+<script charset="utf-8" src=<c:url value='/resources/js/mobile_calendar.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/mobile_edit_business.js' />></script>
 <script type="text/javascript">
 	var baseUrl = location.protocol + '//' + location.host
@@ -66,8 +70,8 @@
 								<ul>
 									<li><a href="#" onclick="addPerson()"
 										class="ui-btn ui-icon-plus">Hinzufügen</a></li>
-									<li><a href="#" onclick="printPhoneList()"
-										class="ui-btn ui-icon-bulletes">Listen</a></li>
+									<li><a href="#" onclick="showCalendar()"
+										class="ui-btn ui-icon-bulletes">Kalender</a></li>
 								</ul>
 							</div>
 							<div>
@@ -256,6 +260,40 @@
 <!-- 									data-inset="true" data-filter="false"> -->
 <!-- 								</ul> -->
 <!-- 							</div> -->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div> <!-- /content -->
+
+		<div data-role="footer" data-position="fixed" data-mini="true">
+			Copyright Markus Kreth - MTV Groß-Buchholz</div>
+		<!-- /footer -->
+
+	</div>
+	<!-- /page -->
+
+	<div data-role="page" id="calendarpage">
+		<div data-role="header" data-position="fixed" data-add-back-btn="true"
+			data-back-btn-text="Zurück">
+			<h1>Clubhelper Mobile</h1>
+		</div>
+		<!-- /header -->
+
+		<div role="main" class="ui-content">
+			<div>
+				<div id="contentDetail" class="width25 floatRight leftColumn">
+					<div class="width75 floatLeft">
+						<div class="gradient">
+<!-- 							<div data-role="navbar"> -->
+<!-- 								<ul> -->
+<!-- 									<li><a href="#" onclick="addFlightTime()" -->
+<!-- 										data-role="button" data-icon="edit" -->
+<!-- 										data-theme="b" data-inline="true">Neuer Termin</a></li> -->
+<!-- 								</ul> -->
+<!-- 							</div> -->
+							<div id="calendar_container" class="cal1"></div>
+							<div id="event_container" style="background-color:powderblue;"><h3>Termine</h3></div>
 						</div>
 					</div>
 				</div>
