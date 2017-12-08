@@ -1,36 +1,16 @@
 package de.kreth.clubhelperbackend.spreadsheet;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URI;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.annotation.Nonnull;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.Sheets.Spreadsheets;
 import com.google.api.services.sheets.v4.Sheets.Spreadsheets.BatchUpdate;
 import com.google.api.services.sheets.v4.Sheets.Spreadsheets.Values.Update;
-import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetResponse;
 import com.google.api.services.sheets.v4.model.DeleteSheetRequest;
@@ -43,45 +23,17 @@ import com.google.api.services.sheets.v4.model.UpdateSheetPropertiesRequest;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
-class GoogleSpreadsheetsAdapter {
+class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
 
     static final String SPREADSHEET_ID = "1clDEc9NakRJTM-onxrjsuyB2Vby8P1j6NINdWelOrwg";
     
-    /** Application name. */
-    static final String APPLICATION_NAME = "Google Sheets API Java Quickstart";
-
-    /** Directory to store user credentials for this application. */
-    static final File DATA_STORE_DIR = new File(
-        System.getProperty("catalina.base"), ".credentials/sheets.googleapis.com-java-quickstart");
-
-    /** Global instance of the JSON factory. */
-    static final JsonFactory JSON_FACTORY =
-        JacksonFactory.getDefaultInstance();
-
-    /** Global instance of the scopes required by this quickstart.
-     *
-     * If modifying these scopes, delete your previously saved credentials
-     * at ~/.credentials/sheets.googleapis.com-java-quickstart
-     */
-    static final List<String> SCOPES =
-        Arrays.asList(SheetsScopes.SPREADSHEETS_READONLY, SheetsScopes.SPREADSHEETS);
-
-    static final Logger log = LoggerFactory.getLogger(GoogleSpreadsheetsAdapter.class);
     private static final AtomicInteger instanceCount = new AtomicInteger(0);
     
-    /** Global instance of the {@link FileDataStoreFactory}. */
-    private final FileDataStoreFactory DATA_STORE_FACTORY;
-
-    /** Global instance of the HTTP transport. */
-    final HttpTransport HTTP_TRANSPORT;
-
     private final Sheets service;
 
-    public GoogleSpreadsheetsAdapter(@Nonnull URI uri) throws IOException, GeneralSecurityException {
-
-        HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-        DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
-    	service = getSheetsService(uri);
+    public GoogleSpreadsheetsAdapter() throws IOException, GeneralSecurityException {
+    	super();
+    	service = getSheetsService();
     	if(instanceCount.incrementAndGet() >1) {
     		log.error("Initialized " + getClass().getName() + " #" + instanceCount.get() + ", may slow down system.");
     	}
@@ -91,47 +43,12 @@ class GoogleSpreadsheetsAdapter {
 	}
     
 	/**
-     * Creates an authorized Credential object.
-     * @param uri 
-     * @return an authorized Credential object.
-     * @throws IOException
-     */
-    private Credential authorize(URI uri) throws IOException {
-        // Load client secrets.
-        InputStream in =
-            GoogleSpreadsheetsAdapter.class.getResourceAsStream("/client_secret.json");
-        GoogleClientSecrets clientSecrets =
-            GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
-
-        // Build flow and trigger user authorization request.
-        GoogleAuthorizationCodeFlow flow =
-                new GoogleAuthorizationCodeFlow.Builder(
-                		HTTP_TRANSPORT, 
-                		JSON_FACTORY, clientSecrets, SCOPES)
-                .setDataStoreFactory(DATA_STORE_FACTORY)
-                .setAccessType("online")
-                .build();
-        LocalServerReceiver.Builder builder = new LocalServerReceiver.Builder();
-        if(uri != null) {
-        	builder.setHost(uri.getHost());
-        }
-		LocalServerReceiver localServerReceiver = builder.build();
-		Credential credential = new AuthorizationCodeInstalledApp(
-            flow, localServerReceiver).authorize("user");
-        if(log.isDebugEnabled()) {
-        	log.debug("Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
-        }
-        return credential;
-    }
-
-    /**
      * Build and return an authorized Sheets API client service.
-     * @param uri 
      * @return an authorized Sheets API client service
      * @throws IOException
      */
-    private Sheets getSheetsService(URI uri) throws IOException {
-        Credential credential = authorize(uri);
+    private Sheets getSheetsService() throws IOException {
+        Credential credential = authorize();
         return new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
                 .setApplicationName(APPLICATION_NAME)
                 .build();

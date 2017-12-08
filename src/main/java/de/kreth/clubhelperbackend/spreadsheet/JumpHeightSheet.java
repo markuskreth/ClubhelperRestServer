@@ -20,12 +20,13 @@ import com.google.api.services.sheets.v4.model.ValueRange;
 public class JumpHeightSheet {
 
 	public static final DateFormat defaultDf = new SimpleDateFormat("dd.MM.yyyy");
-	DateFormat invalidDf = new SimpleDateFormat("dd.MM.yy");
+	static DateFormat invalidDf = new SimpleDateFormat("dd.MM.yy");
 	
 	private static final int rowIndexDate = 2;
 	private static final int taskIndexIncrementor = 4;
+
+	private static final Logger log = LoggerFactory.getLogger(JumpHeightSheet.class);
 	
-	private Logger log = LoggerFactory.getLogger(getClass());
 	Sheet sheet;
 	private ArrayList<String> tasks;
 	private List<CellValue<Date>> dates;

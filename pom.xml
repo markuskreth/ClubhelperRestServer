@@ -5,7 +5,7 @@
 	<artifactId>clubhelperbackend</artifactId>
 	<name>ClubHelperBackend</name>
 	<packaging>war</packaging>
-	<version>1.0.6.5-SNAPSHOT</version>
+	<version>1.0.7</version>
 	<description>Clubhelper Rest Service</description>
 
 	<parent>
@@ -23,6 +23,7 @@
 	<properties>
 		<google-api-version>1.23.0</google-api-version>
 		<google-api-sheets-version>v4-rev488-1.23.0</google-api-sheets-version>
+		<google-api-calendar-version>v3-rev271-1.23.0</google-api-calendar-version>
 	</properties>
 
 	<dependencies>
@@ -149,6 +150,7 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${org.slf4j-version}</version>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -223,6 +225,12 @@
 			<artifactId>google-api-services-sheets</artifactId>
 			<version>${google-api-sheets-version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-calendar</artifactId>
+			<version>${google-api-calendar-version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.google.api-client</groupId>
 			<artifactId>google-api-client-appengine</artifactId>
