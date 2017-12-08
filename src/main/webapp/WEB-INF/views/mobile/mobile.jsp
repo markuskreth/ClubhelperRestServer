@@ -13,6 +13,7 @@
 <link rel="stylesheet"
 	href=<c:url value='/resources/css/jquery.mobile-1.4.5.min.css' /> />
 <link rel="stylesheet" href=<c:url value='/resources/css/custom.css' /> />
+<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Inconsolata" />
 <link rel="stylesheet" href=<c:url value='/resources/css/clndr.css' /> />
 <!-- <link rel="stylesheet/less" type="text/css" href=<c:url value='/resources/css/clndr.less' /> /> -->
 <script src=<c:url value='/resources/js/jquery-1.11.1.min.js' />></script>

@@ -1,10 +1,26 @@
 
 #full-clndr{
-	background-color:#ebebeb;font-weight:700;-moz-box-shadow:4px 4px 0 #343434;-webkit-box-shadow:4px 4px 0 #343434;box-shadow:4px 4px 0 #343434
+	background-color:#ebebeb;font-weight:700;-moz-box-shadow:4px 4px 0 #343434;-webkit-box-shadow:4px 4px 0 #343434;box-shadow:4px 4px 0 #343434;
+	font-family:Inconsolata,Monaco,'Andale Mono',Courier;color:#212121;
 }
 
+#full-clndr h1,#full-clndr h2,#full-clndr h3,#full-clndr h4,#full-clndr h5,#full-clndr h6{
+	margin-bottom:1em;color:white;text-shadow:1px 1px 1px #212121
+}
+
+#full-clndr .clndr-controls  {
+	text-align: center;
+	font-size:18px;
+}
+#full-clndr .clndr-controls .clndr-previous-button {
+	float: left;
+}
+#full-clndr .clndr-controls .clndr-next-button {
+	float: right;
+}
 #full-clndr .clndr-grid{
-	float:left;width:100%;border-right:2px solid white
+	float:left;width:100%;border-right:2px solid white;
+	font-size:12px;
 }
 
 #full-clndr .clndr-grid .days-of-the-week{
@@ -20,11 +36,15 @@
 }
 
 #full-clndr .clndr-grid .days .day,#full-clndr .clndr-grid .days .empty{
-	float:left;width:14.2857%;height:66px;padding:24px 0;text-align:center;color:#4f4f4f;background-color:#ebebeb;border-bottom:2px solid white;background-image:url('./triangle.svg');background-size:cover;background-position:center
+	float:left;width:14.2857%;height:66px;padding:2px;
+	text-align:right;
+	color:#4f4f4f;background-color:#ebebeb;
+	border-bottom:2px solid white;
+	background-image:url('./triangle.svg');background-size:cover;background-position:center
 }
 
 #full-clndr .clndr-grid .days .day.event .day-number,#full-clndr .clndr-grid .days .empty.event .day-number{
-	padding-bottom:4px;border-bottom:2px solid #3883a3
+	padding-bottom:2px;border-bottom:2px solid #3883a3
 }
 
 #full-clndr .clndr-grid .days .day.adjacent-month .day-number,#full-clndr .clndr-grid .days .empty.adjacent-month .day-number{
@@ -57,14 +77,6 @@
 
 *{
 	margin:0;box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box
-}
-
-body{
-	font-family:Inconsolata,Monaco,'Andale Mono',Courier;font-size:18px;color:#212121
-}
-
-body h1,body h2,body h3,body h4,body h5,body h6{
-	margin-bottom:1em;color:white;text-shadow:1px 1px 1px #212121
 }
 
 p{
