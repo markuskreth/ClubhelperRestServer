@@ -5,7 +5,7 @@
 	<artifactId>clubhelperbackend</artifactId>
 	<name>ClubHelperBackend</name>
 	<packaging>war</packaging>
-	<version>1.0.6.5-SNAPSHOT</version>
+	<version>1.0.7</version>
 	<description>Clubhelper Rest Service</description>
 
 	<parent>
@@ -19,6 +19,12 @@
 		<developerConnection>scm:git:https://github.com/markuskreth/ClubhelperRestServer.git</developerConnection>
 		<url>http://github.com/markuskreth/ClubhelperRestServer</url>
 	</scm>
+
+	<properties>
+		<google-api-version>1.23.0</google-api-version>
+		<google-api-sheets-version>v4-rev488-1.23.0</google-api-sheets-version>
+		<google-api-calendar-version>v3-rev271-1.23.0</google-api-calendar-version>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -144,6 +150,7 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${org.slf4j-version}</version>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -216,27 +223,33 @@
 		<dependency>
 			<groupId>com.google.apis</groupId>
 			<artifactId>google-api-services-sheets</artifactId>
-			<version>v4-rev488-1.23.0</version>
+			<version>${google-api-sheets-version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-calendar</artifactId>
+			<version>${google-api-calendar-version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.google.api-client</groupId>
 			<artifactId>google-api-client-appengine</artifactId>
-			<version>1.23.0</version>
+			<version>${google-api-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.api-client</groupId>
 			<artifactId>google-api-client-gson</artifactId>
-			<version>1.23.0</version>
+			<version>${google-api-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.oauth-client</groupId>
 			<artifactId>google-oauth-client-java6</artifactId>
-			<version>1.23.0</version>
+			<version>${google-api-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.oauth-client</groupId>
 			<artifactId>google-oauth-client-jetty</artifactId>
-			<version>1.23.0</version>
+			<version>${google-api-version}</version>
 		</dependency>
 
 		<dependency>
