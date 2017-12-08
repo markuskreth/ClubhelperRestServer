@@ -14,7 +14,10 @@
 	href=<c:url value='/resources/css/jquery.mobile-1.4.5.min.css' /> />
 <link rel="stylesheet" href=<c:url value='/resources/css/custom.css' /> />
 <link rel="stylesheet" href=<c:url value='/resources/css/clndr.css' /> />
+<!-- <link rel="stylesheet/less" type="text/css" href=<c:url value='/resources/css/clndr.less' /> /> -->
 <script src=<c:url value='/resources/js/jquery-1.11.1.min.js' />></script>
+<%-- <script src=<c:url value='/resources/js/less.js' />></script> --%>
+<script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.2/less.min.js"></script>
 <script src=<c:url value='/resources/js/moment-with-locales.min.js' />></script>
 <script src=<c:url value='/resources/js/jquery.mobile-1.4.5.min.js' />></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
@@ -32,7 +35,6 @@
 			+ <c:url value='/' />;
 	var log = log4javascript.getDefaultLogger();
 	log4javascript.setEnabled(true);
-	
 </script>
 <style>
 .ui-icon-person {
@@ -292,8 +294,8 @@
 <!-- 										data-theme="b" data-inline="true">Neuer Termin</a></li> -->
 <!-- 								</ul> -->
 <!-- 							</div> -->
-							<div id="calendar_container" class="cal1"></div>
-							<div id="event_container" style="background-color:powderblue;"><h3>Termine</h3></div>
+							<div id="full-clndr" class="clearfix"></div>
+<!-- 							<div id="event_container" style="background-color:powderblue;"><h3>Termine</h3></div> -->
 						</div>
 					</div>
 				</div>

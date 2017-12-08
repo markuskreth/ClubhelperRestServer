@@ -10,9 +10,9 @@
 	<definition name="ajaxtemplate" template="/WEB-INF/views/ajax_template.jsp">
 		<put-attribute name="top" value="/WEB-INF/views/header.jsp" />
 	</definition>
-	<definition name="home" extends="maintemplate">
-		<put-attribute name="content" value="/WEB-INF/views/home.jsp" />
-	</definition>
+	
+	<definition name="home" template="/WEB-INF/views/mobile/mobile.jsp" />
+	
 	<definition name="output" extends="maintemplate">
 		<put-attribute name="content" value="/WEB-INF/views/output.jsp" />
 	</definition>
