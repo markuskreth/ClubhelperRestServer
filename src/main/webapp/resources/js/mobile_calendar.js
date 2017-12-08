@@ -19,10 +19,11 @@ var templateString =
 		"              </div>\n" + 
 		"            </div>\n" + 
 		"            <div class=\"event-listing\">\n" + 
-		"              <div class=\"event-listing-title\">EVENTS THIS MONTH</div>\n" + 
+		"              <div class=\"event-listing-title\">Veranstaltungen</div>\n" + 
 		"              <% _.each(eventsThisMonth, function(event) { %>\n" + 
 		"                  <div class=\"event-item\">\n" + 
-		"                    <div class=\"event-item-name\"><%= event.title %></div>\n" + 
+		"                    <div class=\"event-item-date\"><%= event.start %></div> " + 
+		"                    <div class=\"event-item-name\"><%= event.title %></div>" + 
 		"                    <div class=\"event-item-location\"><%= event.location %></div>\n" + 
 		"                  </div>\n" + 
 		"                <% }); %>\n" + 
@@ -76,7 +77,7 @@ function loadCalendarData() {
 	        click: function (target) {
 	        	alert(target.date + ": " + JSON.stringify(target.events));
 	        }
-        }
+    	}
 	});
 	repo(baseUrl + "events", function(response) {
 		theCalendarInstance.setEvents(response);

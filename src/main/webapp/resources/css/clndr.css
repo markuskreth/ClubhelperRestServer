@@ -56,7 +56,7 @@
 }
 
 #full-clndr .event-listing{
-	float:left;width:35%
+	float:left;width:100%
 }
 
 #full-clndr .event-listing .event-listing-title{
@@ -181,10 +181,6 @@ strong{
 
 .more-space{
 	margin-top:3em
-}
-
-#full-clndr .event-listing{
-	display:none
 }
 
 h1.banner-text{

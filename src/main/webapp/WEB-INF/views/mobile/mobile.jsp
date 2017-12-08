@@ -233,7 +233,7 @@
 
 		<div role="main" class="ui-content">
 			<div>
-				<div id="contentDetail" class="width25 floatRight leftColumn">
+				<div id="contentJumpHeight" class="width25 floatRight leftColumn">
 					<div class="width75 floatLeft">
 						<div class="gradient">
 							<div data-role="navbar">
@@ -285,7 +285,7 @@
 
 		<div role="main" class="ui-content">
 			<div>
-				<div id="contentDetail" class="width25 floatRight leftColumn">
+				<div id="contentCalendar" class="width25 floatRight leftColumn">
 					<div class="width75 floatLeft">
 						<div class="gradient">
 <!-- 							<div data-role="navbar"> -->
