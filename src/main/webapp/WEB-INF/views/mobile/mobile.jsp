@@ -72,9 +72,9 @@
 							<div data-role="navbar">
 								<ul>
 									<li><a href="#" onclick="addPerson()"
-										class="ui-btn ui-icon-plus">Hinzufügen</a></li>
+										class="ui-btn ui-btn-icon-left ui-icon-plus">Hinzufügen</a></li>
 									<li><a href="#" onclick="showCalendar()"
-										class="ui-btn ui-icon-bulletes">Kalender</a></li>
+										class="ui-btn ui-btn-icon-left ui-icon-calendar">Kalender</a></li>
 								</ul>
 							</div>
 							<div>
@@ -295,7 +295,7 @@
 <!-- 										data-theme="b" data-inline="true">Neuer Termin</a></li> -->
 <!-- 								</ul> -->
 <!-- 							</div> -->
-							<div id="full-clndr" class="clearfix"></div>
+							<div id="full-clndr"></div>
 <!-- 							<div id="event_container" style="background-color:powderblue;"><h3>Termine</h3></div> -->
 						</div>
 					</div>
