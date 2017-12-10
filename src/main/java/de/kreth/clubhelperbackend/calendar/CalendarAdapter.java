@@ -22,45 +22,6 @@ import de.kreth.clubhelperbackend.spreadsheet.GoogleBaseAdapter;
 
 public class CalendarAdapter extends GoogleBaseAdapter {
 
-	private final class FetchEventsRunner implements Runnable {
-		private final List<Event> events;
-		private final long oldest;
-		private final com.google.api.services.calendar.model.Calendar calendar;
-
-		private FetchEventsRunner(com.google.api.services.calendar.model.Calendar calendar, List<Event> events, long oldest) {
-			this.events = events;
-			this.oldest = oldest;
-			this.calendar = calendar;
-		}
-
-		@Override
-		public void run() {
-			
-			try {
-				events.addAll(service.events().list(calendar.getId()).execute().getItems()
-						.parallelStream()
-						.filter(e -> {
-							EventDateTime start = e.getStart();
-							DateTime dateTime = start.getDate()==null?start.getDateTime():start.getDate();
-							if(dateTime == null) {
-
-								try {
-									log.warn("Event without startDate: " + e.toPrettyString() + "\n\nStart=" + start.toPrettyString());
-								} catch (IOException e1) {
-									log.warn("Logging impossible.", e1);
-								}
-								return false;
-							}
-							return dateTime.getValue()>oldest;
-						})
-						.collect(Collectors.toList()));
-				
-			} catch (IOException e) {
-				log.error("Unable to fetch Events from " + calendar.getSummary(), e);
-			}
-		}
-	}
-
 	Calendar service;
 
 	public CalendarAdapter() throws GeneralSecurityException, IOException {
@@ -90,14 +51,14 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 	}
 
 	public List<Event> getAllEvents() throws IOException {
-		
+
 		List<CalendarListEntry> items = getCalendarList();
 		final long oldest = getOldest();
 		
 		final List<Event> events = new ArrayList<>();
 		ExecutorService exec = Executors.newFixedThreadPool(2);
-		exec.execute(new FetchEventsRunner(getCalendarBySummaryName(items, "mtv_wettkampf"), events, oldest));
-		exec.execute(new FetchEventsRunner(getCalendarBySummaryName(items, "mtv_allgemein"), events, oldest));
+		exec.execute(new FetchEventsRunner(getCalendarBySummaryName(items, "mtv_wettkampf"), events, oldest, "color1"));
+		exec.execute(new FetchEventsRunner(getCalendarBySummaryName(items, "mtv_allgemein"), events, oldest, "color2"));
 		exec.shutdown();
 		try {
 			exec.awaitTermination(20, TimeUnit.SECONDS);
@@ -122,4 +83,47 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 			CalendarList calendarList = service.calendarList().list().execute();
 			return calendarList.getItems();
 	}
+
+	private final class FetchEventsRunner implements Runnable {
+		private final List<Event> events;
+		private final long oldest;
+		private final com.google.api.services.calendar.model.Calendar calendar;
+		private String colorClass;
+
+		private FetchEventsRunner(com.google.api.services.calendar.model.Calendar calendar, List<Event> events, long oldest, String colorClass) {
+			this.events = events;
+			this.oldest = oldest;
+			this.calendar = calendar;
+			this.colorClass = colorClass;
+		}
+
+		@Override
+		public void run() {
+
+			try {
+				events.addAll(service.events().list(calendar.getId()).execute().getItems()
+						.parallelStream()
+						.filter(e -> {
+							EventDateTime start = e.getStart();
+							e.set("colorClass", colorClass);
+							DateTime dateTime = start.getDate()==null?start.getDateTime():start.getDate();
+							if(dateTime == null) {
+
+								try {
+									log.warn("Event without startDate: " + e.toPrettyString() + "\n\nStart=" + start.toPrettyString());
+								} catch (IOException e1) {
+									log.warn("Logging impossible.", e1);
+								}
+								return false;
+							}
+							return dateTime.getValue()>oldest;
+						})
+						.collect(Collectors.toList()));
+				
+			} catch (IOException e) {
+				log.error("Unable to fetch Events from " + calendar.getSummary(), e);
+			}
+		}
+	}
+
 }
