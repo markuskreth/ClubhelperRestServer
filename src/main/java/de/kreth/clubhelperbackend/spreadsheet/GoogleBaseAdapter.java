@@ -25,6 +25,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.SheetsScopes;
+import com.google.api.services.calendar.CalendarScopes;
 
 public class GoogleBaseAdapter {
 
@@ -40,7 +41,7 @@ public class GoogleBaseAdapter {
 	 * If modifying these scopes, delete your previously saved credentials
 	 * at ~/.credentials/sheets.googleapis.com-java-quickstart
 	 */
-	static final List<String> SCOPES = Arrays.asList(SheetsScopes.SPREADSHEETS_READONLY, SheetsScopes.SPREADSHEETS, com.google.api.services.calendar.CalendarScopes.CALENDAR);
+	static final List<String> SCOPES = Arrays.asList(SheetsScopes.SPREADSHEETS, CalendarScopes.CALENDAR);
 
 	private static Credential credential;
 	
