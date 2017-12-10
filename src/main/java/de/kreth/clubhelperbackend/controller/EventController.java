@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.tiles.context.MapEntry;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -69,7 +68,7 @@ public class EventController {
 		Object value = entry.getValue();
 		switch(entry.getKey()) {
 		case "summary":
-			entry = new MapEntry<String, Object>("title", value, false);
+			entry = Maps.immutableEntry("title", value);
 			break;
 		case "start":
 		case "end":
@@ -80,6 +79,7 @@ public class EventController {
 		case "created":
 		case "updated":
 		case "status":
+		case "colorClass":
 			entry = Maps.immutableEntry(entry.getKey(), value.toString());
 			break;
 		default: 

@@ -1,8 +1,8 @@
 
 var templateString = 
 		"<div class=\"clndr-controls\">\n" + 
-		"              <div class=\"clndr-previous-button\">&lt;</div>\n" + 
-		"              <div class=\"clndr-next-button\">&gt;</div>\n" + 
+		"              <a href=\"#\" class=\"ui-btn ui-icon-carat-l ui-btn-icon-notext clndr-previous-button\">prev</a>\n" + 
+		"              <a href=\"#\" class=\"ui-btn ui-icon-carat-r ui-btn-icon-notext clndr-next-button\">next</a>\n" + 
 		"              <div class=\"current-month\"><%= month %> <%= year %></div>\n" + 
 		"\n" + 
 		"            </div>\n" + 
@@ -22,8 +22,8 @@ var templateString =
 		"              <div class=\"event-listing-title\">Veranstaltungen</div>\n" + 
 		"              <% _.each(eventsThisMonth, function(event) { %>\n" + 
 		"                  <div class=\"event-item\">\n" + 
-		"                    <div class=\"event-item-date\"><%= event.start %></div> " + 
-		"                    <div class=\"event-item-name\"><%= event.title %></div>" + 
+		"                    <div class=\"event-item-date\"><%= moment(event.start, \"YYYY-MM-DD\").format(\"L\") %><%= typeof(event.end)!== \'undefined\' ?  \' - \'+moment(event.end).format(\'L\') : \'\' %></div> " + 
+		"                    <div class=\"event-item-name, <%= event.colorClass %>\"><%= event.title %></div>" + 
 		"                    <div class=\"event-item-location\"><%= event.location %></div>\n" + 
 		"                  </div>\n" + 
 		"                <% }); %>\n" + 
@@ -44,26 +44,12 @@ function showCalendar(){
 
 function loadCalendarData() {
 	$("#full-clndr").empty();
-	var lotsOfMixedEvents = [
-	    {
-	        end: '2017-11-08',
-	        start: '2017-11-04',
-	        title: 'Monday to Friday Event'
-	    }, {
-	        end: '2017-12-20',
-	        start: '2017-12-15',
-	        title: 'Another Long Event'
-	    }, {
-	        title: 'Birthday',
-	        start: '2017-12-28'
-	    }
-	];
 	
 	var theCalendarInstance = $("#full-clndr").clndr({
 		startWithMonth: moment(),
         daysOfTheWeek: ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'],
         constraints: {
-            startDate: moment().subtract(1, 'months').date(0)
+            startDate: moment().subtract(1, 'months').date(0).format('YYYY-MM-DD')
         },
         multiDayEvents: {
             endDate: 'end',
@@ -75,12 +61,26 @@ function loadCalendarData() {
         template: templateString,
         clickEvents: {
 	        click: function (target) {
-	        	alert(target.date + ": " + JSON.stringify(target.events));
-	        }
+	        	var text = "";
+	        	target.events.forEach(function(elt, i) {
+	        		text+=elt.title +"\n";
+	        	})
+	        	alert(target.date.format("DD.MM.YY") + ": " + text);
+	        },
+	        onMonthChange: function(month) {
+	        	theCalendarInstance.eventsThisInterval.forEach(function(event){
+					var theKey = moment(event.start).format("[.calendar-day-]YYYY-MM-DD");
+					$(theKey).append("<br>"+event.title);
+				});
+	          }
     	}
 	});
 	repo(baseUrl + "events", function(response) {
 		theCalendarInstance.setEvents(response);
+		theCalendarInstance.eventsThisInterval.forEach(function(event){
+			var theKey = moment(event.start).format("[.calendar-day-]YYYY-MM-DD");
+			$(theKey).append("<br><span>"+event.title+"</span>");
+		});
 	});
 	
 }
