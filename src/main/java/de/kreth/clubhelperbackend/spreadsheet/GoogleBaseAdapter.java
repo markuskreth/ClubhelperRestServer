@@ -93,6 +93,7 @@ public class GoogleBaseAdapter {
 				URI uri = new URI(new StringBuilder("http://").append(hostName).toString());
 		        if(uri != null) {
 		        	builder.setHost(uri.getHost());
+		        	builder.setPort(59431);
 		        }
 			}
 		} catch (URISyntaxException e) {
