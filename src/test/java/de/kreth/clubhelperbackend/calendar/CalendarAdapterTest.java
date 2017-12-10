@@ -30,13 +30,13 @@ public class CalendarAdapterTest {
 		
 		List<CalendarListEntry> items = adapter.getCalendarList();
 		assertTrue(items.size()>0);
-		Calendar wettkampf = adapter.getWettkampf(items);
+		Calendar wettkampf = adapter.getCalendarBySummaryName(items, "mtv_wettkampf");
 		assertNotNull(wettkampf);
 	}
 
 	@Test
 	public void getWettkampfEvents() throws IOException {
-		List<Event> events = adapter.service.events().list(adapter.getWettkampf(adapter.getCalendarList()).getId()).execute().getItems();
+		List<Event> events = adapter.service.events().list(adapter.getCalendarBySummaryName(adapter.getCalendarList(), "mtv_wettkampf").getId()).execute().getItems();
 		assertNotNull(events);
 		assertTrue("No events found!", events.size()>0);
 		Event first = events.get(0);
