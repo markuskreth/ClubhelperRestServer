@@ -320,11 +320,13 @@
 		<input class="datepicker" type="date" data-role="datebox" data-options='{"mode": "datebox", "useNewStyle":true,"zindex":1200}' />
 		<div data-role="popup" id="popupBasic"></div>
 	</div>
-	<div id="chooseTaskDialog" data-role="page">
-		<div data-role="header">
+	<div id="chooseTaskDialog" data-role="page" data-dialog="true">
+		<div data-role="header" data-position="fixed" data-add-back-btn="true"
+			data-back-btn-text="Zurück">
 			<H2 id="TaskHeadText"></H2>
 		</div>
-		<div id="TaskContentText" data-role="main" class="ui-content">
+		<div data-role="main" class="ui-content">
+			<div id="TaskContentText"></div>
 		</div>
 		<a id="TaskOkbutton" href="#" data-role="button" data-icon="ok">OK</a>
 		<a id="TaskCancelbutton" href="#" data-role="button" data-icon="cancel">Abbrechen</a>

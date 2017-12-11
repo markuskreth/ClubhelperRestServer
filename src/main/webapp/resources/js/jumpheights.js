@@ -48,7 +48,7 @@ function addFlightTime() {
 			var task = $(this).text();
 			log.debug("Choosen Task: " + task);
 			$("#contentText").empty();
-			$("#chooseTaskDialog").dialog( "close" );
+			$.mobile.changePage("#personJumpHeight");
 			var div = $("<div></div>")
 				.append("<label for=\"TaskInputValue\">" + task +" Wert:</label>")
 				.append("<input type=\"text\" name=\"TaskInputValue\" id=\"TaskInputValue\" value=\"\">");
@@ -60,7 +60,7 @@ function addFlightTime() {
 				log.trace(url);
 				ajax(url, value, "post", function(response){
 
-					$("#chooseTaskDialog").dialog( "close" );
+					$.mobile.changePage("#personJumpHeight");
 					var popup = $("#popupBasic");
 					popup.empty();
 					popup.append("Neuer Wert für " + task + " gespeichert.");
@@ -93,8 +93,7 @@ function showTaskDialog(headText, mainView, okAction) {
 		dlg.find("#TaskOkbutton").show();
 		dlg.find("#TaskOkbutton").on('click', okAction);
 	}
-	dlg.find("#TaskCancelbutton").on('click', function() { $("#chooseTaskDialog").dialog( "close" ) });
-	dlg.trigger("create");
-	dlg.dialog();
+	dlg.find("#TaskCancelbutton").on('click', function() { $.mobile.changePage("#personJumpHeight"); });
+	
 	$.mobile.changePage("#chooseTaskDialog");
 }
