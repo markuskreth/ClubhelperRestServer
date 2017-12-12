@@ -43,7 +43,7 @@ public class GoogleBaseAdapter {
 	 */
 	static final List<String> SCOPES = Arrays.asList(SheetsScopes.SPREADSHEETS, CalendarScopes.CALENDAR);
 
-	private static Credential credential;
+	protected static Credential credential;
 	
 	protected static final Logger log = LoggerFactory.getLogger(GoogleSpreadsheetsAdapter.class);
 	/** Global instance of the {@link FileDataStoreFactory}. */
@@ -58,16 +58,31 @@ public class GoogleBaseAdapter {
         DATA_STORE_DIR.mkdirs();
 	}
 
+	protected void checkRefreshToken() throws IOException {
+
+		if(credential != null && (credential.getExpiresInSeconds()!=null && credential.getExpiresInSeconds()<3600)) {
+			if(log.isDebugEnabled()) {
+				log.debug("Security needs refresh, trying.");
+			}
+			credential.refreshToken();
+			if(log.isDebugEnabled()) {
+				log.debug("Token successfully refreshed.");
+			}
+		} else {
+			authorize();
+		}
+	}
+	
 	/**
 	 * Creates an authorized Credential object.
 	 * @return an authorized Credential object.
 	 * @throws IOException
 	 */
 	protected synchronized Credential authorize() throws IOException {
-		if(credential != null) {
+		if(credential != null && (credential.getExpiresInSeconds()!=null && credential.getExpiresInSeconds()<3600)) {
+			credential.refreshToken();
 			return credential;
 		}
-		
 	    // Load client secrets.
 	    InputStream in =
 	        getClass().getResourceAsStream("/client_secret.json");
@@ -80,10 +95,10 @@ public class GoogleBaseAdapter {
 	            		HTTP_TRANSPORT, 
 	            		JSON_FACTORY, clientSecrets, SCOPES)
 	            .setDataStoreFactory(DATA_STORE_FACTORY)
-	            .setAccessType("online")
+	            .setAccessType("offline")
 	            .build();
 	    LocalServerReceiver.Builder builder = new LocalServerReceiver.Builder();
-	
+    	builder.setPort(59431);
 		try {
 	
 			InetAddress localHost = InetAddress.getLocalHost();
@@ -93,11 +108,12 @@ public class GoogleBaseAdapter {
 				URI uri = new URI(new StringBuilder("http://").append(hostName).toString());
 		        if(uri != null) {
 		        	builder.setHost(uri.getHost());
-		        	builder.setPort(59431);
 		        }
 			}
 		} catch (URISyntaxException e) {
-			log.warn("Unable to determine Hostname. Using default localhost.", e);
+			if(log.isWarnEnabled()) {
+				log.warn("Unable to determine Hostname. Using default localhost.", e);
+			}
 		}
 	
 		LocalServerReceiver localServerReceiver = builder.build();

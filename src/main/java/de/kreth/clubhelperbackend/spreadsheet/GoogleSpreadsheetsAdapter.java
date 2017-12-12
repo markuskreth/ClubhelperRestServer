@@ -74,8 +74,25 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
     }
     
 	private Spreadsheet loadSheet() throws IOException {
-		Spreadsheets spreadsheets = service.spreadsheets();
-        Spreadsheet sheet = spreadsheets.get(SPREADSHEET_ID).setIncludeGridData(false).execute();
+		checkRefreshToken();
+		
+		Spreadsheets spreadsheets;
+		Spreadsheet sheet;
+		try {
+			spreadsheets = service.spreadsheets();
+			sheet = spreadsheets.get(SPREADSHEET_ID).setIncludeGridData(false).execute();
+			
+		} catch (IOException e) {
+			if(log.isDebugEnabled()) {
+				log.debug("Error fetching SpreadSheed, trying token refresh", e);
+			}
+			credential.refreshToken();
+			if(log.isInfoEnabled()) {
+				log.info("Successfully refreshed Google Security Token.");
+			}
+			spreadsheets = service.spreadsheets();
+			sheet = spreadsheets.get(SPREADSHEET_ID).setIncludeGridData(false).execute();
+		}
 		return sheet;
 	}
     

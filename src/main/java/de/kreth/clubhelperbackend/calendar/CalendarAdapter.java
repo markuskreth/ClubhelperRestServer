@@ -80,8 +80,21 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 	}
 	
 	List<CalendarListEntry> getCalendarList() throws IOException {
-			CalendarList calendarList = service.calendarList().list().execute();
-			return calendarList.getItems();
+		checkRefreshToken();
+		CalendarList calendarList;
+		try {
+			calendarList = service.calendarList().list().execute();
+		} catch (IOException e) {
+			if(log.isWarnEnabled()) {
+				log.warn("Error fetching Calendar List, trying token refresh", e);
+			}
+			credential.refreshToken();
+			if(log.isInfoEnabled()) {
+				log.info("Successfully refreshed Google Security Token.");
+			}
+			calendarList = service.calendarList().list().execute();
+		}
+		return calendarList.getItems();
 	}
 
 	private final class FetchEventsRunner implements Runnable {
@@ -108,11 +121,13 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 							e.set("colorClass", colorClass);
 							DateTime dateTime = start.getDate()==null?start.getDateTime():start.getDate();
 							if(dateTime == null) {
-
-								try {
-									log.warn("Event without startDate: " + e.toPrettyString() + "\n\nStart=" + start.toPrettyString());
-								} catch (IOException e1) {
-									log.warn("Logging impossible.", e1);
+								if(log.isWarnEnabled()) {
+									try {
+										
+										log.warn("Event without startDate: " + e.toPrettyString() + "\n\nStart=" + start.toPrettyString());
+									} catch (IOException e1) {
+										log.warn("Logging impossible.", e1);
+									}
 								}
 								return false;
 							}
