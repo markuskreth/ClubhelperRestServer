@@ -8,46 +8,44 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.util.DateTime;
-import com.google.api.services.calendar.Calendar;
+import com.google.api.services.calendar.model.Calendar;
 import com.google.api.services.calendar.model.CalendarList;
 import com.google.api.services.calendar.model.CalendarListEntry;
 import com.google.api.services.calendar.model.Event;
-import com.google.api.services.calendar.model.EventDateTime;
 
 import de.kreth.clubhelperbackend.google.GoogleBaseAdapter;
 
 public class CalendarAdapter extends GoogleBaseAdapter {
 
-	Calendar service;
+	com.google.api.services.calendar.Calendar service;
 
 	public CalendarAdapter() throws GeneralSecurityException, IOException {
 		super();
 		service = createService();
 	}
 
-	private Calendar createService() throws IOException {
+	private com.google.api.services.calendar.Calendar createService() throws IOException {
 		Credential credential = authorize();
 		return new com.google.api.services.calendar.Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
 				.setApplicationName(APPLICATION_NAME).build();
 	}
 
-	com.google.api.services.calendar.model.Calendar getCalendarBySummaryName(List<CalendarListEntry> items, String calendarSummary) throws IOException {
+	Calendar getCalendarBySummaryName(List<CalendarListEntry> items, String calendarSummary) throws IOException {
 
-		String wettkampfId = null;
+		String calendarId = null;
 		for(CalendarListEntry e: items) {
 			if(calendarSummary.equals(e.getSummary())) {
-				wettkampfId = e.getId();
+				calendarId = e.getId();
 				break;
 			}
 		}
-		if(wettkampfId == null) {
+		if(calendarId == null) {
 			throw new IllegalStateException("Calendar " + calendarSummary + " not found!");
 		}
-		return service.calendars().get(wettkampfId).execute();
+		return service.calendars().get(calendarId).execute();
 	}
 
 	public List<Event> getAllEvents() throws IOException {
@@ -57,8 +55,8 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 		
 		final List<Event> events = new ArrayList<>();
 		ExecutorService exec = Executors.newFixedThreadPool(2);
-		exec.execute(new FetchEventsRunner(getCalendarBySummaryName(items, "mtv_wettkampf"), events, oldest, "color1"));
-		exec.execute(new FetchEventsRunner(getCalendarBySummaryName(items, "mtv_allgemein"), events, oldest, "color2"));
+		exec.execute(new FetchEventsRunner(items, "mtv_wettkampf", events, oldest, "color1"));
+		exec.execute(new FetchEventsRunner(items, "mtv_allgemein", events, oldest, "color2"));
 		exec.shutdown();
 		try {
 			exec.awaitTermination(20, TimeUnit.SECONDS);
@@ -100,43 +98,29 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 	private final class FetchEventsRunner implements Runnable {
 		private final List<Event> events;
 		private final long oldest;
-		private final com.google.api.services.calendar.model.Calendar calendar;
 		private String colorClass;
+		private List<CalendarListEntry> items;
+		private String summary;
 
-		private FetchEventsRunner(com.google.api.services.calendar.model.Calendar calendar, List<Event> events, long oldest, String colorClass) {
+		private FetchEventsRunner(List<CalendarListEntry> items, String summary, List<Event> events, long oldest, String colorClass) {
 			this.events = events;
 			this.oldest = oldest;
-			this.calendar = calendar;
+			this.items = items;
+			this.summary = summary;
 			this.colorClass = colorClass;
 		}
 
 		@Override
 		public void run() {
-
+			
 			try {
-				events.addAll(service.events().list(calendar.getId()).execute().getItems()
-						.parallelStream()
-						.filter(e -> {
-							EventDateTime start = e.getStart();
-							e.set("colorClass", colorClass);
-							DateTime dateTime = start.getDate()==null?start.getDateTime():start.getDate();
-							if(dateTime == null) {
-								if(log.isWarnEnabled()) {
-									try {
-										
-										log.warn("Event without startDate: " + e.toPrettyString() + "\n\nStart=" + start.toPrettyString());
-									} catch (IOException e1) {
-										log.warn("Logging impossible.", e1);
-									}
-								}
-								return false;
-							}
-							return dateTime.getValue()>oldest;
-						})
-						.collect(Collectors.toList()));
-				
+				Calendar calendar = getCalendarBySummaryName(items, summary);
+				DateTime timeMin = new DateTime(oldest);
+				List<Event> items = service.events().list(calendar.getId()).setTimeMin(timeMin).execute().getItems();
+				items.forEach(item -> item.set("colorClass", colorClass));
+				events.addAll(items);
 			} catch (IOException e) {
-				log.error("Unable to fetch Events from " + calendar.getSummary(), e);
+				log.error("Unable to fetch Events from " + summary, e);
 			}
 		}
 	}
