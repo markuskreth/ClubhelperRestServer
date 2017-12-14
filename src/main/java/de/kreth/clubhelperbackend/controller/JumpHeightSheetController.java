@@ -27,12 +27,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import de.kreth.clubhelperbackend.spreadsheet.CellValue;
-import de.kreth.clubhelperbackend.spreadsheet.JumpHeightSheet;
-import de.kreth.clubhelperbackend.spreadsheet.JumpHightTask;
-import de.kreth.clubhelperbackend.spreadsheet.JumpHightTask.Builder;
-import de.kreth.clubhelperbackend.spreadsheet.SheetDataException;
-import de.kreth.clubhelperbackend.spreadsheet.SheetService;
+import de.kreth.clubhelperbackend.google.spreadsheet.CellValue;
+import de.kreth.clubhelperbackend.google.spreadsheet.JumpHeightSheet;
+import de.kreth.clubhelperbackend.google.spreadsheet.JumpHightTask;
+import de.kreth.clubhelperbackend.google.spreadsheet.SheetDataException;
+import de.kreth.clubhelperbackend.google.spreadsheet.SheetService;
+import de.kreth.clubhelperbackend.google.spreadsheet.JumpHightTask.Builder;
 import de.kreth.clubhelperbackend.utils.ThreadPoolErrors;
 
 @Controller

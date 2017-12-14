@@ -1,4 +1,4 @@
-package de.kreth.clubhelperbackend.calendar;
+package de.kreth.clubhelperbackend.google.calendar;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -13,6 +13,8 @@ import org.junit.Test;
 import com.google.api.services.calendar.model.Calendar;
 import com.google.api.services.calendar.model.CalendarListEntry;
 import com.google.api.services.calendar.model.Event;
+
+import de.kreth.clubhelperbackend.google.calendar.CalendarAdapter;
 
 public class CalendarAdapterTest {
 
@@ -47,7 +49,7 @@ public class CalendarAdapterTest {
 				first.getLocation(),
 				first.getCreator().getDisplayName()
 				)
-				);
+			);
 		System.out.println(first.toPrettyString());
 		System.out.println("found: " + events.size());
 	}

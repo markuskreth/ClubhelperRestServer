@@ -20,7 +20,7 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.EventDateTime;
 import com.google.common.collect.Maps;
 
-import de.kreth.clubhelperbackend.calendar.CalendarAdapter;
+import de.kreth.clubhelperbackend.google.calendar.CalendarAdapter;
 
 @Controller
 @RequestMapping("/events")

@@ -328,7 +328,6 @@
 					<url>http://spallek.com:8080/manager/text</url>
 					<server>SpellakTomcat</server>
 					<path>/ClubHelperBackend</path>
-					<update>true</update>
 				</configuration>
 			</plugin>
 			<plugin>

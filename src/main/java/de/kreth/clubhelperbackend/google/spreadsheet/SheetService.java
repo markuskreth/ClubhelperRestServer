@@ -1,4 +1,4 @@
-package de.kreth.clubhelperbackend.spreadsheet;
+package de.kreth.clubhelperbackend.google.spreadsheet;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;

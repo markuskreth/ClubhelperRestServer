@@ -1,4 +1,4 @@
-package de.kreth.clubhelperbackend.spreadsheet;
+package de.kreth.clubhelperbackend.google.spreadsheet;
 
 public class SheetDataException extends RuntimeException {
 

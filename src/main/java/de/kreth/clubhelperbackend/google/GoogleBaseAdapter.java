@@ -1,4 +1,4 @@
-package de.kreth.clubhelperbackend.spreadsheet;
+package de.kreth.clubhelperbackend.google;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,10 +24,10 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
-import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.calendar.CalendarScopes;
+import com.google.api.services.sheets.v4.SheetsScopes;
 
-public class GoogleBaseAdapter {
+public abstract class GoogleBaseAdapter {
 
 	/** Application name. */
 	protected static final String APPLICATION_NAME = "ClubHelperBackend";
@@ -45,7 +45,7 @@ public class GoogleBaseAdapter {
 
 	protected static Credential credential;
 	
-	protected static final Logger log = LoggerFactory.getLogger(GoogleSpreadsheetsAdapter.class);
+	protected static final Logger log = LoggerFactory.getLogger(GoogleBaseAdapter.class);
 	/** Global instance of the {@link FileDataStoreFactory}. */
 	protected final FileDataStoreFactory DATA_STORE_FACTORY;
 	/** Global instance of the HTTP transport. */
@@ -64,9 +64,9 @@ public class GoogleBaseAdapter {
 			if(log.isDebugEnabled()) {
 				log.debug("Security needs refresh, trying.");
 			}
-			credential.refreshToken();
+			boolean result = credential.refreshToken();
 			if(log.isDebugEnabled()) {
-				log.debug("Token successfully refreshed.");
+				log.debug("Token refresh " + (result?"successfull.":"failed."));
 			}
 		} else {
 			authorize();
@@ -96,6 +96,7 @@ public class GoogleBaseAdapter {
 	            		JSON_FACTORY, clientSecrets, SCOPES)
 	            .setDataStoreFactory(DATA_STORE_FACTORY)
 	            .setAccessType("offline")
+	            .setApprovalPrompt("force")
 	            .build();
 	    LocalServerReceiver.Builder builder = new LocalServerReceiver.Builder();
     	builder.setPort(59431);
@@ -122,6 +123,15 @@ public class GoogleBaseAdapter {
 	    if(log.isDebugEnabled()) {
 	    	log.debug("Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
 	    }
+
+		credential.setExpiresInSeconds(Long.valueOf(691200L));
+		
+		boolean refreshToken = credential.refreshToken();
+		if(refreshToken == false && log.isWarnEnabled()) {
+			log.warn("Refresh of google access token failed after initialization!");
+		} else if(log.isDebugEnabled()) {
+			log.debug("Initial Refresh of google access Token " + (refreshToken?"was successful.":"failed."));
+		}
 	    return credential;
 	}
 

@@ -10,8 +10,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.kreth.clubhelperbackend.spreadsheet.CellValue;
-import de.kreth.clubhelperbackend.spreadsheet.SheetService;
+import de.kreth.clubhelperbackend.google.spreadsheet.CellValue;
+import de.kreth.clubhelperbackend.google.spreadsheet.SheetService;
 
 public class JumpHeightSheetControllerTest {
 

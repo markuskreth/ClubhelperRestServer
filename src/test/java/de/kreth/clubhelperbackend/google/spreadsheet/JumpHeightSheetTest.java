@@ -1,4 +1,4 @@
-package de.kreth.clubhelperbackend.spreadsheet;
+package de.kreth.clubhelperbackend.google.spreadsheet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -13,6 +13,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import de.kreth.clubhelperbackend.google.spreadsheet.CellRange;
+import de.kreth.clubhelperbackend.google.spreadsheet.CellValue;
+import de.kreth.clubhelperbackend.google.spreadsheet.JumpHeightSheet;
+import de.kreth.clubhelperbackend.google.spreadsheet.SheetService;
 
 public class JumpHeightSheetTest {
 
