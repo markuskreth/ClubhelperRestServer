@@ -45,14 +45,20 @@ public class EventController {
 			Map<String, Object> events = new HashMap<>();
 
 			adjustExcludedEndDate(e);
+			StringBuilder msg = new StringBuilder();
+			msg.append("Event: ").append(e.getSummary()).append(", Start=").append(e.getStart()).append(" skipped properties:");
 			for(Entry<String, Object> entry: e.entrySet()) {
 				
-				entry = map(entry);
-				if(entry != null) {
-					events.put(entry.getKey(), entry.getValue());
+				Entry<String, Object> ev = map(entry);
+				if(ev != null) {
+					events.put(ev.getKey(), ev.getValue());
+				} else if(log.isTraceEnabled()) {
+					msg.append("\n\t\"").append(entry.getKey()).append("\", value: ").append(entry.getValue());
 				}
 			}
-
+			if(log.isTraceEnabled()) {
+				log.trace(msg.toString());
+			}
 			result.add(events);
 		});
 		return result;
@@ -91,9 +97,6 @@ public class EventController {
 			entry = Maps.immutableEntry(entry.getKey(), value);
 			break;
 		default:
-			if(log.isDebugEnabled()) {
-				log.debug("Skipping Event property \"" + entry.getKey() + "\", value: " + entry.getValue());
-			}
 			entry = null;
 		}
 		return entry;
