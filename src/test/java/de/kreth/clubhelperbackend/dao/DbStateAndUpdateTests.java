@@ -51,7 +51,7 @@ public class DbStateAndUpdateTests  extends AbstractMysqlDatabaseTests {
 			cols.add(rs.getString("COLUMN_NAME") + " (" + rs.getString("TYPE_NAME") + ")");
 		}
 
-		assertEquals("Found Columns: " + cols, 10, cols.size());
+		assertEquals("Found Columns: " + cols, 9, cols.size());
 	}
 
 	@Test

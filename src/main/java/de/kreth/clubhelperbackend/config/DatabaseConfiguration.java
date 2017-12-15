@@ -15,7 +15,7 @@ import de.kreth.dbmanager.TableDefinition;
 
 public class DatabaseConfiguration {
 
-	private static final int LATEST_VERSION = 5;
+	private static final int LATEST_VERSION = 6;
 
 	private final Logger logger;
 
@@ -70,12 +70,19 @@ public class DatabaseConfiguration {
 		case 4:
 			addUniqueGroupName();
 			addUniquePersonGroup();
+			break;
+		case 5:
+			addDeleteColumnStm(person, new ColumnDefinition(DataType.TEXT, "type", "NOT NULL"));
+			break;
+			
 		}
 		if(fromVersion != LATEST_VERSION && logger.isInfoEnabled()) {
 			logger.info("Prepared Datebase update from Version " + fromVersion + " to Version " + LATEST_VERSION);
 		}
 	}
 
+	private void addDeleteColumnStm(TableDefinition table, ColumnDefinition columnDefinition) {
+	}
 
 	private void addDeleteColumn(List<ColumnDefinition> columns) {
 		columns.add(new ColumnDefinition(DataType.DATETIME, "deleted", " DEFAULT null"));
@@ -242,7 +249,6 @@ public class DatabaseConfiguration {
 		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
 		columns.add(new ColumnDefinition(DataType.TEXT, "prename", "NOT NULL"));
 		columns.add(new ColumnDefinition(DataType.TEXT, "surname"));
-		columns.add(new ColumnDefinition(DataType.TEXT, "type", "NOT NULL"));
 		columns.add(new ColumnDefinition(DataType.DATETIME, "birth"));
 		columns.add(new ColumnDefinition(DataType.TEXT, "username", "DEFAULT NULL"));
 		columns.add(new ColumnDefinition(DataType.TEXT, "password", "DEFAULT NULL"));
