@@ -168,7 +168,6 @@ public class DatabaseConfiguration {
 
 	private List<ColumnDefinition> createGroupColumns() {
 		ColumnDefinition colTableName = new ColumnDefinition(DataType.VARCHAR255, "name", "NOT NULL UNIQUE");
-
 		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
 		columns.add(colTableName);
 		return columns;
@@ -221,28 +220,20 @@ public class DatabaseConfiguration {
 	}
 
 	private List<ColumnDefinition> createRelativeColumns() {
-		ColumnDefinition colPerson1 = new ColumnDefinition(DataType.INTEGER, "person1", "NOT NULL");
-		ColumnDefinition colPerson2 = new ColumnDefinition(DataType.INTEGER, "person2", "NOT NULL");
-		ColumnDefinition colToPerson2 = new ColumnDefinition(DataType.TEXT, "TO_PERSON2_RELATION");
-		ColumnDefinition colToPerson1 = new ColumnDefinition(DataType.TEXT, "TO_PERSON1_RELATION");
 
 		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
-		columns.add(colPerson1);
-		columns.add(colPerson2);
-		columns.add(colToPerson1);
-		columns.add(colToPerson2);
+		columns.add(new ColumnDefinition(DataType.INTEGER, "person1", "NOT NULL"));
+		columns.add(new ColumnDefinition(DataType.INTEGER, "person2", "NOT NULL"));
+		columns.add(new ColumnDefinition(DataType.TEXT, "TO_PERSON2_RELATION"));
+		columns.add(new ColumnDefinition(DataType.TEXT, "TO_PERSON1_RELATION"));
 		return columns;
 	}
 
 	private List<ColumnDefinition> createContactColumns() {
-		ColumnDefinition colType = new ColumnDefinition(DataType.TEXT, "type", "NOT NULL");
-		ColumnDefinition colValue = new ColumnDefinition(DataType.TEXT, "value");
-		ColumnDefinition colPerson = new ColumnDefinition(DataType.INTEGER, "person_id", "NOT NULL");
-
 		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
-		columns.add(colType);
-		columns.add(colValue);
-		columns.add(colPerson);
+		columns.add(new ColumnDefinition(DataType.TEXT, "type", "NOT NULL"));
+		columns.add(new ColumnDefinition(DataType.TEXT, "value"));
+		columns.add(new ColumnDefinition(DataType.INTEGER, "person_id", "NOT NULL"));
 		return columns;
 	}
 
@@ -261,10 +252,8 @@ public class DatabaseConfiguration {
 
 	private void addCreateChangeColumn(List<ColumnDefinition> columns) {
 
-		ColumnDefinition colchanged = new ColumnDefinition(DataType.DATETIME, "changed");
-		ColumnDefinition colcreated = new ColumnDefinition(DataType.DATETIME, "created");
-		columns.add(colchanged);
-		columns.add(colcreated);
+		columns.add(new ColumnDefinition(DataType.DATETIME, "changed"));
+		columns.add(new ColumnDefinition(DataType.DATETIME, "created"));
 	}
 
 	public void executeOn(Database db) throws SQLException {
