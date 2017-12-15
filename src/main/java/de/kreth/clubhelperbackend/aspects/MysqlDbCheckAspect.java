@@ -36,11 +36,14 @@ public class MysqlDbCheckAspect implements Database {
 	public MysqlDbCheckAspect(DataSource dataSource) {
 
 		logger = LoggerFactory.getLogger(MysqlDbCheckAspect.class);
-
-		logger.debug("init with " + dataSource);
+		if(logger.isDebugEnabled()) {
+			logger.debug("init with " + dataSource);
+		}
 		try {
 			con = dataSource.getConnection();
-			logger.info("finished db init, got con: " + con);
+			if(logger.isInfoEnabled()) {
+				logger.info("finished db init, got con to " + con.getCatalog());
+			}
 			checkDb();
 		} catch (SQLException e) {
 			throw new InvalidDataAccessApiUsageException("Keine Connection aus DataSource erhalten", e);
@@ -50,15 +53,21 @@ public class MysqlDbCheckAspect implements Database {
 	@Before("execution (* de.kreth.clubhelperbackend.dao.*.*(..))")
 	public synchronized void checkDb() {
 		if (isChecked) {
-			logger.trace("Database already checked.");
+			if(logger.isTraceEnabled()) {
+				logger.trace("Database already checked.");
+			}
 			return;
 		}
 		isChecked = true;
-		logger.debug("Initalizing Database");
+		if(logger.isDebugEnabled()) {
+			logger.debug("Initalizing Database");
+		}
 
 		try {
 			int currentDbVersion = getVersion();
-			logger.info("Database Version " + currentDbVersion);
+			if(logger.isInfoEnabled()) {
+				logger.info("Database Version " + currentDbVersion);
+			}
 			beginTransaction();
 			DatabaseConfiguration manager = new DatabaseConfiguration(currentDbVersion);
 			manager.executeOn(this);
@@ -118,13 +127,17 @@ public class MysqlDbCheckAspect implements Database {
 				version = rs.getInt("version");
 
 		} catch (SQLException e) {
-			logger.warn("Error on Database fetch version", e);
+			if(logger.isDebugEnabled()) {
+				logger.debug("Error on Database fetch version, version 0?", e);
+			}
 		} finally {
 			if (stm != null)
 				try {
 					stm.close();
 				} catch (SQLException e) {
-					logger.debug("Error on Database close", e);
+					if(logger.isDebugEnabled()) {
+						logger.debug("Error on Database close", e);
+					}
 				}
 		}
 

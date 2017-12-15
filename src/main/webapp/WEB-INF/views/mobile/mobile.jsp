@@ -1,9 +1,7 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="utf-8"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="utf-8"%><!doctype html>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="s"%>
-<!doctype html>
 <html lang="de">
 <head>
 <title>Clubhelper Mobile</title>
