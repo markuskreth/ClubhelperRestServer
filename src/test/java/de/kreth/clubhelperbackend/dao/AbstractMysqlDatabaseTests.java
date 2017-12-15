@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
 
@@ -21,15 +22,15 @@ public class AbstractMysqlDatabaseTests {
 	static final String db_file_name_prefix = "TestDatabase";
 
 	protected MysqlDbCheckAspect dbCheck;
-	protected MysqlConnectionPoolDataSource dataSource;
+	protected static MysqlConnectionPoolDataSource dataSource;
 
 	public AbstractMysqlDatabaseTests() {
 		super();
 	}
 
-	@Before
-	public void setUp() throws Exception {
-	
+	@BeforeClass
+	public static void initDbConnection() {
+
 		dataSource = new MysqlConnectionPoolDataSource();
 		dataSource.setUser("markus");
 		dataSource.setPassword("0773");
@@ -37,8 +38,11 @@ public class AbstractMysqlDatabaseTests {
 		dataSource.setPort(3306);
 		dataSource.setDatabaseName("testdb");
 	
+	}
+
+	@Before
+	public void setUp() throws Exception {
 		deleteTables(dataSource.getConnection());
-	
 		dbCheck = new MysqlDbCheckAspect(dataSource);
 	
 	}
@@ -49,7 +53,7 @@ public class AbstractMysqlDatabaseTests {
 		Connection conn = dataSource.getConnection();
 		deleteTables(conn);
 	
-		if (dataSource != null) {
+		if (conn != null) {
 			conn.close();
 		}
 		File dbFile = new File(db_file_name_prefix);
@@ -58,7 +62,7 @@ public class AbstractMysqlDatabaseTests {
 		}
 	}
 
-	private void deleteTables(Connection conn) throws SQLException {
+	protected void deleteTables(Connection conn) throws SQLException {
 	
 		String[] types = { "TABLE", "VIEW" };
 		DatabaseMetaData metaData = conn.getMetaData();
@@ -77,6 +81,17 @@ public class AbstractMysqlDatabaseTests {
 			}
 		}
 		rs.close();
+		allSql.sort((sql1, sql2)-> {
+
+			if(sql1.toLowerCase().endsWith(" person")) {
+				return 1;
+			}
+			if(sql2.toLowerCase().endsWith(" person")) {
+				return -1;
+			}
+			return sql1.compareTo(sql2);
+					
+		});
 		Statement stm = conn.createStatement();
 		for (String sql : allSql) {
 			try {

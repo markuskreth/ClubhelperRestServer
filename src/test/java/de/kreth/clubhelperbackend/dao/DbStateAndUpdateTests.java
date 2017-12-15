@@ -1,6 +1,7 @@
 package de.kreth.clubhelperbackend.dao;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Connection;
@@ -22,6 +23,21 @@ import de.kreth.clubhelperbackend.pojo.Relative;
 public class DbStateAndUpdateTests  extends AbstractMysqlDatabaseTests {
 
 	@Test
+	public void testDatabaseUpdateFromVersion5To5() throws SQLException {
+		DatabaseConfigVersion5 v5 = new DatabaseConfigVersion5();
+		Connection conn = dataSource.getConnection();
+		deleteTables(conn);
+		v5.installOn(conn);
+		
+		DatabaseMetaData metaData = conn.getMetaData();
+		ResultSet rs = metaData.getColumns(conn.getCatalog(), null, "person", "type");
+		assertTrue(rs.next());
+		assertEquals("type", rs.getString("COLUMN_NAME"));
+		assertFalse(rs.next());
+		
+	}
+
+	@Test
 	public void testPersonTableComplete() throws SQLException {
 
 		dbCheck.checkDb();
@@ -35,7 +51,7 @@ public class DbStateAndUpdateTests  extends AbstractMysqlDatabaseTests {
 			cols.add(rs.getString("COLUMN_NAME") + " (" + rs.getString("TYPE_NAME") + ")");
 		}
 
-		assertEquals(9, cols.size());
+		assertEquals("Found Columns: " + cols, 10, cols.size());
 	}
 
 	@Test
