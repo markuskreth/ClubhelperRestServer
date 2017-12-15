@@ -35,6 +35,10 @@ public class DbStateAndUpdateTests  extends AbstractMysqlDatabaseTests {
 		assertEquals("type", rs.getString("COLUMN_NAME"));
 		assertFalse(rs.next());
 		
+		dbCheck.checkDb(true);
+		rs = metaData.getColumns(conn.getCatalog(), null, "person", "type");
+		assertFalse(rs.next());
+
 	}
 
 	@Test

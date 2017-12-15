@@ -115,5 +115,6 @@ public class DatabaseConfigVersion5 {
 		stm.execute(de.kreth.dbmanager.DbManager.createSqlStatement(deletedEntries));
 		stm.execute(de.kreth.dbmanager.DbManager.createSqlStatement(group));
 		stm.execute(de.kreth.dbmanager.DbManager.createSqlStatement(persongroup));
+		stm.execute("INSERT INTO version(version) VALUES (5)");
 	}
 }

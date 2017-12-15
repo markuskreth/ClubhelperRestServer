@@ -44,15 +44,19 @@ public class MysqlDbCheckAspect implements Database {
 			if(logger.isInfoEnabled()) {
 				logger.info("finished db init, got con to " + con.getCatalog());
 			}
-			checkDb();
+			checkDb(false);
 		} catch (SQLException e) {
 			throw new InvalidDataAccessApiUsageException("Keine Connection aus DataSource erhalten", e);
 		}
 	}
 
 	@Before("execution (* de.kreth.clubhelperbackend.dao.*.*(..))")
-	public synchronized void checkDb() {
-		if (isChecked) {
+	public void checkDb() {
+		checkDb(false);
+	}
+
+	public synchronized void checkDb(boolean force) {
+		if (isChecked && force==false ) {
 			if(logger.isTraceEnabled()) {
 				logger.trace("Database already checked.");
 			}

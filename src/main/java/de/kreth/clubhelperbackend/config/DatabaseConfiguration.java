@@ -2,7 +2,6 @@ package de.kreth.clubhelperbackend.config;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -51,6 +50,7 @@ public class DatabaseConfiguration {
 			addAuthColumns(person);
 			statements.add(new DirectStatement("INSERT INTO `groupDef`(`name`,`changed`,`created`)VALUES('ADMIN',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)"));
 			addUniquePersonGroup();
+			addDeleteColumnStm(person, new ColumnDefinition(DataType.TEXT, "type", "NOT NULL"));
 			break;
 		case 2:
 			createAll();
@@ -60,18 +60,22 @@ public class DatabaseConfiguration {
 			addAuthColumns(person);statements.add(new DirectStatement("INSERT INTO `groupDef`(`name`,`changed`,`created`)VALUES('ADMIN',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)"));
 			addUniqueGroupName();
 			addUniquePersonGroup();
+			addDeleteColumnStm(person, new ColumnDefinition(DataType.TEXT, "type", "NOT NULL"));
 			break;
 		case 3:
 			createAll();
 			addAuthColumns(person);statements.add(new DirectStatement("INSERT INTO `groupDef`(`name`,`changed`,`created`)VALUES('ADMIN',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)"));
 			addUniqueGroupName();
 			addUniquePersonGroup();
+			addDeleteColumnStm(person, new ColumnDefinition(DataType.TEXT, "type", "NOT NULL"));
 			break;
 		case 4:
 			addUniqueGroupName();
 			addUniquePersonGroup();
+			addDeleteColumnStm(person, new ColumnDefinition(DataType.TEXT, "type", "NOT NULL"));
 			break;
 		case 5:
+			createAll();
 			addDeleteColumnStm(person, new ColumnDefinition(DataType.TEXT, "type", "NOT NULL"));
 			break;
 			
@@ -82,6 +86,7 @@ public class DatabaseConfiguration {
 	}
 
 	private void addDeleteColumnStm(TableDefinition table, ColumnDefinition columnDefinition) {
+		statements.add(new DropColumnStatement(table, columnDefinition));
 	}
 
 	private void addDeleteColumn(List<ColumnDefinition> columns) {
@@ -297,10 +302,22 @@ public class DatabaseConfiguration {
 			}
 		}
 	}
+	
+	private class DropColumnStatement extends AddColumnStatement {
 
+		public DropColumnStatement(TableDefinition def, ColumnDefinition col) {
+			super(def, col);
+		}
+
+		@Override
+		public String getSql() {
+			return de.kreth.dbmanager.DbManager.createSqlDropColumns(def, col);
+		}
+	}
+	
 	private class AddColumnStatement extends CreateTableStatement {
 
-		private ColumnDefinition col;
+		protected ColumnDefinition col;
 
 		public AddColumnStatement(TableDefinition def, ColumnDefinition col) {
 			super(def);
@@ -309,8 +326,9 @@ public class DatabaseConfiguration {
 		
 		@Override
 		public String getSql() {
-			return de.kreth.dbmanager.DbManager.createSqlAddColumns(def, Arrays.asList(col));
+			return de.kreth.dbmanager.DbManager.createSqlAddColumns(def, col);
 		}
+		
 		@Override
 		public String toString() {
 			return getClass().getSimpleName() + " " + col + " to " + def;
