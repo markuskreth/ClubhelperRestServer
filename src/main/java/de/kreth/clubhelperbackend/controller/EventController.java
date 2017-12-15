@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,9 +30,11 @@ import de.kreth.clubhelperbackend.google.calendar.CalendarAdapter;
 public class EventController {
 
 	private final CalendarAdapter adapter;
+	private final Logger log;
 
 	public EventController() throws GeneralSecurityException, IOException {
 		adapter = new CalendarAdapter();
+		log = LoggerFactory.getLogger(getClass());
 	}
 
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
@@ -80,9 +84,16 @@ public class EventController {
 		case "updated":
 		case "status":
 		case "colorClass":
-			entry = Maps.immutableEntry(entry.getKey(), value.toString());
+		case "id":
+		case "location":
+		case "description":
+		case "sequence":
+			entry = Maps.immutableEntry(entry.getKey(), value);
 			break;
-		default: 
+		default:
+			if(log.isDebugEnabled()) {
+				log.debug("Skipping Event property \"" + entry.getKey() + "\", value: " + entry.getValue());
+			}
 			entry = null;
 		}
 		return entry;
