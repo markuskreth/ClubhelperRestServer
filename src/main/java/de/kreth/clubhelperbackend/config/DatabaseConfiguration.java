@@ -2,10 +2,8 @@ package de.kreth.clubhelperbackend.config;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,15 +29,14 @@ public class DatabaseConfiguration {
 	private TableDefinition group;
 	private TableDefinition persongroup;
 
-	private List<TableDefinition> tablesToCreate;
-	private Map<TableDefinition, List<ColumnDefinition>> tablesToAddColumns = null;
-	private List<String> insertSql = new ArrayList<>();
+	private final List<MyStatement> statements;
 
 	private int fromVersion;
 
 	public DatabaseConfiguration(int fromVersion) {
 		this.fromVersion = fromVersion;
-
+		statements = new ArrayList<>();
+		
 		logger = LoggerFactory.getLogger(getClass());
 
 		switch (fromVersion) {
@@ -52,8 +49,7 @@ public class DatabaseConfiguration {
 			createWith(deletedEntries, group, persongroup);
 			addDeletedColumn(person, contact, relative, adress, attendance, version);
 			addAuthColumns(person);
-			insertSql.add(
-					"INSERT INTO `groupDef`(`name`,`changed`,`created`)VALUES('ADMIN',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)");
+			statements.add(new DirectStatement("INSERT INTO `groupDef`(`name`,`changed`,`created`)VALUES('ADMIN',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)"));
 			addUniquePersonGroup();
 			break;
 		case 2:
@@ -61,17 +57,13 @@ public class DatabaseConfiguration {
 			createWith();
 			addDeletedColumn(person, contact, relative, adress, attendance, version, deletedEntries, group,
 					persongroup);
-			addAuthColumns(person);
-			insertSql.add(
-					"INSERT INTO `groupDef`(`name`,`changed`,`created`)VALUES('ADMIN',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)");
+			addAuthColumns(person);statements.add(new DirectStatement("INSERT INTO `groupDef`(`name`,`changed`,`created`)VALUES('ADMIN',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)"));
 			addUniqueGroupName();
 			addUniquePersonGroup();
 			break;
 		case 3:
 			createAll();
-			addAuthColumns(person);
-			insertSql.add(
-					"INSERT INTO `groupDef`(`name`,`changed`,`created`)VALUES('ADMIN',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)");
+			addAuthColumns(person);statements.add(new DirectStatement("INSERT INTO `groupDef`(`name`,`changed`,`created`)VALUES('ADMIN',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)"));
 			addUniqueGroupName();
 			addUniquePersonGroup();
 			break;
@@ -84,52 +76,44 @@ public class DatabaseConfiguration {
 		}
 	}
 
+
+	private void addDeleteColumn(List<ColumnDefinition> columns) {
+		columns.add(new ColumnDefinition(DataType.DATETIME, "deleted", " DEFAULT null"));
+	}
+
 	private void addUniqueGroupName() {
-		insertSql.add("delete n1 from groupDef n1, groupDef n2 WHERE n1._id >n2._id AND n1.name = n2.name");
-		insertSql.add("ALTER TABLE `groupDef` \n" + "ADD UNIQUE INDEX `groupname_UNIQUE` (`name` ASC);");
+		statements.add(new DirectStatement("delete n1 from groupDef n1, groupDef n2 WHERE n1._id >n2._id AND n1.name = n2.name"));
+		statements.add(new DirectStatement("ALTER TABLE `groupDef` \n" + "ADD UNIQUE INDEX `groupname_UNIQUE` (`name` ASC);"));
 	}
 
 	private void addUniquePersonGroup() {
-		insertSql.add(
-				"delete n1 from persongroup n1, persongroup n2 WHERE n1._id >n2._id AND n1.person_id = n2.person_id AND n1.group_id = n2.group_id;");
-		insertSql.add("ALTER TABLE `persongroup` \n"
+		statements.add(new DirectStatement("delete n1 from persongroup n1, persongroup n2 WHERE n1._id >n2._id AND n1.person_id = n2.person_id AND n1.group_id = n2.group_id;"));
+		add("ALTER TABLE `persongroup` \n"
 				+ "ADD UNIQUE INDEX `unique_person_group` (`person_id` ASC, `group_id` ASC);");
+	}
+
+	private void add(String sql) {
+		statements.add(new DirectStatement(sql));
 	}
 
 	private void addAuthColumns(TableDefinition... defs) {
 
-		if (tablesToAddColumns == null) {
-			tablesToAddColumns = new HashMap<TableDefinition, List<ColumnDefinition>>();
-		}
-
-		List<ColumnDefinition> columns;
-
 		for (TableDefinition t : defs) {
-			columns = new ArrayList<ColumnDefinition>();
-			columns.add(new ColumnDefinition(DataType.TEXT, "username", "DEFAULT NULL"));
-			columns.add(new ColumnDefinition(DataType.TEXT, "password", "DEFAULT NULL"));
-			tablesToAddColumns.put(t, columns);
+			statements.add(new AddColumnStatement(t, new ColumnDefinition(DataType.TEXT, "username", "DEFAULT NULL")));
+			statements.add(new AddColumnStatement(t, new ColumnDefinition(DataType.TEXT, "password", "DEFAULT NULL")));
 		}
 	}
 
 	private void addDeletedColumn(TableDefinition... defs) {
-		if (tablesToAddColumns == null) {
-			tablesToAddColumns = new HashMap<TableDefinition, List<ColumnDefinition>>();
-		}
-
-		List<ColumnDefinition> columns;
 
 		for (TableDefinition t : defs) {
-			columns = new ArrayList<ColumnDefinition>();
-			addDeleteColumn(columns);
-			tablesToAddColumns.put(t, columns);
+			statements.add(new AddColumnStatement(t, new ColumnDefinition(DataType.DATETIME, "deleted", " DEFAULT null")));
 		}
 	}
 
 	private void createWith(TableDefinition... defs) {
-		tablesToCreate = new ArrayList<TableDefinition>();
 		for (TableDefinition d : defs) {
-			tablesToCreate.add(d);
+			statements.add(new CreateTableStatement(d));
 		}
 	}
 
@@ -275,11 +259,6 @@ public class DatabaseConfiguration {
 		return columns;
 	}
 
-	private void addDeleteColumn(List<ColumnDefinition> columns) {
-		ColumnDefinition coldeleted = new ColumnDefinition(DataType.DATETIME, "deleted", " DEFAULT null");
-		columns.add(coldeleted);
-	}
-
 	private void addCreateChangeColumn(List<ColumnDefinition> columns) {
 
 		ColumnDefinition colchanged = new ColumnDefinition(DataType.DATETIME, "changed");
@@ -290,39 +269,18 @@ public class DatabaseConfiguration {
 
 	public void executeOn(Database db) throws SQLException {
 
-		if (tablesToCreate != null) {
-
-			logger.info("Installing/ Updating tables: " + tablesToCreate);
-			for (TableDefinition def : tablesToCreate) {
-				String sql = de.kreth.dbmanager.DbManager.createSqlStatement(def);
+		for(MyStatement stm:statements) {
+			String sql = stm.getSql();
+			if(logger.isDebugEnabled()) {
 				logger.debug(sql);
-				db.execSQL(sql);
 			}
-
-		}
-
-		if (tablesToAddColumns != null) {
-
-			for (Entry<TableDefinition, List<ColumnDefinition>> e : tablesToAddColumns.entrySet()) {
-				String sql = de.kreth.dbmanager.DbManager.createSqlAddColumns(e.getKey(), e.getValue());
-				logger.debug(sql);
-				try {
-					db.execSQL(sql);
-				} catch (SQLException ex) {
-					throw new SQLException("Error on: " + sql, ex);
-				}
-			}
-		}
-
-		for (String sql : insertSql) {
-			logger.debug(sql);
 			try {
 				db.execSQL(sql);
 			} catch (SQLException ex) {
 				throw new SQLException("Error on: " + sql, ex);
 			}
 		}
-
+		
 		String sql;
 		if (fromVersion == 0) {
 			sql = "INSERT INTO version(version) VALUES (" + LATEST_VERSION + ")";
@@ -331,12 +289,78 @@ public class DatabaseConfiguration {
 		}
 
 		if (fromVersion != LATEST_VERSION) {
-			logger.debug(sql);
+			if(logger.isDebugEnabled()) {
+				logger.debug(sql);
+			}
 			db.execSQL(sql);
-			logger.info("Updated database to version " + LATEST_VERSION);
+			if(logger.isInfoEnabled()) {
+				logger.info("Updated database to version " + LATEST_VERSION);
+			}
 		} else {
-			logger.info("Database was up to date.");
+			if(logger.isInfoEnabled()) {
+				logger.info("Database was up to date.");
+			}
 		}
 	}
 
+	private class AddColumnStatement extends CreateTableStatement {
+
+		private ColumnDefinition col;
+
+		public AddColumnStatement(TableDefinition def, ColumnDefinition col) {
+			super(def);
+			this.col = col;
+		}
+		
+		@Override
+		public String getSql() {
+			return de.kreth.dbmanager.DbManager.createSqlAddColumns(def, Arrays.asList(col));
+		}
+		@Override
+		public String toString() {
+			return getClass().getSimpleName() + " " + col + " to " + def;
+		}
+	}
+	
+	private class CreateTableStatement implements MyStatement {
+
+		protected TableDefinition def;
+
+		public CreateTableStatement(TableDefinition def) {
+			this.def = def;
+		}
+		
+		@Override
+		public String getSql() {
+			return de.kreth.dbmanager.DbManager.createSqlStatement(def);
+		}
+		@Override
+		public String toString() {
+			return getClass().getSimpleName() + " " + def;
+		}
+		
+	}
+	
+	private class DirectStatement implements MyStatement {
+
+		private String sql;
+
+		public DirectStatement(String sql) {
+			super();
+			this.sql = sql;
+		}
+
+		@Override
+		public String getSql() {
+			return sql;
+		}
+		
+		@Override
+		public String toString() {
+			return sql;
+		}
+	}
+	private interface MyStatement {
+		String getSql();
+	}
 }
