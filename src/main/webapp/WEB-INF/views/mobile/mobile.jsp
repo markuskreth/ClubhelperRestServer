@@ -33,7 +33,7 @@
 	var baseUrl = location.protocol + '//' + location.host
 			+ <c:url value='/' />;
 	var log = log4javascript.getDefaultLogger();
-	log4javascript.setEnabled(true);
+	log4javascript.setEnabled(false);
 </script>
 <style>
 .ui-icon-person {
