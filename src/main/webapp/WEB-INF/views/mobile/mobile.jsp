@@ -8,18 +8,22 @@
 <meta charset="utf-8">
 <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet"
-	href=<c:url value='/resources/css/jquery.mobile-1.4.5.min.css' /> />
+
 <link rel="stylesheet" href=<c:url value='/resources/css/custom.css' /> />
 <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Inconsolata" />
 <link rel="stylesheet" href=<c:url value='/resources/css/clndr.css' /> />
+
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+
 <!-- <link rel="stylesheet/less" type="text/css" href=<c:url value='/resources/css/clndr.less' /> /> -->
-<script src=<c:url value='/resources/js/jquery-1.11.1.min.js' />></script>
 <%-- <script src=<c:url value='/resources/js/less.js' />></script> --%>
-<script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.2/less.min.js"></script>
+<%-- <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.2/less.min.js"></script> --%>
+
 <script src=<c:url value='/resources/js/moment-with-locales.min.js' />></script>
-<script src=<c:url value='/resources/js/jquery.mobile-1.4.5.min.js' />></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+
+<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
 <script charset="utf-8" src=<c:url value='/resources/js/log4javascript.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/general.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/jumpheights.js' />></script>
@@ -312,13 +316,14 @@
 <!-- 		<a href="#" data-role="button" onclick="printPhoneList2">Telefonliste</a> -->
 <!-- 	</div> -->
 
-	<div id="editDialog" data-role="page" data-dialog="true"></div>
-	<div id="editGroupDialog" data-role="page" data-dialog="true"></div>
+	<div id="editDialog" data-role="page"></div>
+	<div id="editGroupDialog" data-role="page"></div>
+	
 	<div id="templates" style="display:none;">
 		<input class="datepicker" type="date" data-role="datebox" data-options='{"mode": "datebox", "useNewStyle":true,"zindex":1200}' />
 		<div data-role="popup" id="popupBasic"></div>
 	</div>
-	<div id="chooseTaskDialog" data-role="page" data-dialog="true">
+	<div id="chooseTaskDialog" data-role="page">
 		<div data-role="header" data-position="fixed" data-add-back-btn="true"
 			data-back-btn-text="Zurück">
 			<H2 id="TaskHeadText"></H2>

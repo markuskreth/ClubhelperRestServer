@@ -216,6 +216,7 @@
 			<version>1.2</version>
 		</dependency>
 
+		<!-- Google APIs -->
 		<dependency>
 			<groupId>com.google.apis</groupId>
 			<artifactId>google-api-services-sheets</artifactId>

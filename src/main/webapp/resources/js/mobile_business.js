@@ -184,7 +184,7 @@ function showGroups(withDelete) {
 			}
 		}
 
-		showDialog("#editGroupDialog", "Gruppen für " + currentPerson.prename + " " + currentPerson.surname, content, function(){log.debug("Clicked ok for Persongroup.")});
+		showDialog("#editGroupDialog", "Gruppen für\n" + currentPerson.prename + " " + currentPerson.surname, content, function(){log.debug("Clicked ok for Persongroup.")});
 	});
 }
 
@@ -330,9 +330,12 @@ function showDialog(dialogId, headText, contentText, action) {
 			})
 			.attr("data-icon", "cancel")
 			.text("Abbrechen"));
-	editDialog.trigger("create");
+
 	$.mobile.changePage(dialogId, {
-		role : "dialog"
+        transition: "pop"
+        , role: "dialog"
+//        , closeBtn: "right"
+        , overlayTheme: "b"
 	});
 }
 
