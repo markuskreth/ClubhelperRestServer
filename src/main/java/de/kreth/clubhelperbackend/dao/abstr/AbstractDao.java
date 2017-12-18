@@ -39,19 +39,21 @@ import de.kreth.clubhelperbackend.pojo.DeletedEntries;
 public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport implements Dao<T> {
 
 	private SqlForDialect sqlDialect;
-	private String SQL_QUERY_BY_ID;
-	private String SQL_QUERY_CHANGED;
-	private String SQL_UPDATE;
-	private String SQL_DELETE;
 	private String SQL_QUERY_ALL;
-	private String SQL_INSERTWithoutId;
-	private String SQL_INSERTWithId;
-	private RowMapper<T> mapper;
-	private String tableName;
+	
+	final String SQL_QUERY_BY_ID;
+	final String SQL_QUERY_CHANGED;
+	final String SQL_UPDATE;
+	final String SQL_DELETE;
+	final String SQL_INSERTWithoutId;
+	final String SQL_INSERTWithId;
+	final RowMapper<T> mapper;
+	final String tableName;
+	private final Logger log;
+
 	private DeletedEntriesDao deletedEntriesDao;
 	private TransactionTemplate transactionTemplate;
-	private Logger log;
-
+	
 	/**
 	 * Constructs this {@link Dao} implemetation.
 	 * 
