@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import de.kreth.clubhelperbackend.dao.abstr.AbstractDao;
 import de.kreth.clubhelperbackend.pojo.Adress;
 import de.kreth.clubhelperbackend.pojo.Attendance;
 import de.kreth.clubhelperbackend.pojo.Contact;
@@ -20,7 +21,7 @@ import de.kreth.clubhelperbackend.pojo.Person;
 import de.kreth.clubhelperbackend.pojo.PersonGroup;
 import de.kreth.clubhelperbackend.pojo.Relative;
 
-public class DbStateAndUpdateTests  extends AbstractMysqlDatabaseTests {
+public class DbStateAndUpdateTests  extends AbstractMysqlDatabaseTests<Person> {
 
 	@Test
 	public void testDatabaseUpdateFromVersion5To5() throws SQLException {
@@ -86,6 +87,11 @@ public class DbStateAndUpdateTests  extends AbstractMysqlDatabaseTests {
 		assertTrue("DeletedEntries Table not found!", tables.contains(DeletedEntriesDao.TABLE_NAME.toLowerCase()));
 		assertTrue("version Table not found!", tables.contains("version"));
 
+	}
+
+	@Override
+	public AbstractDao<Person> initDao() {
+		return new PersonDao();
 	}
 
 }

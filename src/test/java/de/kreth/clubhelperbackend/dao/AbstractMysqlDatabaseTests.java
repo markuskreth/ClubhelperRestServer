@@ -12,17 +12,22 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
 
 import de.kreth.clubhelperbackend.aspects.MysqlDbCheckAspect;
+import de.kreth.clubhelperbackend.config.SqlForMysql;
+import de.kreth.clubhelperbackend.dao.abstr.AbstractDao;
+import de.kreth.clubhelperbackend.pojo.Data;
 
-public class AbstractMysqlDatabaseTests {
+public abstract class AbstractMysqlDatabaseTests<T extends Data> {
 
 	static final String db_file_name_prefix = "TestDatabase";
 
 	protected MysqlDbCheckAspect dbCheck;
 	protected static MysqlConnectionPoolDataSource dataSource;
+	protected AbstractDao<T> dao;
 
 	public AbstractMysqlDatabaseTests() {
 		super();
@@ -44,8 +49,25 @@ public class AbstractMysqlDatabaseTests {
 	public void setUp() throws Exception {
 		deleteTables(dataSource.getConnection());
 		dbCheck = new MysqlDbCheckAspect(dataSource);
-	
+		dao = initDao();
+
+		dbCheck.checkDb();
+		DataSourceTransactionManager transMan = new DataSourceTransactionManager(dataSource);
+
+		DeletedEntriesDao deletedEntriesDao = new DeletedEntriesDao();
+		deletedEntriesDao.setDataSource(dataSource);
+		deletedEntriesDao.setPlatformTransactionManager(transMan);
+		deletedEntriesDao.setSqlDialect(new SqlForMysql(dataSource));
+
+		dao.setDataSource(dataSource);
+		dao.setPlatformTransactionManager(transMan);
+		dao.setDeletedEntriesDao(deletedEntriesDao);
+
+		dao.setSqlDialect(new SqlForMysql(dataSource));
+		
 	}
+
+	public abstract AbstractDao<T> initDao();
 
 	@After
 	public void tearDown() throws SQLException {

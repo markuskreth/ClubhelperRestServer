@@ -4,8 +4,10 @@ import static org.apache.commons.lang3.StringUtils.join;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -39,7 +41,7 @@ import de.kreth.clubhelperbackend.pojo.DeletedEntries;
 public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport implements Dao<T> {
 
 	private SqlForDialect sqlDialect;
-	private String SQL_QUERY_ALL;
+	protected String SQL_QUERY_ALL;
 	
 	final String SQL_QUERY_BY_ID;
 	final String SQL_QUERY_CHANGED;
@@ -147,6 +149,9 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 			this.orderBy = orderBy;
 		}
 
+		public RowMapper<Y> getMapper() {
+			return mapper;
+		}
 	}
 
 	/**
@@ -185,6 +190,17 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		setDataSource(source);
 	}
 
+	public static Date normalizeDateToDay(Date date) {
+		Calendar onDate = new GregorianCalendar();
+		onDate.setTime(date);
+		onDate.set(Calendar.MILLISECOND, 0);
+		onDate.set(Calendar.SECOND, 0);
+		onDate.set(Calendar.MINUTE, 0);
+		onDate.set(Calendar.HOUR_OF_DAY, 0);
+		Date time = onDate.getTime();
+		return time;
+	}
+	
 	@Override
 	public T getById(long id) {
 		try {

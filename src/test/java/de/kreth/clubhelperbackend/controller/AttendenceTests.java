@@ -4,9 +4,11 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +41,7 @@ public class AttendenceTests extends AbstractDaoTest<Attendance> {
 		verify(jdbcTemplate).update(Matchers.eq(sql), Matchers.argThat(new ObjectArrayMatcher(null)));
 		assertNotNull(created.getChanged());
 		assertNotNull(created.getCreated());
-		assertEquals(now, created.getOnDate());
+		assertEquals(nowWithoutTime(), created.getOnDate());
 		assertEquals(1L, created.getPersonId());
 		assertEquals(objectId, created.getId());
 		
@@ -47,6 +49,16 @@ public class AttendenceTests extends AbstractDaoTest<Attendance> {
 	
 	private Date now() {
 		return new GregorianCalendar(2017, Calendar.DECEMBER, 18, 17, 10, 15).getTime();
+	}
+
+	private Date nowWithoutTime() {
+		GregorianCalendar gregorianCalendar = new GregorianCalendar();
+		gregorianCalendar.setTime(now());
+		gregorianCalendar.set(Calendar.MILLISECOND, 0);
+		gregorianCalendar.set(Calendar.SECOND, 0);
+		gregorianCalendar.set(Calendar.MINUTE, 0);
+		gregorianCalendar.set(Calendar.HOUR_OF_DAY, 0);
+		return gregorianCalendar.getTime();
 	}
 
 	@Override

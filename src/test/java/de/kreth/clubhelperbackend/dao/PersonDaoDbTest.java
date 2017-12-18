@@ -8,27 +8,14 @@ import org.junit.Test;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import de.kreth.clubhelperbackend.config.SqlForMysql;
+import de.kreth.clubhelperbackend.dao.abstr.AbstractDao;
 import de.kreth.clubhelperbackend.pojo.Person;
 import de.kreth.clubhelperbackend.testutils.TestDataPerson;
 
-public class PersonDaoDbTest extends AbstractMysqlDatabaseTests {
+public class PersonDaoDbTest extends AbstractMysqlDatabaseTests<Person> {
 
 	@Test
 	public void insertDelete() throws Exception {
-		dbCheck.checkDb();
-		DataSourceTransactionManager transMan = new DataSourceTransactionManager(dataSource);
-
-		DeletedEntriesDao deletedEntriesDao = new DeletedEntriesDao();
-		deletedEntriesDao.setDataSource(dataSource);
-		deletedEntriesDao.setPlatformTransactionManager(transMan);
-		deletedEntriesDao.setSqlDialect(new SqlForMysql(dataSource));
-
-		PersonDao dao = new PersonDao();
-		dao.setDataSource(dataSource);
-		dao.setPlatformTransactionManager(transMan);
-		dao.setDeletedEntriesDao(deletedEntriesDao);
-
-		dao.setSqlDialect(new SqlForMysql(dataSource));
 		Person p1 = TestDataPerson.INSTANCE.person;
 		Person p2 = (Person) p1.clone();
 
@@ -83,5 +70,10 @@ public class PersonDaoDbTest extends AbstractMysqlDatabaseTests {
 		assertEquals(p2.getId(), all.get(0).getId());
 		assertEquals(p1.getId(), all.get(1).getId());
 		assertEquals(p3.getId(), all.get(2).getId());
+	}
+
+	@Override
+	public AbstractDao<Person> initDao() {
+		return new PersonDao();
 	}
 }
