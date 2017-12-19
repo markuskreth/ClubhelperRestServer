@@ -56,7 +56,7 @@
 		<div data-role="header" data-position="fixed">
 			<h1>Clubhelper Mobile</h1>
 			<a href="#personListMenu" data-rel="popup" data-role="button"
-				data-icon="bars" data-mini="true" data-rel="popup"></a>
+				data-icon="bars" data-rel="popup"></a>
 			<div data-role="popup" id="personListMenu">
 				<ul id="mainMenuItems">
 					<li><a href="#" onclick="printPhoneList2()" data-rel="popup"
@@ -66,7 +66,7 @@
 		</div>
 		<!-- /header -->
 
-		<div role="main" class="ui-">
+		<div role="main" class="ui-content">
 			<div>
 				<div id="content" class="width25 floatRight leftColumn">
 					<div class="width75 floatLeft">
@@ -79,9 +79,20 @@
 										class="ui-btn ui-btn-icon-left ui-icon-calendar">Kalender</a></li>
 								</ul>
 							</div>
+							<div data-role="navbar">
+								<ul>
+									<li class="ui-field-contain">
+										<select name="flip-checkbox-attendance" id="flip-checkbox-attendance" data-mini="true">
+											<option value="loadPersonList">Personen</option>
+											<option value="showAttendanceList">Anwesenheit</option>
+										</select>
+									</li>
+									<li id="sendAttendance"><a href="#" onclick="sendAttendance()"
+										class="ui-btn ui-btn-icon-left ui-icon-action">Abschicken</a></li>
+								</ul>
+							</div>
 							<div>
-								<p>Personen</p>
-							<ul id="personList" data-role="listview" data-inset="true"
+								<ul id="personList" data-role="listview" data-inset="true"
 								data-filter="true">
 								</ul>
 							</div>
