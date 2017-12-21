@@ -88,7 +88,7 @@ public abstract class GoogleBaseAdapter {
 	        getClass().getResourceAsStream("/client_secret.json");
 	    GoogleClientSecrets clientSecrets =
 	        GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
-	
+	    log.trace("client secret json resource loaded.");
 	    // Build flow and trigger user authorization request.
 	    GoogleAuthorizationCodeFlow flow =
 	            new GoogleAuthorizationCodeFlow.Builder(

@@ -80,10 +80,15 @@ function showAttendanceList() {
 }
 
 function sendAttendance() {
+	ui = $( "#flip-checkbox-attendance" );
+	ui.val("loadPersonList");
+	window[ui.val()]();
+	$("#sendAttendance").hide();
 	attendants.forEach(function(item) {
 		ajax(baseUrl + "attendance/for/" + item, "", "post");
 	})
 	attendants = [];
+	
 }
 
 function addAttendancePersonToList(person) {
