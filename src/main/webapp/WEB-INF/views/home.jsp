@@ -14,6 +14,4 @@
 
 <!-- <a href="person/">Alle Personen</a><br /> -->
 
-<a target="_blank" href="downloadJnlp/ClubHelperClient.jnlp" type="application/x-java-jnlp-file" download="ClubHelperClient.jnlp">Programm starten</a><br /><br />
-
 </p>

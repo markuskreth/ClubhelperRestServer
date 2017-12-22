@@ -1,14 +1,13 @@
 package de.kreth.clubhelperbackend.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,12 +23,12 @@ import de.kreth.clubhelperbackend.pojo.Attendance;
 public class AttendenceTests extends AbstractDaoTest<Attendance> {
 
 	private AttendanceController controller;
-	
+
 	@Before
 	public void initController() {
 		controller = new AttendanceController(dao);
 	}
-	
+
 	@Test
 	public void createAttendence() {
 		when(jdbcTemplate.update(Matchers.anyString(), Matchers.argThat(new ObjectArrayMatcher(null)))).thenReturn(1);
@@ -44,9 +43,9 @@ public class AttendenceTests extends AbstractDaoTest<Attendance> {
 		assertEquals(nowWithoutTime(), created.getOnDate());
 		assertEquals(1L, created.getPersonId());
 		assertEquals(objectId, created.getId());
-		
+
 	}
-	
+
 	private Date now() {
 		return new GregorianCalendar(2017, Calendar.DECEMBER, 18, 17, 10, 15).getTime();
 	}
