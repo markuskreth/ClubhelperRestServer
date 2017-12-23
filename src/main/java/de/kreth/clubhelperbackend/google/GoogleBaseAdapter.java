@@ -32,19 +32,19 @@ public abstract class GoogleBaseAdapter {
 	/** Application name. */
 	protected static final String APPLICATION_NAME = "ClubHelperBackend";
 	/** Directory to store user credentials for this application. */
-	protected static final File DATA_STORE_DIR = new File(
-	        System.getProperty("catalina.base"), ".credentials");
+	protected static final File DATA_STORE_DIR = new File(System.getProperty("catalina.base"), ".credentials");
 	/** Global instance of the JSON factory. */
 	protected static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-	/** Global instance of the scopes required by this quickstart.
+	/**
+	 * Global instance of the scopes required by this quickstart.
 	 *
-	 * If modifying these scopes, delete your previously saved credentials
-	 * at ~/.credentials/sheets.googleapis.com-java-quickstart
+	 * If modifying these scopes, delete your previously saved credentials at
+	 * ~/.credentials/sheets.googleapis.com-java-quickstart
 	 */
 	static final List<String> SCOPES = Arrays.asList(SheetsScopes.SPREADSHEETS, CalendarScopes.CALENDAR);
 
 	protected static Credential credential;
-	
+
 	protected static final Logger log = LoggerFactory.getLogger(GoogleBaseAdapter.class);
 	/** Global instance of the {@link FileDataStoreFactory}. */
 	protected final FileDataStoreFactory DATA_STORE_FACTORY;
@@ -53,86 +53,82 @@ public abstract class GoogleBaseAdapter {
 
 	public GoogleBaseAdapter() throws GeneralSecurityException, IOException {
 		super();
-        HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-        DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
-        DATA_STORE_DIR.mkdirs();
+		HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+		DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
+		DATA_STORE_DIR.mkdirs();
 	}
 
 	protected void checkRefreshToken() throws IOException {
 
-		if(credential != null && (credential.getExpiresInSeconds()!=null && credential.getExpiresInSeconds()<3600)) {
-			if(log.isDebugEnabled()) {
+		if (credential != null
+				&& (credential.getExpiresInSeconds() != null && credential.getExpiresInSeconds() < 3600)) {
+			if (log.isDebugEnabled()) {
 				log.debug("Security needs refresh, trying.");
 			}
 			boolean result = credential.refreshToken();
-			if(log.isDebugEnabled()) {
-				log.debug("Token refresh " + (result?"successfull.":"failed."));
+			if (log.isDebugEnabled()) {
+				log.debug("Token refresh " + (result ? "successfull." : "failed."));
 			}
 		} else {
 			authorize();
 		}
 	}
-	
+
 	/**
 	 * Creates an authorized Credential object.
+	 * 
 	 * @return an authorized Credential object.
 	 * @throws IOException
 	 */
 	protected synchronized Credential authorize() throws IOException {
-		if(credential != null && (credential.getExpiresInSeconds()!=null && credential.getExpiresInSeconds()<3600)) {
+		if (credential != null
+				&& (credential.getExpiresInSeconds() != null && credential.getExpiresInSeconds() < 3600)) {
 			credential.refreshToken();
 			return credential;
 		}
-	    // Load client secrets.
-	    InputStream in =
-	        getClass().getResourceAsStream("/client_secret.json");
-	    GoogleClientSecrets clientSecrets =
-	        GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
-	    log.trace("client secret json resource loaded.");
-	    // Build flow and trigger user authorization request.
-	    GoogleAuthorizationCodeFlow flow =
-	            new GoogleAuthorizationCodeFlow.Builder(
-	            		HTTP_TRANSPORT, 
-	            		JSON_FACTORY, clientSecrets, SCOPES)
-	            .setDataStoreFactory(DATA_STORE_FACTORY)
-	            .setAccessType("offline")
-	            .setApprovalPrompt("force")
-	            .build();
-	    LocalServerReceiver.Builder builder = new LocalServerReceiver.Builder();
-    	builder.setPort(59431);
+		// Load client secrets.
+		InputStream in = getClass().getResourceAsStream("/client_secret.json");
+		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
+		log.trace("client secret json resource loaded.");
+		// Build flow and trigger user authorization request.
+		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY,
+				clientSecrets, SCOPES).setDataStoreFactory(DATA_STORE_FACTORY).setAccessType("offline")
+						.setApprovalPrompt("force").build();
+		LocalServerReceiver.Builder builder = new LocalServerReceiver.Builder();
+		builder.setPort(59431);
 		try {
-	
+
 			InetAddress localHost = InetAddress.getLocalHost();
-			if(false == (localHost.isAnyLocalAddress()||localHost.isSiteLocalAddress()||localHost.isLinkLocalAddress())) {
+			if (false == (localHost.isAnyLocalAddress() || localHost.isSiteLocalAddress()
+					|| localHost.isLinkLocalAddress() || localHost.isLoopbackAddress())) {
 
 				String hostName = localHost.getHostName();
 				URI uri = new URI(new StringBuilder("http://").append(hostName).toString());
-		        if(uri != null) {
-		        	builder.setHost(uri.getHost());
-		        }
+				if (uri != null) {
+					builder.setHost(uri.getHost());
+				}
 			}
 		} catch (URISyntaxException e) {
-			if(log.isWarnEnabled()) {
+			if (log.isWarnEnabled()) {
 				log.warn("Unable to determine Hostname. Using default localhost.", e);
 			}
 		}
-	
+
 		LocalServerReceiver localServerReceiver = builder.build();
-		credential = new AuthorizationCodeInstalledApp(
-	        flow, localServerReceiver).authorize("user");
-	    if(log.isDebugEnabled()) {
-	    	log.debug("Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
-	    }
+		credential = new AuthorizationCodeInstalledApp(flow, localServerReceiver).authorize("user");
+		if (log.isDebugEnabled()) {
+			log.debug("Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
+		}
 
 		credential.setExpiresInSeconds(Long.valueOf(691200L));
-		
+
 		boolean refreshToken = credential.refreshToken();
-		if(refreshToken == false && log.isWarnEnabled()) {
+		if (refreshToken == false && log.isWarnEnabled()) {
 			log.warn("Refresh of google access token failed after initialization!");
-		} else if(log.isDebugEnabled()) {
-			log.debug("Initial Refresh of google access Token " + (refreshToken?"was successful.":"failed."));
+		} else if (log.isDebugEnabled()) {
+			log.debug("Initial Refresh of google access Token " + (refreshToken ? "was successful." : "failed."));
 		}
-	    return credential;
+		return credential;
 	}
 
 }
