@@ -36,12 +36,12 @@ public class MysqlDbCheckAspect implements Database {
 	public MysqlDbCheckAspect(DataSource dataSource) {
 
 		logger = LoggerFactory.getLogger(MysqlDbCheckAspect.class);
-		if(logger.isDebugEnabled()) {
+		if (logger.isDebugEnabled()) {
 			logger.debug("init with " + dataSource);
 		}
 		try {
 			con = dataSource.getConnection();
-			if(logger.isInfoEnabled()) {
+			if (logger.isInfoEnabled()) {
 				logger.info("finished db init, got con to " + con.getCatalog());
 			}
 			checkDb(false);
@@ -56,20 +56,20 @@ public class MysqlDbCheckAspect implements Database {
 	}
 
 	public synchronized void checkDb(boolean force) {
-		if (isChecked && force==false ) {
-			if(logger.isTraceEnabled()) {
+		if (isChecked && force == false) {
+			if (logger.isTraceEnabled()) {
 				logger.trace("Database already checked.");
 			}
 			return;
 		}
 		isChecked = true;
-		if(logger.isDebugEnabled()) {
+		if (logger.isDebugEnabled()) {
 			logger.debug("Initalizing Database");
 		}
 
 		try {
 			int currentDbVersion = getVersion();
-			if(logger.isInfoEnabled()) {
+			if (logger.isInfoEnabled()) {
 				logger.info("Database Version " + currentDbVersion);
 			}
 			beginTransaction();
@@ -86,7 +86,7 @@ public class MysqlDbCheckAspect implements Database {
 				logger.warn("rollback failed", e1);
 			}
 
-			throw new DataAccessResourceFailureException("Konnte Datenbanktabellen nicht erstellen1", e);
+			throw new DataAccessResourceFailureException("Konnte Datenbanktabellen nicht erstellen!", e);
 		}
 	}
 
@@ -131,7 +131,7 @@ public class MysqlDbCheckAspect implements Database {
 				version = rs.getInt("version");
 
 		} catch (SQLException e) {
-			if(logger.isDebugEnabled()) {
+			if (logger.isDebugEnabled()) {
 				logger.debug("Error on Database fetch version, version 0?", e);
 			}
 		} finally {
@@ -139,7 +139,7 @@ public class MysqlDbCheckAspect implements Database {
 				try {
 					stm.close();
 				} catch (SQLException e) {
-					if(logger.isDebugEnabled()) {
+					if (logger.isDebugEnabled()) {
 						logger.debug("Error on Database close", e);
 					}
 				}
