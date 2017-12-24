@@ -46,17 +46,18 @@ public class EventController {
 
 			adjustExcludedEndDate(e);
 			StringBuilder msg = new StringBuilder();
-			msg.append("Event: ").append(e.getSummary()).append(", Start=").append(e.getStart()).append(" skipped properties:");
-			for(Entry<String, Object> entry: e.entrySet()) {
-				
+			msg.append("Event: ").append(e.getSummary()).append(", Start=").append(e.getStart())
+					.append(" skipped properties:");
+			for (Entry<String, Object> entry : e.entrySet()) {
+
 				Entry<String, Object> ev = map(entry);
-				if(ev != null) {
+				if (ev != null) {
 					events.put(ev.getKey(), ev.getValue());
-				} else if(log.isTraceEnabled()) {
+				} else if (log.isTraceEnabled()) {
 					msg.append("\n\t\"").append(entry.getKey()).append("\", value: ").append(entry.getValue());
 				}
 			}
-			if(log.isTraceEnabled()) {
+			if (log.isTraceEnabled()) {
 				log.trace(msg.toString());
 			}
 			result.add(events);
@@ -65,18 +66,20 @@ public class EventController {
 	}
 
 	private void adjustExcludedEndDate(com.google.api.services.calendar.model.Event e) {
-		if(e.isEndTimeUnspecified() == false && (e.getStart().getDate() !=null || e.getStart().getDateTime().isDateOnly())) {
+		if (e.isEndTimeUnspecified() == false
+				&& (e.getStart().getDate() != null || e.getStart().getDateTime().isDateOnly())) {
 			EventDateTime end = e.getEnd();
 			GregorianCalendar calendar = new GregorianCalendar();
-			calendar.setTimeInMillis(end.getDate()!=null?end.getDate().getValue():end.getDateTime().getValue());
+			calendar.setTimeInMillis(end.getDate() != null ? end.getDate().getValue() : end.getDateTime().getValue());
 			calendar.add(Calendar.DAY_OF_MONTH, -1);
-			end.setDate(new DateTime(String.format("%d-%02d-%02d", calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH)+1, calendar.get(Calendar.DAY_OF_MONTH))));
+			end.setDate(new DateTime(String.format("%d-%02d-%02d", calendar.get(Calendar.YEAR),
+					calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH))));
 		}
 	}
 
 	private Entry<String, Object> map(Entry<String, Object> entry) {
 		Object value = entry.getValue();
-		switch(entry.getKey()) {
+		switch (entry.getKey()) {
 		case "summary":
 			entry = Maps.immutableEntry("title", value);
 			break;
@@ -94,6 +97,7 @@ public class EventController {
 		case "location":
 		case "description":
 		case "sequence":
+		case "attendees":
 			entry = Maps.immutableEntry(entry.getKey(), value);
 			break;
 		default:
@@ -104,7 +108,7 @@ public class EventController {
 
 	private String firstValue(Object value) {
 		int index = -1;
-		index = value.toString().indexOf(':')+2;
+		index = value.toString().indexOf(':') + 2;
 		String substring = value.toString().substring(index, value.toString().indexOf('\"', index));
 		return substring;
 	}
