@@ -1,27 +1,29 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="utf-8"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="utf-8"%><!doctype html>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="s"%>
-<!doctype html>
 <html lang="de">
 <head>
 <title>Clubhelper Mobile</title>
 <meta charset="utf-8">
 <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet"
-	href=<c:url value='/resources/css/jquery.mobile-1.4.5.min.css' /> />
+
 <link rel="stylesheet" href=<c:url value='/resources/css/custom.css' /> />
 <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Inconsolata" />
 <link rel="stylesheet" href=<c:url value='/resources/css/clndr.css' /> />
+
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+
 <!-- <link rel="stylesheet/less" type="text/css" href=<c:url value='/resources/css/clndr.less' /> /> -->
-<script src=<c:url value='/resources/js/jquery-1.11.1.min.js' />></script>
 <%-- <script src=<c:url value='/resources/js/less.js' />></script> --%>
-<script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.2/less.min.js"></script>
+<%-- <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.2/less.min.js"></script> --%>
+
 <script src=<c:url value='/resources/js/moment-with-locales.min.js' />></script>
-<script src=<c:url value='/resources/js/jquery.mobile-1.4.5.min.js' />></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+
+<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
 <script charset="utf-8" src=<c:url value='/resources/js/log4javascript.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/general.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/jumpheights.js' />></script>
@@ -35,7 +37,7 @@
 	var baseUrl = location.protocol + '//' + location.host
 			+ <c:url value='/' />;
 	var log = log4javascript.getDefaultLogger();
-	log4javascript.setEnabled(true);
+	log4javascript.setEnabled(false);
 </script>
 <style>
 .ui-icon-person {
@@ -54,7 +56,7 @@
 		<div data-role="header" data-position="fixed">
 			<h1>Clubhelper Mobile</h1>
 			<a href="#personListMenu" data-rel="popup" data-role="button"
-				data-icon="bars" data-mini="true" data-rel="popup"></a>
+				data-icon="bars" data-rel="popup"></a>
 			<div data-role="popup" id="personListMenu">
 				<ul id="mainMenuItems">
 					<li><a href="#" onclick="printPhoneList2()" data-rel="popup"
@@ -64,7 +66,7 @@
 		</div>
 		<!-- /header -->
 
-		<div role="main" class="ui-">
+		<div role="main" class="ui-content">
 			<div>
 				<div id="content" class="width25 floatRight leftColumn">
 					<div class="width75 floatLeft">
@@ -77,9 +79,20 @@
 										class="ui-btn ui-btn-icon-left ui-icon-calendar">Kalender</a></li>
 								</ul>
 							</div>
+							<div data-role="navbar">
+								<ul>
+									<li class="ui-field-contain">
+										<select name="flip-checkbox-attendance" id="flip-checkbox-attendance" data-mini="true">
+											<option value="loadPersonList">Personen</option>
+											<option value="showAttendanceList">Anwesenheit</option>
+										</select>
+									</li>
+									<li id="sendAttendance"><a href="#" onclick="sendAttendance()"
+										class="ui-btn ui-btn-icon-left ui-icon-action">Abschicken</a></li>
+								</ul>
+							</div>
 							<div>
-								<p>Personen</p>
-							<ul id="personList" data-role="listview" data-inset="true"
+								<ul id="personList" data-role="listview" data-inset="true"
 								data-filter="true">
 								</ul>
 							</div>
@@ -314,13 +327,14 @@
 <!-- 		<a href="#" data-role="button" onclick="printPhoneList2">Telefonliste</a> -->
 <!-- 	</div> -->
 
-	<div id="editDialog" data-role="page" data-dialog="true"></div>
-	<div id="editGroupDialog" data-role="page" data-dialog="true"></div>
+	<div id="editDialog" data-role="page"></div>
+	<div id="editGroupDialog" data-role="page"></div>
+	
 	<div id="templates" style="display:none;">
 		<input class="datepicker" type="date" data-role="datebox" data-options='{"mode": "datebox", "useNewStyle":true,"zindex":1200}' />
 		<div data-role="popup" id="popupBasic"></div>
 	</div>
-	<div id="chooseTaskDialog" data-role="page" data-dialog="true">
+	<div id="chooseTaskDialog" data-role="page">
 		<div data-role="header" data-position="fixed" data-add-back-btn="true"
 			data-back-btn-text="Zurück">
 			<H2 id="TaskHeadText"></H2>

@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,9 +30,11 @@ import de.kreth.clubhelperbackend.google.calendar.CalendarAdapter;
 public class EventController {
 
 	private final CalendarAdapter adapter;
+	private final Logger log;
 
 	public EventController() throws GeneralSecurityException, IOException {
 		adapter = new CalendarAdapter();
+		log = LoggerFactory.getLogger(getClass());
 	}
 
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
@@ -41,32 +45,41 @@ public class EventController {
 			Map<String, Object> events = new HashMap<>();
 
 			adjustExcludedEndDate(e);
-			for(Entry<String, Object> entry: e.entrySet()) {
-				
-				entry = map(entry);
-				if(entry != null) {
-					events.put(entry.getKey(), entry.getValue());
+			StringBuilder msg = new StringBuilder();
+			msg.append("Event: ").append(e.getSummary()).append(", Start=").append(e.getStart())
+					.append(" skipped properties:");
+			for (Entry<String, Object> entry : e.entrySet()) {
+
+				Entry<String, Object> ev = map(entry);
+				if (ev != null) {
+					events.put(ev.getKey(), ev.getValue());
+				} else if (log.isTraceEnabled()) {
+					msg.append("\n\t\"").append(entry.getKey()).append("\", value: ").append(entry.getValue());
 				}
 			}
-
+			if (log.isTraceEnabled()) {
+				log.trace(msg.toString());
+			}
 			result.add(events);
 		});
 		return result;
 	}
 
 	private void adjustExcludedEndDate(com.google.api.services.calendar.model.Event e) {
-		if(e.isEndTimeUnspecified() == false && (e.getStart().getDate() !=null || e.getStart().getDateTime().isDateOnly())) {
+		if (e.isEndTimeUnspecified() == false
+				&& (e.getStart().getDate() != null || e.getStart().getDateTime().isDateOnly())) {
 			EventDateTime end = e.getEnd();
 			GregorianCalendar calendar = new GregorianCalendar();
-			calendar.setTimeInMillis(end.getDate()!=null?end.getDate().getValue():end.getDateTime().getValue());
+			calendar.setTimeInMillis(end.getDate() != null ? end.getDate().getValue() : end.getDateTime().getValue());
 			calendar.add(Calendar.DAY_OF_MONTH, -1);
-			end.setDate(new DateTime(String.format("%d-%02d-%02d", calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH)+1, calendar.get(Calendar.DAY_OF_MONTH))));
+			end.setDate(new DateTime(String.format("%d-%02d-%02d", calendar.get(Calendar.YEAR),
+					calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH))));
 		}
 	}
 
 	private Entry<String, Object> map(Entry<String, Object> entry) {
 		Object value = entry.getValue();
-		switch(entry.getKey()) {
+		switch (entry.getKey()) {
 		case "summary":
 			entry = Maps.immutableEntry("title", value);
 			break;
@@ -80,9 +93,14 @@ public class EventController {
 		case "updated":
 		case "status":
 		case "colorClass":
-			entry = Maps.immutableEntry(entry.getKey(), value.toString());
+		case "id":
+		case "location":
+		case "description":
+		case "sequence":
+		case "attendees":
+			entry = Maps.immutableEntry(entry.getKey(), value);
 			break;
-		default: 
+		default:
 			entry = null;
 		}
 		return entry;
@@ -90,7 +108,7 @@ public class EventController {
 
 	private String firstValue(Object value) {
 		int index = -1;
-		index = value.toString().indexOf(':')+2;
+		index = value.toString().indexOf(':') + 2;
 		String substring = value.toString().substring(index, value.toString().indexOf('\"', index));
 		return substring;
 	}

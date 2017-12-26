@@ -4,8 +4,10 @@ import static org.apache.commons.lang3.StringUtils.join;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -39,19 +41,21 @@ import de.kreth.clubhelperbackend.pojo.DeletedEntries;
 public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport implements Dao<T> {
 
 	private SqlForDialect sqlDialect;
-	private String SQL_QUERY_BY_ID;
-	private String SQL_QUERY_CHANGED;
-	private String SQL_UPDATE;
-	private String SQL_DELETE;
-	private String SQL_QUERY_ALL;
-	private String SQL_INSERTWithoutId;
-	private String SQL_INSERTWithId;
-	private RowMapper<T> mapper;
-	private String tableName;
+	protected String SQL_QUERY_ALL;
+	
+	final String SQL_QUERY_BY_ID;
+	final String SQL_QUERY_CHANGED;
+	final String SQL_UPDATE;
+	final String SQL_DELETE;
+	final String SQL_INSERTWithoutId;
+	final String SQL_INSERTWithId;
+	final RowMapper<T> mapper;
+	final String tableName;
+	private final Logger log;
+
 	private DeletedEntriesDao deletedEntriesDao;
 	private TransactionTemplate transactionTemplate;
-	private Logger log;
-
+	
 	/**
 	 * Constructs this {@link Dao} implemetation.
 	 * 
@@ -145,6 +149,9 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 			this.orderBy = orderBy;
 		}
 
+		public RowMapper<Y> getMapper() {
+			return mapper;
+		}
 	}
 
 	/**
@@ -183,6 +190,17 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		setDataSource(source);
 	}
 
+	public static Date normalizeDateToDay(Date date) {
+		Calendar onDate = new GregorianCalendar();
+		onDate.setTime(date);
+		onDate.set(Calendar.MILLISECOND, 0);
+		onDate.set(Calendar.SECOND, 0);
+		onDate.set(Calendar.MINUTE, 0);
+		onDate.set(Calendar.HOUR_OF_DAY, 0);
+		Date time = onDate.getTime();
+		return time;
+	}
+	
 	@Override
 	public T getById(long id) {
 		try {

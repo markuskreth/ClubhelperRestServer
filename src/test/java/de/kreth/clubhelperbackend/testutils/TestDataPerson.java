@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import de.kreth.clubhelperbackend.pojo.Person;
-import de.kreth.clubhelperbackend.pojo.PersonType;
 
 public enum TestDataPerson {
 
@@ -19,9 +18,9 @@ public enum TestDataPerson {
 	public final Person person2;
 
 	TestDataPerson() {
-		personWithoutCreateChange = new Person(-1L, "Markus", "Kreth", "Trainer", birth, null, null);
-		person = new Person(2L, "Markus", "Kreth", "Trainer", birth, now, now);
-		person2 = new Person(3L, "Jane", "Doe", PersonType.RELATIVE.toString(),
+		personWithoutCreateChange = new Person(-1L, "Markus", "Kreth", birth, null, null);
+		person = new Person(2L, "Markus", "Kreth", birth, now, now);
+		person2 = new Person(3L, "Jane", "Doe", 
 				new GregorianCalendar(1980, Calendar.JANUARY, 1).getTime(), now, now);
 	}
 }

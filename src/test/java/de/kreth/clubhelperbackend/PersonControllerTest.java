@@ -69,7 +69,6 @@ public class PersonControllerTest {
 
 		assertEquals("Markus", created.getPrename());
 		assertEquals("Kreth", created.getSurname());
-		assertEquals("Trainer", created.getType());
 		assertEquals(TestDataPerson.INSTANCE.birth, created.getBirth());
 		assertEquals(dao.lastInsertId, created.getId());
 
@@ -84,7 +83,6 @@ public class PersonControllerTest {
 		assertEquals(2L, out.getId().longValue());
 		assertEquals("Markus", out.getPrename());
 		assertEquals("Kreth", out.getSurname());
-		assertEquals("Trainer", out.getType());
 		assertEquals(TestDataPerson.INSTANCE.birth, out.getBirth());
 		assertEquals(TestDataPerson.INSTANCE.now, out.getCreated());
 		assertTrue("Created not before changed!", out.getCreated().before(out.getChanged()));
@@ -103,7 +101,6 @@ public class PersonControllerTest {
 		assertEquals((long) 2, out.getId().longValue());
 		assertEquals("Markus", out.getPrename());
 		assertEquals("Kreth", out.getSurname());
-		assertEquals("Trainer", out.getType());
 		assertEquals(TestDataPerson.INSTANCE.birth, out.getBirth());
 	}
 

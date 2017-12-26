@@ -10,8 +10,14 @@ $(document).ready(function() {
 		}
 	});
 
+	$("#sendAttendance").hide();
 	loadPersonList();
-
+	
+	$( "#flip-checkbox-attendance" ).bind( "change", function(event, ui) {
+		ui = $( "#flip-checkbox-attendance" );
+		window[ui.val()]();
+		$("#sendAttendance").toggle();
+		});
 	$(document).on("pageshow", "#personDetails", function() {
 		if(currentPersonId == null) {
 			currentPersonId = readCookie('currentPersonId');
@@ -34,6 +40,10 @@ $(document).ready(function() {
 });
 
 function loadPersonList() {
+	createPersonListItems(addPersonToList);
+}
+
+function createPersonListItems(itemCreator) {
 	$("#personList").empty();
 
 	var x = readCookie('DataRefreshNotNessessary');
@@ -46,7 +56,7 @@ function loadPersonList() {
 			for ( var index in response) {
 				var person = response[index];
 				sessionStorage.setItem("personId" + person.id, JSON.stringify(person));
-				addPersonToList(person);
+				itemCreator(person);
 			}
 		});
 
@@ -55,13 +65,66 @@ function loadPersonList() {
 			var key = sessionStorage.key(i);
 			if(key.startsWith("personId")) {
 				var person = sessionStorage.getItem(key);
-				addPersonToList(JSON.parse(person));
+				itemCreator(JSON.parse(person));
 			}
 		}
 	}
 	
 	$("#personList").listview().listview('refresh');
 	
+}
+
+var attendants = [];
+function showAttendanceList() {
+	createPersonListItems(addAttendancePersonToList);
+}
+
+function sendAttendance() {
+	ui = $( "#flip-checkbox-attendance" );
+	ui.val("loadPersonList");
+	window[ui.val()]();
+	$("#sendAttendance").hide();
+	attendants.forEach(function(item) {
+		ajax(baseUrl + "attendance/for/" + item, "", "post");
+	})
+	attendants = [];
+	
+}
+
+function addAttendancePersonToList(person) {
+	if(!person) return;
+	var id = "checkboxAttendance" + person.id;
+	var link = $("<input data-iconpos=\"left\" type=\"checkbox\"></input>");
+	link.attr("personId", person.id);
+	if(attendants.indexOf(link.attr("personId"))>-1) {
+		link.attr("checked", true);
+	}
+	link.attr("id", id);
+	link.attr("name", id);
+	link.click(function() {
+		var me = $(this);
+		var pId = me.attr("personId");
+		var checked = me.prop("checked")
+		if(checked) {
+			attendants.push(pId);
+		} else {
+			var index = attendants.indexOf(pId);
+			if (index > -1) {
+				attendants.splice(index, 1);
+			}
+		}
+		
+	});
+	var hull = $("<div></div>");
+	var label = $("<label></label>").attr("for", id).text(person.prename + " " + person.surname);
+	hull.append(link);
+	hull.append(label);
+//	.append("<a href=\"#\" \r\n" + 
+//			"       data-icon=\"info\" \r\n" + 
+//			"       onclick=\"alert(\'Hello\')\"> This is a link though</a>")
+	var item = $("<li></li>").append(label.append(link));
+
+	$("#personList").append(item);
 }
 
 function addPersonToList(person) {
@@ -184,7 +247,7 @@ function showGroups(withDelete) {
 			}
 		}
 
-		showDialog("#editGroupDialog", "Gruppen für " + currentPerson.prename + " " + currentPerson.surname, content, function(){log.debug("Clicked ok for Persongroup.")});
+		showDialog("#editGroupDialog", "Gruppen für\n" + currentPerson.prename + " " + currentPerson.surname, content, function(){log.debug("Clicked ok for Persongroup.")});
 	});
 }
 
@@ -330,9 +393,12 @@ function showDialog(dialogId, headText, contentText, action) {
 			})
 			.attr("data-icon", "cancel")
 			.text("Abbrechen"));
-	editDialog.trigger("create");
+
 	$.mobile.changePage(dialogId, {
-		role : "dialog"
+        transition: "pop"
+        , role: "dialog"
+//        , closeBtn: "right"
+        , overlayTheme: "b"
 	});
 }
 

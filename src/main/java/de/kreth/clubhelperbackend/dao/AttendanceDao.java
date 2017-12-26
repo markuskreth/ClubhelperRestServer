@@ -1,11 +1,16 @@
 package de.kreth.clubhelperbackend.dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.stereotype.Repository;
 
 import de.kreth.clubhelperbackend.dao.abstr.AbstractDao;
@@ -19,6 +24,8 @@ public class AttendanceDao extends AbstractDao<Attendance> implements Dao<Attend
 
 	private static DaoConfig<Attendance> daoConfig = new DaoConfig<Attendance>("attendance", columnNames,
 			new RowMapper(), null);
+
+	private PreparedStatement prepStm;
 
 	public AttendanceDao() {
 		super(daoConfig);
@@ -36,10 +43,30 @@ public class AttendanceDao extends AbstractDao<Attendance> implements Dao<Attend
 		@Override
 		public Collection<Object> mapObject(Attendance obj) {
 			List<Object> values = new ArrayList<Object>();
-			values.add(obj.getOnDate());
+			
+			Date time = normalizeDateToDay(obj.getOnDate());
+			obj.setOnDate(time);
+			values.add(time);
 			values.add(obj.getPersonId());
 			return values;
 		}
+
 	};
 
+	public List<Attendance> getAttendencesFor(Date day) throws SQLException {
+		JdbcTemplate jdbcTemplate = getJdbcTemplate();
+		if(prepStm == null) {
+			prepStm = jdbcTemplate.getDataSource().getConnection().prepareStatement(SQL_QUERY_ALL + " AND on_date=?");
+		}
+		prepStm.setDate(1, new java.sql.Date(day.getTime()));
+		PreparedStatementCreator psc = new PreparedStatementCreator() {
+			
+			@Override
+			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+				return prepStm;
+			}
+		};
+		return jdbcTemplate.query(psc, daoConfig.getMapper());
+	}
+	
 }

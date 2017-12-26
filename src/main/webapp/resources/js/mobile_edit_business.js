@@ -463,6 +463,7 @@ function addPerson() {
 			});
 		});
 	$.mobile.changePage("#editDialog", {
-		role : "dialog"
+        transition: "pop"
+        , role: "dialog" 
 	});
 }

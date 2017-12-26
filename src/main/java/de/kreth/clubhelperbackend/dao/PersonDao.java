@@ -16,7 +16,7 @@ import de.kreth.clubhelperbackend.pojo.Person;
 @Repository
 public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 
-	private final static String columnNames[] = { "prename", "surname", "type", "birth" };
+	private final static String columnNames[] = { "prename", "surname", "birth" };
 
 	private final static DaoConfig<Person> config = new DaoConfig<Person>("person", columnNames, new PersonRowMapper(),
 			new String[] { "surname", "prename" });
@@ -30,7 +30,7 @@ public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 		@Override
 		public Person mapRow(ResultSet rs, int rowNum) throws SQLException {
 			Person p = new PersonToString(rs.getLong("_id"), rs.getString("prename"), rs.getString("surname"),
-					rs.getString("type"), rs.getTimestamp("birth"), rs.getTimestamp("changed"),
+					rs.getTimestamp("birth"), rs.getTimestamp("changed"),
 					rs.getTimestamp("created"));
 			return p;
 		}
@@ -40,7 +40,6 @@ public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 			List<Object> values = new ArrayList<Object>();
 			values.add(p.getPrename());
 			values.add(p.getSurname());
-			values.add(p.getType());
 			values.add(p.getBirth());
 			return values;
 		}
@@ -57,9 +56,9 @@ public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 			return bld.toString();
 		}
 
-		public PersonToString(Long id, String prename, String surname, String type, Date birth, Date changed,
+		public PersonToString(Long id, String prename, String surname, Date birth, Date changed,
 				Date created) {
-			super(id, prename, surname, type, birth, changed, created);
+			super(id, prename, surname, birth, changed, created);
 		}
 
 	}

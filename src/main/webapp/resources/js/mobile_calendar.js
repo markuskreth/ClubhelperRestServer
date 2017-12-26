@@ -64,6 +64,18 @@ function loadCalendarData() {
 	        	var text = "";
 	        	target.events.forEach(function(elt, i) {
 	        		text+=elt.title +"\n";
+	        		if(elt.attendees) {
+	        			text+="\t";
+	        			elt.attendees.forEach(function(att) {
+							if(att.displayName) {
+								text+=att.displayName;
+							} else {
+								text+=att.email;
+							}
+		        			text+="; ";
+						});
+	        			text+="\n";
+	        		}
 	        	})
 	        	alert(target.date.format("DD.MM.YY") + ": " + text);
 	        },
