@@ -22,33 +22,39 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-public class ClubhelperAuthenticationProvider implements AuthenticationProvider, UserDetailsService {
+public class ClubhelperAuthenticationProvider
+		implements
+			AuthenticationProvider,
+			UserDetailsService {
 
-	private final Logger log = LoggerFactory.getLogger(ClubhelperAuthenticationProvider.class);
+	private final Logger log = LoggerFactory
+			.getLogger(ClubhelperAuthenticationProvider.class);
 	private final DataSource dataSource;
 	private PreparedStatement stmGroups;
 	private PreparedStatement stmUser;
 
-	public ClubhelperAuthenticationProvider(DataSource dataSource) throws SQLException {
+	public ClubhelperAuthenticationProvider(DataSource dataSource)
+			throws SQLException {
 		this.dataSource = dataSource;
 		reinitStm();
 	}
 
 	private void reinitStm() throws SQLException {
-		stmGroups = dataSource.getConnection()
-				.prepareStatement("select groupDef.name groupname from person \n"
-						+ "	left join persongroup on persongroup.person_id = person._id\n"
-						+ " left join groupDef on persongroup.group_id = groupDef._id\n"
+		stmGroups = dataSource.getConnection().prepareStatement(
+				"select groupDef.name groupname from person \n"
+						+ "	left join persongroup on persongroup.person_id = person.id\n"
+						+ " left join groupDef on persongroup.group_id = groupDef.id\n"
 						+ " where person.username = ? and person.password = ?");
-		stmUser = dataSource.getConnection()
-				.prepareStatement("select person.password password, groupDef.name groupname from person \n"
-						+ "	left join persongroup on persongroup.person_id = person._id\n"
-						+ " left join groupDef on persongroup.group_id = groupDef._id\n"
+		stmUser = dataSource.getConnection().prepareStatement(
+				"select person.password password, groupDef.name groupname from person \n"
+						+ "	left join persongroup on persongroup.person_id = person.id\n"
+						+ " left join groupDef on persongroup.group_id = groupDef.id\n"
 						+ " where person.username = ?");
 	}
 
 	@Override
-	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+	public Authentication authenticate(Authentication authentication)
+			throws AuthenticationException {
 		String name = authentication.getName();
 		String password = authentication.getCredentials().toString();
 
@@ -61,8 +67,10 @@ public class ClubhelperAuthenticationProvider implements AuthenticationProvider,
 				log.warn("No valid login group found for \"" + name + "\"");
 				return null;
 			} else {
-				Authentication auth = new UsernamePasswordAuthenticationToken(name, password, grantedAuths);
-				log.info("Login groups found for \"" + name + "\": " + grantedAuths);
+				Authentication auth = new UsernamePasswordAuthenticationToken(
+						name, password, grantedAuths);
+				log.info("Login groups found for \"" + name + "\": "
+						+ grantedAuths);
 				return auth;
 			}
 
@@ -72,14 +80,17 @@ public class ClubhelperAuthenticationProvider implements AuthenticationProvider,
 			} catch (SQLException e2) {
 
 				log.error("Sql error on reinitialization of statements", e2);
-				throw new AuthenticationCredentialsNotFoundException("Sql error on reinitialization of statements", e2);
+				throw new AuthenticationCredentialsNotFoundException(
+						"Sql error on reinitialization of statements", e2);
 			}
 			log.error("Sql error on authentication", e);
-			throw new AuthenticationCredentialsNotFoundException("Sql error on authentication", e);
+			throw new AuthenticationCredentialsNotFoundException(
+					"Sql error on authentication", e);
 		}
 	}
 
-	private List<GrantedAuthority> getRoles(String name, String password) throws SQLException {
+	private List<GrantedAuthority> getRoles(String name, String password)
+			throws SQLException {
 
 		stmGroups.setString(1, name);
 		stmGroups.setString(2, password);
@@ -103,7 +114,8 @@ public class ClubhelperAuthenticationProvider implements AuthenticationProvider,
 	}
 
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(String username)
+			throws UsernameNotFoundException {
 		log.debug("getting Userdetails for username " + username);
 
 		try {
@@ -118,13 +130,15 @@ public class ClubhelperAuthenticationProvider implements AuthenticationProvider,
 			}
 
 			if (password == null) {
-				throw new UsernameNotFoundException("No user found matching " + username);
+				throw new UsernameNotFoundException(
+						"No user found matching " + username);
 			} else {
 				return new User(username, password, grantedAuths);
 			}
 
 		} catch (SQLException e) {
-			throw new UsernameNotFoundException("error executing " + stmUser, e);
+			throw new UsernameNotFoundException("error executing " + stmUser,
+					e);
 		}
 	}
 

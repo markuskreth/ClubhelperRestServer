@@ -38,11 +38,13 @@ import de.kreth.clubhelperbackend.pojo.DeletedEntries;
  * @param <T>
  *            object type this dao is used for.
  */
-public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport implements Dao<T> {
+public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
+		implements
+			Dao<T> {
 
 	private SqlForDialect sqlDialect;
 	protected String SQL_QUERY_ALL;
-	
+
 	final String SQL_QUERY_BY_ID;
 	final String SQL_QUERY_CHANGED;
 	final String SQL_UPDATE;
@@ -55,7 +57,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 
 	private DeletedEntriesDao deletedEntriesDao;
 	private TransactionTemplate transactionTemplate;
-	
+
 	/**
 	 * Constructs this {@link Dao} implemetation.
 	 * 
@@ -66,28 +68,30 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		super();
 		log = LoggerFactory.getLogger(getClass());
 
-		List<String> columnNames = new ArrayList<String>(Arrays.asList(config.columnNames));
+		List<String> columnNames = new ArrayList<String>(
+				Arrays.asList(config.columnNames));
 		columnNames.add("changed");
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("update `");
-		stringBuilder.append(config.tableName);
-		stringBuilder.append("` set ");
-		stringBuilder.append(join(columnNames, "=?, "));
-		stringBuilder.append("=? WHERE _id=?");
+		StringBuilder stringBuilder = new StringBuilder().append("update ")
+				.append(config.tableName).append(" set ")
+				.append(join(columnNames, "=?, ")).append("=? WHERE id=?");
 		this.SQL_UPDATE = stringBuilder.toString();
 
 		columnNames.add("created");
-		SQL_INSERTWithoutId = "insert into `" + config.tableName + "` (" + join(columnNames, ", ") + ") values ("
+		SQL_INSERTWithoutId = "insert into " + config.tableName + " ("
+				+ join(columnNames, ", ") + ") values ("
 				+ generateQuestionMarkList(config.columnNames.length + 2) + ")";
 
-		columnNames.add(0, "_id");
-		this.SQL_INSERTWithId = "insert into `" + config.tableName + "` (" + join(columnNames, ", ") + ") values ("
+		columnNames.add(0, "id");
+		this.SQL_INSERTWithId = "insert into " + config.tableName + " ("
+				+ join(columnNames, ", ") + ") values ("
 				+ generateQuestionMarkList(config.columnNames.length + 3) + ")";
 
-		this.SQL_DELETE = "update `" + config.tableName + "` set deleted=? where _id=?";
+		this.SQL_DELETE = "update " + config.tableName
+				+ " set deleted=? where id=?";
 
-		this.SQL_QUERY_ALL = "select * from `" + config.tableName + "` WHERE deleted is null";
-		this.SQL_QUERY_BY_ID = SQL_QUERY_ALL + " AND _id=?";
+		this.SQL_QUERY_ALL = "select * from " + config.tableName
+				+ " WHERE deleted is null";
+		this.SQL_QUERY_BY_ID = SQL_QUERY_ALL + " AND id=?";
 		this.SQL_QUERY_CHANGED = SQL_QUERY_ALL + " AND changed>?";
 		this.mapper = config.mapper;
 		this.tableName = config.tableName;
@@ -97,8 +101,10 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 	}
 
 	@Autowired
-	public void setPlatformTransactionManager(PlatformTransactionManager transMan) {
-		Assert.notNull(transMan, "The 'transactionManager' argument must not be null.");
+	public void setPlatformTransactionManager(
+			PlatformTransactionManager transMan) {
+		Assert.notNull(transMan,
+				"The 'transactionManager' argument must not be null.");
 		this.transactionTemplate = new TransactionTemplate(transMan);
 	}
 
@@ -141,7 +147,8 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		 * @param orderBy
 		 *            column names for ordering list. null for no order clause
 		 */
-		public DaoConfig(String tableName, String[] columnNames, RowMapper<Y> mapper, String[] orderBy) {
+		public DaoConfig(String tableName, String[] columnNames,
+				RowMapper<Y> mapper, String[] orderBy) {
 			super();
 			this.tableName = tableName;
 			this.columnNames = columnNames;
@@ -161,7 +168,9 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 	 * @param <X>
 	 *            Obect type to be mapped
 	 */
-	public interface RowMapper<X extends Data> extends org.springframework.jdbc.core.RowMapper<X> {
+	public interface RowMapper<X extends Data>
+			extends
+				org.springframework.jdbc.core.RowMapper<X> {
 
 		/**
 		 * Maps the given object to a value array.
@@ -200,11 +209,12 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		Date time = onDate.getTime();
 		return time;
 	}
-	
+
 	@Override
 	public T getById(long id) {
 		try {
-			return getJdbcTemplate().queryForObject(SQL_QUERY_BY_ID, mapper, id);
+			return getJdbcTemplate().queryForObject(SQL_QUERY_BY_ID, mapper,
+					id);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
@@ -212,12 +222,14 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 
 	@Override
 	public List<T> getByWhere(String where) {
-		return getJdbcTemplate().query(SQL_QUERY_ALL + " AND " + where + " AND deleted is null", mapper);
+		return getJdbcTemplate().query(
+				SQL_QUERY_ALL + " AND " + where + " AND deleted is null",
+				mapper);
 	}
 
 	@Override
 	public List<T> getChangedSince(Date changed) {
-		Object[] args = { changed };
+		Object[] args = {changed};
 		return getJdbcTemplate().query(SQL_QUERY_CHANGED, args, mapper);
 	}
 
@@ -250,12 +262,14 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 				if (inserted == 1) {
 					if (!withId) {
 						sql = sqlDialect.queryForIdentity(tableName);
-						Long id = jdbcTemplate.queryForObject(sql, null, Long.class);
+						Long id = jdbcTemplate.queryForObject(sql, null,
+								Long.class);
 						obj.setId(id);
 					}
 				} else {
 					status.setRollbackOnly();
-					throw new IllegalStateException("insert could not successfully create the database entity");
+					throw new IllegalStateException(
+							"insert could not successfully create the database entity");
 				}
 
 				return obj;
@@ -272,11 +286,14 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		values.add(obj.getChanged());
 		values.add(obj.getId());
 
-		log.debug("sql=" + SQL_UPDATE + "; ValueSize=" + values.size() + "; Values=" + values);
+		log.debug("sql=" + SQL_UPDATE + "; ValueSize=" + values.size()
+				+ "; Values=" + values);
 
-		int updateCount = getJdbcTemplate().update(SQL_UPDATE, values.toArray());
+		int updateCount = getJdbcTemplate().update(SQL_UPDATE,
+				values.toArray());
 		if (updateCount != 1) {
-			log.warn("UpdateCount for " + obj + " was " + updateCount + ". Created: " + obj.getCreated());
+			log.warn("UpdateCount for " + obj + " was " + updateCount
+					+ ". Created: " + obj.getCreated());
 		}
 
 		return updateCount == 1;
@@ -301,7 +318,8 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		Date date = new Date();
 		int inserted = getJdbcTemplate().update(SQL_DELETE, date, id);
 		if (inserted == 1) {
-			DeletedEntries deleted = deletedEntriesDao.insert(new DeletedEntries(-1L, tableName, id, date, date));
+			DeletedEntries deleted = deletedEntriesDao
+					.insert(new DeletedEntries(-1L, tableName, id, date, date));
 			return deleted.getId() >= 0;
 		} else {
 			return false;

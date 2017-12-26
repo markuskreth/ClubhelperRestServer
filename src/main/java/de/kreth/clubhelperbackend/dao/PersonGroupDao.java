@@ -14,20 +14,24 @@ import de.kreth.clubhelperbackend.pojo.PersonGroup;
 @Repository
 public class PersonGroupDao extends AbstractDao<PersonGroup> {
 
-	private final static String columnNames[] = { "person_id", "group_id" };
+	private final static String columnNames[] = {"person_id", "group_id"};
 
-	private final static DaoConfig<PersonGroup> config = new DaoConfig<PersonGroup>("persongroup", columnNames,
-			new PersonGroupRowMapper(), null);
+	private final static DaoConfig<PersonGroup> config = new DaoConfig<PersonGroup>(
+			"persongroup", columnNames, new PersonGroupRowMapper(), null);
 
 	public PersonGroupDao() {
 		super(config);
 	}
 
-	private static class PersonGroupRowMapper implements RowMapper<PersonGroup> {
+	private static class PersonGroupRowMapper
+			implements
+				RowMapper<PersonGroup> {
 
 		@Override
-		public PersonGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
-			PersonGroup p = new PersonGroup(rs.getLong("_id"), rs.getLong("person_id"), rs.getLong("group_id"),
+		public PersonGroup mapRow(ResultSet rs, int rowNum)
+				throws SQLException {
+			PersonGroup p = new PersonGroup(rs.getLong("id"),
+					rs.getLong("person_id"), rs.getLong("group_id"),
 					rs.getTimestamp("changed"), rs.getTimestamp("created"));
 			return p;
 		}

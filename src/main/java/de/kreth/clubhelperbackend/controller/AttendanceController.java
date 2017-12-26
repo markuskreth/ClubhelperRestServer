@@ -27,7 +27,8 @@ public class AttendanceController extends AbstractController<Attendance> {
 
 	@RequestMapping(value = "/{date}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public List<Attendance> getAttendencesOn(@PathVariable("date") Date date) throws SQLException {
+	public List<Attendance> getAttendencesOn(@PathVariable("date") Date date)
+			throws SQLException {
 		AttendanceDao tmpDao = (AttendanceDao) dao;
 		return tmpDao.getAttendencesFor(date);
 	}
@@ -35,9 +36,7 @@ public class AttendanceController extends AbstractController<Attendance> {
 	@RequestMapping(value = "/for/{id}", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
 	public Attendance post(@PathVariable("id") Long id) {
-		Attendance att = new Attendance(-1L);
-		att.setPersonId(id);
-		att.setOnDate(new Date());
+		Attendance att = new Attendance(-1L, new Date(), id, null, null);
 		return post(att);
 	}
 }

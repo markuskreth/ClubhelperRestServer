@@ -16,20 +16,24 @@ public class DeletedEntriesDao extends AbstractDao<DeletedEntries> {
 
 	public static final String TABLE_NAME = "deleted_entries";
 
-	private static final String[] columnNames = { "tablename", "entryId" };
+	private static final String[] columnNames = {"tablename", "entryId"};
 
-	private static final DaoConfig<DeletedEntries> config = new DaoConfig<DeletedEntries>(TABLE_NAME, columnNames,
-			new DeletedEntriesRowMapper(), null);
+	private static final DaoConfig<DeletedEntries> config = new DaoConfig<DeletedEntries>(
+			TABLE_NAME, columnNames, new DeletedEntriesRowMapper(), null);
 
 	public DeletedEntriesDao() {
 		super(config);
 	}
 
-	private static class DeletedEntriesRowMapper implements AbstractDao.RowMapper<DeletedEntries> {
+	private static class DeletedEntriesRowMapper
+			implements
+				AbstractDao.RowMapper<DeletedEntries> {
 
 		@Override
-		public DeletedEntries mapRow(ResultSet rs, int rowNum) throws SQLException {
-			return new DeletedEntries(rs.getLong("_id"), rs.getString("tablename"), rs.getLong("entryId"),
+		public DeletedEntries mapRow(ResultSet rs, int rowNum)
+				throws SQLException {
+			return new DeletedEntries(rs.getLong("id"),
+					rs.getString("tablename"), rs.getLong("entryId"),
 					rs.getTimestamp("changed"), rs.getTimestamp("created"));
 		}
 
@@ -50,12 +54,14 @@ public class DeletedEntriesDao extends AbstractDao<DeletedEntries> {
 
 	@Override
 	public boolean delete(DeletedEntries obj) {
-		getJdbcTemplate().execute("DELETE FROM " + TABLE_NAME + " WHERE _id=" + obj.getId());
+		getJdbcTemplate().execute(
+				"DELETE FROM " + TABLE_NAME + " WHERE _id=" + obj.getId());
 		return true;
 	}
 
 	@Override
 	public boolean undelete(long id) {
-		throw new UnsupportedOperationException("Delete Entry cannot be undeleted!");
+		throw new UnsupportedOperationException(
+				"Delete Entry cannot be undeleted!");
 	}
 }

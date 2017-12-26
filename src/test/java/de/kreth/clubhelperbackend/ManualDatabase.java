@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
 
-import de.kreth.clubhelperbackend.aspects.MysqlDbCheckAspect;
+import de.kreth.clubhelperbackend.aspects.DbCheckAspect;
 
 public class ManualDatabase {
 
@@ -19,10 +19,10 @@ public class ManualDatabase {
 		initLogger();
 
 		LoggerFactory.getLogger(ManualDatabase.class).debug("Manual");
-		LoggerFactory.getLogger(MysqlDbCheckAspect.class).debug("MysqlDbCheckAspect");
+		LoggerFactory.getLogger(DbCheckAspect.class).debug("MysqlDbCheckAspect");
 
 		DataSource dataSource = getDatasource(args);
-		MysqlDbCheckAspect updater = new MysqlDbCheckAspect(dataSource);
+		DbCheckAspect updater = new DbCheckAspect(dataSource);
 		updater.checkDb();
 	}
 

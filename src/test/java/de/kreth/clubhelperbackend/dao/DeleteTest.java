@@ -21,7 +21,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
 
-import de.kreth.clubhelperbackend.aspects.MysqlDbCheckAspect;
+import de.kreth.clubhelperbackend.aspects.DbCheckAspect;
 import de.kreth.clubhelperbackend.config.SqlForMysql;
 import de.kreth.clubhelperbackend.pojo.Contact;
 
@@ -58,7 +58,7 @@ public class DeleteTest {
 		contactDao.setPlatformTransactionManager(man);
 		contactDao.setDeletedEntriesDao(deletedEnriesDao);
 
-		MysqlDbCheckAspect mysqlCheck = new MysqlDbCheckAspect(dataSource);
+		DbCheckAspect mysqlCheck = new DbCheckAspect(dataSource);
 		mysqlCheck.checkDb();
 	}
 

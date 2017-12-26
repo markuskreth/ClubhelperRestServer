@@ -14,12 +14,15 @@ import de.kreth.clubhelperbackend.dao.abstr.Dao;
 import de.kreth.clubhelperbackend.pojo.Relative;
 
 @Repository
-public class RelativeDao extends AbstractDao<Relative> implements Dao<Relative> {
+public class RelativeDao extends AbstractDao<Relative>
+		implements
+			Dao<Relative> {
 
-	private static final String columnNames[] = { "person1", "person2", "TO_PERSON1_RELATION", "TO_PERSON2_RELATION" };
+	private static final String columnNames[] = {"person1", "person2",
+			"TO_PERSON1_RELATION", "TO_PERSON2_RELATION"};
 
-	private static final DaoConfig<Relative> daoConfig = new DaoConfig<Relative>("relative", columnNames,
-			new RelativeRowMapper(), null);
+	private static final DaoConfig<Relative> daoConfig = new DaoConfig<Relative>(
+			"relative", columnNames, new RelativeRowMapper(), null);
 
 	public RelativeDao() {
 		super(daoConfig);
@@ -29,8 +32,10 @@ public class RelativeDao extends AbstractDao<Relative> implements Dao<Relative> 
 
 		@Override
 		public Relative mapRow(ResultSet rs, int rowNo) throws SQLException {
-			Relative r = new ToStringRelative(rs.getLong("_id"), rs.getLong("person1"), rs.getLong("person2"),
-					rs.getString("TO_PERSON1_RELATION"), rs.getString("TO_PERSON2_RELATION"),
+			Relative r = new ToStringRelative(rs.getLong("id"),
+					rs.getLong("person1"), rs.getLong("person2"),
+					rs.getString("TO_PERSON1_RELATION"),
+					rs.getString("TO_PERSON2_RELATION"),
 					rs.getTimestamp("changed"), rs.getTimestamp("created"));
 			return r;
 		}
@@ -49,14 +54,17 @@ public class RelativeDao extends AbstractDao<Relative> implements Dao<Relative> 
 
 			private static final long serialVersionUID = 4772529931953029461L;
 
-			public ToStringRelative(long id, long person1Id, long person2Id, String toPerson1Relation,
-					String toPerson2Relation, Date changedDate, Date createdDate) {
-				super(id, person1Id, person2Id, toPerson1Relation, toPerson2Relation, changedDate, createdDate);
+			public ToStringRelative(long id, long person1Id, long person2Id,
+					String toPerson1Relation, String toPerson2Relation,
+					Date changedDate, Date createdDate) {
+				super(id, person1Id, person2Id, toPerson1Relation,
+						toPerson2Relation, changedDate, createdDate);
 			}
 
 			@Override
 			public String toString() {
-				return getId() + ": " + getPerson2() + " " + getToPerson1Relation() + " --> " + getPerson1();
+				return getId() + ": " + getPerson2() + " "
+						+ getToPerson1Relation() + " --> " + getPerson1();
 			}
 		}
 	};

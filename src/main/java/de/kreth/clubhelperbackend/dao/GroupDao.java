@@ -16,9 +16,9 @@ import de.kreth.clubhelperbackend.pojo.Group;
 public class GroupDao extends AbstractDao<Group> implements Dao<Group> {
 
 	public static final String TABLE_NAME = "groupDef";
-	private static final String[] columnNames = { "name" };
-	private static final DaoConfig<Group> config = new DaoConfig<Group>(TABLE_NAME, columnNames, new GroupRowMapper(),
-			null);
+	private static final String[] columnNames = {"name"};
+	private static final DaoConfig<Group> config = new DaoConfig<Group>(
+			TABLE_NAME, columnNames, new GroupRowMapper(), null);
 
 	public GroupDao() {
 		super(config);
@@ -28,8 +28,8 @@ public class GroupDao extends AbstractDao<Group> implements Dao<Group> {
 
 		@Override
 		public Group mapRow(ResultSet rs, int rowNum) throws SQLException {
-			Group g = new Group(rs.getLong("_id"), rs.getString("name"), rs.getTimestamp("changed"),
-					rs.getTimestamp("created"));
+			Group g = new Group(rs.getLong("id"), rs.getString("name"),
+					rs.getTimestamp("changed"), rs.getTimestamp("created"));
 			return g;
 		}
 

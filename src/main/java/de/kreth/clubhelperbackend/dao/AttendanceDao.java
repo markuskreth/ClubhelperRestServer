@@ -18,12 +18,14 @@ import de.kreth.clubhelperbackend.dao.abstr.Dao;
 import de.kreth.clubhelperbackend.pojo.Attendance;
 
 @Repository
-public class AttendanceDao extends AbstractDao<Attendance> implements Dao<Attendance> {
+public class AttendanceDao extends AbstractDao<Attendance>
+		implements
+			Dao<Attendance> {
 
-	private static final String columnNames[] = { "on_date", "person_id" };
+	private static final String columnNames[] = {"on_date", "person_id"};
 
-	private static DaoConfig<Attendance> daoConfig = new DaoConfig<Attendance>("attendance", columnNames,
-			new RowMapper(), null);
+	private static DaoConfig<Attendance> daoConfig = new DaoConfig<Attendance>(
+			"attendance", columnNames, new RowMapper(), null);
 
 	private PreparedStatement prepStm;
 
@@ -31,11 +33,14 @@ public class AttendanceDao extends AbstractDao<Attendance> implements Dao<Attend
 		super(daoConfig);
 	}
 
-	private static class RowMapper implements AbstractDao.RowMapper<Attendance> {
+	private static class RowMapper
+			implements
+				AbstractDao.RowMapper<Attendance> {
 
 		@Override
 		public Attendance mapRow(ResultSet rs, int rowNr) throws SQLException {
-			Attendance a = new Attendance(rs.getLong("_id"), rs.getTimestamp("on_date"), rs.getLong("person_id"),
+			Attendance a = new Attendance(rs.getLong("id"),
+					rs.getTimestamp("on_date"), rs.getLong("person_id"),
 					rs.getTimestamp("changed"), rs.getTimestamp("created"));
 			return a;
 		}
@@ -43,7 +48,7 @@ public class AttendanceDao extends AbstractDao<Attendance> implements Dao<Attend
 		@Override
 		public Collection<Object> mapObject(Attendance obj) {
 			List<Object> values = new ArrayList<Object>();
-			
+
 			Date time = normalizeDateToDay(obj.getOnDate());
 			obj.setOnDate(time);
 			values.add(time);
@@ -55,18 +60,20 @@ public class AttendanceDao extends AbstractDao<Attendance> implements Dao<Attend
 
 	public List<Attendance> getAttendencesFor(Date day) throws SQLException {
 		JdbcTemplate jdbcTemplate = getJdbcTemplate();
-		if(prepStm == null) {
-			prepStm = jdbcTemplate.getDataSource().getConnection().prepareStatement(SQL_QUERY_ALL + " AND on_date=?");
+		if (prepStm == null) {
+			prepStm = jdbcTemplate.getDataSource().getConnection()
+					.prepareStatement(SQL_QUERY_ALL + " AND on_date=?");
 		}
 		prepStm.setDate(1, new java.sql.Date(day.getTime()));
 		PreparedStatementCreator psc = new PreparedStatementCreator() {
-			
+
 			@Override
-			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+			public PreparedStatement createPreparedStatement(Connection con)
+					throws SQLException {
 				return prepStm;
 			}
 		};
 		return jdbcTemplate.query(psc, daoConfig.getMapper());
 	}
-	
+
 }

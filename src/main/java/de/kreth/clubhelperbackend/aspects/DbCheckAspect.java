@@ -21,21 +21,28 @@ import org.springframework.stereotype.Component;
 
 import de.kreth.clubhelperbackend.config.DatabaseConfiguration;
 import de.kreth.dbmanager.Database;
+import de.kreth.dbmanager.DatabaseType;
 import de.kreth.dbmanager.DbValue;
 
 @Component
 @Aspect
-public class MysqlDbCheckAspect implements Database {
+public class DbCheckAspect implements Database {
 
 	private final Logger logger;
 
 	private Connection con;
+	private final DatabaseType dbType;
 	private boolean isChecked = false;
 
 	@Autowired
-	public MysqlDbCheckAspect(DataSource dataSource) {
+	public DbCheckAspect(DataSource dataSource) {
+		this(dataSource, DatabaseType.MYSQL);
+	}
 
-		logger = LoggerFactory.getLogger(MysqlDbCheckAspect.class);
+	public DbCheckAspect(DataSource dataSource, DatabaseType dbType) {
+
+		logger = LoggerFactory.getLogger(getClass());
+		this.dbType = dbType;
 		if (logger.isDebugEnabled()) {
 			logger.debug("init with " + dataSource);
 		}
@@ -46,8 +53,10 @@ public class MysqlDbCheckAspect implements Database {
 			}
 			checkDb(false);
 		} catch (SQLException e) {
-			throw new InvalidDataAccessApiUsageException("Keine Connection aus DataSource erhalten", e);
+			throw new InvalidDataAccessApiUsageException(
+					"Keine Connection aus DataSource erhalten", e);
 		}
+
 	}
 
 	@Before("execution (* de.kreth.clubhelperbackend.dao.*.*(..))")
@@ -73,7 +82,8 @@ public class MysqlDbCheckAspect implements Database {
 				logger.info("Database Version " + currentDbVersion);
 			}
 			beginTransaction();
-			DatabaseConfiguration manager = new DatabaseConfiguration(currentDbVersion);
+			DatabaseConfiguration manager = new DatabaseConfiguration(
+					currentDbVersion, dbType);
 			manager.executeOn(this);
 			setTransactionSuccessful();
 		} catch (SQLException e) {
@@ -86,7 +96,8 @@ public class MysqlDbCheckAspect implements Database {
 				logger.warn("rollback failed", e1);
 			}
 
-			throw new DataAccessResourceFailureException("Konnte Datenbanktabellen nicht erstellen!", e);
+			throw new DataAccessResourceFailureException(
+					"Konnte Datenbanktabellen nicht erstellen!", e);
 		}
 	}
 
@@ -159,7 +170,8 @@ public class MysqlDbCheckAspect implements Database {
 	}
 
 	@Override
-	public Iterator<Collection<DbValue>> query(String table, String[] columns) throws SQLException {
+	public Iterator<Collection<DbValue>> query(String table, String[] columns)
+			throws SQLException {
 		return null;
 	}
 
@@ -171,7 +183,8 @@ public class MysqlDbCheckAspect implements Database {
 			autoCommit = con.getAutoCommit();
 			con.setAutoCommit(false);
 			stm = con.createStatement();
-			int rows = stm.executeUpdate("UPDATE version SET version = " + version);
+			int rows = stm
+					.executeUpdate("UPDATE version SET version = " + version);
 			if (rows == 1)
 				con.commit();
 			else
@@ -181,7 +194,8 @@ public class MysqlDbCheckAspect implements Database {
 			try {
 				con.rollback();
 			} catch (SQLException e1) {
-				logger.error("Error on database rollback after exception " + e.getMessage(), e1);
+				logger.error("Error on database rollback after exception "
+						+ e.getMessage(), e1);
 			}
 			logger.error("Error updating verions", e);
 		} finally {
@@ -195,7 +209,8 @@ public class MysqlDbCheckAspect implements Database {
 	}
 
 	@Override
-	public int delete(String table, String whereClause, String[] whereArgs) throws SQLException {
+	public int delete(String table, String whereClause, String[] whereArgs)
+			throws SQLException {
 		return 0;
 	}
 
