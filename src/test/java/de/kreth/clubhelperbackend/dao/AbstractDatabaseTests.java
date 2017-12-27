@@ -9,72 +9,72 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sql.DataSource;
+
+import org.hsqldb.jdbc.JDBCDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
-
-import de.kreth.clubhelperbackend.aspects.MysqlDbCheckAspect;
-import de.kreth.clubhelperbackend.config.SqlForMysql;
+import de.kreth.clubhelperbackend.aspects.DbCheckAspect;
+import de.kreth.clubhelperbackend.config.SqlForHsqlDb;
 import de.kreth.clubhelperbackend.dao.abstr.AbstractDao;
 import de.kreth.clubhelperbackend.pojo.Data;
+import de.kreth.dbmanager.DatabaseType;
 
-public abstract class AbstractMysqlDatabaseTests<T extends Data> {
+public abstract class AbstractDatabaseTests<T extends Data> {
 
 	static final String db_file_name_prefix = "TestDatabase";
 
-	protected MysqlDbCheckAspect dbCheck;
-	protected static MysqlConnectionPoolDataSource dataSource;
+	protected DbCheckAspect dbCheck;
+	protected static DataSource dataSource;
 	protected AbstractDao<T> dao;
 
-	public AbstractMysqlDatabaseTests() {
+	public AbstractDatabaseTests() {
 		super();
 	}
 
 	@BeforeClass
-	public static void initDbConnection() {
+	public static void initDbConnection() throws Exception {
+		JDBCDataSource ds = new JDBCDataSource();
+		ds.setUrl("jdbc:hsqldb:mem:testdb");
+		ds.setUser("sa");
 
-		dataSource = new MysqlConnectionPoolDataSource();
-		dataSource.setUser("markus");
-		dataSource.setPassword("0773");
-		dataSource.setServerName("localhost");
-		dataSource.setPort(3306);
-		dataSource.setDatabaseName("testdb");
-	
+		dataSource = ds;
 	}
 
 	@Before
 	public void setUp() throws Exception {
 		deleteTables(dataSource.getConnection());
-		dbCheck = new MysqlDbCheckAspect(dataSource);
+		dbCheck = new DbCheckAspect(dataSource, DatabaseType.HSQLDB);
 		dao = initDao();
 
 		dbCheck.checkDb();
-		DataSourceTransactionManager transMan = new DataSourceTransactionManager(dataSource);
+		DataSourceTransactionManager transMan = new DataSourceTransactionManager(
+				dataSource);
 
 		DeletedEntriesDao deletedEntriesDao = new DeletedEntriesDao();
 		deletedEntriesDao.setDataSource(dataSource);
 		deletedEntriesDao.setPlatformTransactionManager(transMan);
-		deletedEntriesDao.setSqlDialect(new SqlForMysql(dataSource));
+		deletedEntriesDao.setSqlDialect(new SqlForHsqlDb(dataSource));
 
 		dao.setDataSource(dataSource);
 		dao.setPlatformTransactionManager(transMan);
 		dao.setDeletedEntriesDao(deletedEntriesDao);
 
-		dao.setSqlDialect(new SqlForMysql(dataSource));
-		
+		dao.setSqlDialect(new SqlForHsqlDb(dataSource));
+
 	}
 
 	public abstract AbstractDao<T> initDao();
 
 	@After
 	public void tearDown() throws SQLException {
-	
+
 		Connection conn = dataSource.getConnection();
 		deleteTables(conn);
-	
+
 		if (conn != null) {
 			conn.close();
 		}
@@ -85,17 +85,17 @@ public abstract class AbstractMysqlDatabaseTests<T extends Data> {
 	}
 
 	protected void deleteTables(Connection conn) throws SQLException {
-	
-		String[] types = { "TABLE", "VIEW" };
+
+		String[] types = {"TABLE", "VIEW"};
 		DatabaseMetaData metaData = conn.getMetaData();
 		String catalog = conn.getCatalog();
-	
+
 		ResultSet rs = metaData.getTables(catalog, null, "%", types);
 		List<String> allSql = new ArrayList<String>();
-	
+
 		while (rs.next()) {
 			String type = rs.getString("TABLE_TYPE");
-	
+
 			if (type != null && type.startsWith("SYSTEM") == false) {
 				String tableName = rs.getString("TABLE_NAME");
 				String sql = String.format("DROP %s %s", type, tableName);
@@ -103,16 +103,16 @@ public abstract class AbstractMysqlDatabaseTests<T extends Data> {
 			}
 		}
 		rs.close();
-		allSql.sort((sql1, sql2)-> {
+		allSql.sort((sql1, sql2) -> {
 
-			if(sql1.toLowerCase().endsWith(" person")) {
+			if (sql1.toLowerCase().endsWith(" person")) {
 				return 1;
 			}
-			if(sql2.toLowerCase().endsWith(" person")) {
+			if (sql2.toLowerCase().endsWith(" person")) {
 				return -1;
 			}
 			return sql1.compareTo(sql2);
-					
+
 		});
 		Statement stm = conn.createStatement();
 		for (String sql : allSql) {

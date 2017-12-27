@@ -22,9 +22,11 @@ public class SqlForMysql implements SqlForDialect {
 
 	@Override
 	public boolean tableExists(String tableName) {
+
 		boolean exists = false;
 		Statement stm = null;
 		ResultSet rs = null;
+
 		try {
 			stm = dataSource.getConnection().createStatement();
 			rs = stm.executeQuery("SHOW TABLES LIKE '" + tableName + "'");
@@ -44,5 +46,17 @@ public class SqlForMysql implements SqlForDialect {
 		}
 		return exists;
 	}
+
+	// @Override
+	// public String escapeSqlNames(String name) {
+	// return String.format("%s", name);
+	// }
+	//
+	// @Override
+	// public String alterTableRenameColumn(String tableName, String
+	// columnOldName,
+	// String columnNewName) {
+	// return String.format("%s", tableName, columnOldName, columnNewName);
+	// }
 
 }

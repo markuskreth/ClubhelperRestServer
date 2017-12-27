@@ -13,7 +13,7 @@ import de.kreth.dbmanager.TableDefinition;
 
 public class DatabaseConfigVersion5 {
 
-	public final DatabaseType dbType = DatabaseType.MYSQL;
+	public final DatabaseType dbType = DatabaseType.HSQLDB;
 	public final TableDefinition person;
 	public final TableDefinition contact;
 	public final TableDefinition relative;

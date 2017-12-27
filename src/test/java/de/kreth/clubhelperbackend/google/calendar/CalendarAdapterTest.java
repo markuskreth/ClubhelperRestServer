@@ -12,6 +12,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.api.client.util.DateTime;
@@ -21,6 +22,7 @@ import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventAttendee;
 import com.google.api.services.calendar.model.EventDateTime;
 
+@Ignore
 public class CalendarAdapterTest {
 
 	private static final String summaryText = "AutomatedTestCalendar";

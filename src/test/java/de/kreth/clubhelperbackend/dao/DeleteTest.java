@@ -43,7 +43,8 @@ public class DeleteTest {
 		dataSource.setPort(3306);
 		dataSource.setDatabaseName("testdb");
 
-		PlatformTransactionManager man = new DataSourceTransactionManager(dataSource);
+		PlatformTransactionManager man = new DataSourceTransactionManager(
+				dataSource);
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 
 		deletedEnriesDao = new DeletedEntriesDao();
@@ -75,7 +76,8 @@ public class DeleteTest {
 
 	private void deleteTables(Connection conn) throws SQLException {
 
-		ResultSet rs = conn.getMetaData().getTables(conn.getCatalog(), null, "%", null);
+		ResultSet rs = conn.getMetaData().getTables(conn.getCatalog(), null,
+				"%", new String[]{"TABLE"});
 		List<String> allSql = new ArrayList<String>();
 
 		while (rs.next()) {
@@ -94,7 +96,8 @@ public class DeleteTest {
 	@Test
 	public void testDelete() throws SQLException {
 		Date created = new Date();
-		Contact c = new Contact(-1L, "MOBILE", "555123456", 1L, created, created);
+		Contact c = new Contact(-1L, "MOBILE", "555123456", 1L, created,
+				created);
 		c = contactDao.insert(c);
 		assertEquals(1L, c.getId().longValue());
 		c = new Contact(-1L, "MOBILE", "12345678", 1L, created, created);
@@ -108,7 +111,7 @@ public class DeleteTest {
 		ResultSet rs = stm.executeQuery("SELECT * from contact");
 		assertTrue(rs.next());
 		assertTrue(rs.next());
-		assertEquals(2L, rs.getLong("_id"));
+		assertEquals(2L, rs.getLong("id"));
 		Date deleted = rs.getDate("deleted");
 		assertNotNull(deleted);
 		assertTrue(deleted.getTime() > 0);
@@ -124,8 +127,10 @@ public class DeleteTest {
 	public void queryAllwithoutDeleted() {
 		assertEquals(0, contactDao.getAll().size());
 		Date created = new Date();
-		Contact c1 = contactDao.insert(new Contact(-1L, "Test", "5555", 1, created, created));
-		Contact c2 = contactDao.insert(new Contact(-1L, "Test2", "6666", 1, created, created));
+		Contact c1 = contactDao
+				.insert(new Contact(-1L, "Test", "5555", 1, created, created));
+		Contact c2 = contactDao
+				.insert(new Contact(-1L, "Test2", "6666", 1, created, created));
 
 		assertEquals(2, contactDao.getAll().size());
 		contactDao.delete(c1);

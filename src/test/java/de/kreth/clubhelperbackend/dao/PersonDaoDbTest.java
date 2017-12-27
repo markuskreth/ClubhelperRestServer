@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.junit.Test;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
@@ -12,19 +13,20 @@ import de.kreth.clubhelperbackend.dao.abstr.AbstractDao;
 import de.kreth.clubhelperbackend.pojo.Person;
 import de.kreth.clubhelperbackend.testutils.TestDataPerson;
 
-public class PersonDaoDbTest extends AbstractMysqlDatabaseTests<Person> {
+public class PersonDaoDbTest extends AbstractDatabaseTests<Person> {
 
 	@Test
 	public void insertDelete() throws Exception {
 		Person p1 = TestDataPerson.INSTANCE.person;
-		Person p2 = (Person) p1.clone();
+
+		Person p2 = SerializationUtils.clone(p1);
 
 		assertEquals(p1, p2);
 		p2.setId(p1.getId() + 1);
 		p2.setSurname("AAAAA");
 		p2.setPrename("AAAAAA");
 
-		Person p3 = (Person) p1.clone();
+		Person p3 = SerializationUtils.clone(p1);
 		p3.setId(p1.getId() + 2);
 		p3.setPrename("AAAAAAA");
 		p3.setSurname("ZZZZZZZZZ");
@@ -45,18 +47,19 @@ public class PersonDaoDbTest extends AbstractMysqlDatabaseTests<Person> {
 		dbCheck.checkDb();
 		PersonDao dao = new PersonDao();
 		dao.setDataSource(dataSource);
-		dao.setPlatformTransactionManager(new DataSourceTransactionManager(dataSource));
+		dao.setPlatformTransactionManager(
+				new DataSourceTransactionManager(dataSource));
 
 		dao.setSqlDialect(new SqlForMysql(dataSource));
 		Person p1 = TestDataPerson.INSTANCE.person;
-		Person p2 = (Person) p1.clone();
+		Person p2 = SerializationUtils.clone(p1);
 
 		assertEquals(p1, p2);
 		p2.setId(p1.getId() + 1);
 		p2.setSurname("AAAAA");
 		p2.setPrename("AAAAAA");
 
-		Person p3 = (Person) p1.clone();
+		Person p3 = SerializationUtils.clone(p1);
 		p3.setId(p1.getId() + 2);
 		p3.setPrename("AAAAAAA");
 		p3.setSurname("ZZZZZZZZZ");

@@ -13,7 +13,7 @@ import org.junit.Test;
 import de.kreth.clubhelperbackend.dao.abstr.AbstractDao;
 import de.kreth.clubhelperbackend.pojo.Attendance;
 
-public class AttendenceDaoTests extends AbstractMysqlDatabaseTests<Attendance> {
+public class AttendenceDaoTests extends AbstractDatabaseTests<Attendance> {
 
 	@Test
 	public void testInsertAttendence() {
