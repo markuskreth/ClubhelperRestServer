@@ -4,14 +4,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.sql.DataSource;
+
+import org.hsqldb.jdbc.JDBCDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,11 +23,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
-
 import de.kreth.clubhelperbackend.aspects.DbCheckAspect;
-import de.kreth.clubhelperbackend.config.SqlForMysql;
+import de.kreth.clubhelperbackend.config.SqlForDialect;
+import de.kreth.clubhelperbackend.config.SqlForHsqlDb;
 import de.kreth.clubhelperbackend.pojo.Contact;
+import de.kreth.dbmanager.DatabaseType;
 
 //@RunWith(SpringJUnit4ClassRunner.class)
 // @ContextConfiguration(locations = { "/services-test-config.xml" })
@@ -31,17 +35,19 @@ public class DeleteTest {
 
 	private ContactDao contactDao;
 	private DeletedEntriesDao deletedEnriesDao;
-	private MysqlConnectionPoolDataSource dataSource;
+	private DataSource dataSource;
+	private StringWriter log;
 
 	@Before
 	public void setUp() throws Exception {
 
-		dataSource = new MysqlConnectionPoolDataSource();
-		dataSource.setUser("markus");
-		dataSource.setPassword("0773");
-		dataSource.setServerName("localhost");
-		dataSource.setPort(3306);
-		dataSource.setDatabaseName("testdb");
+		log = new StringWriter();
+
+		JDBCDataSource ds = new JDBCDataSource();
+		ds.setUrl("jdbc:hsqldb:mem:testdb");
+		ds.setUser("sa");
+		ds.setLogWriter(new PrintWriter(log));
+		dataSource = ds;
 
 		PlatformTransactionManager man = new DataSourceTransactionManager(
 				dataSource);
@@ -49,7 +55,7 @@ public class DeleteTest {
 
 		deletedEnriesDao = new DeletedEntriesDao();
 		deletedEnriesDao.setJdbcTemplate(jdbcTemplate);
-		SqlForMysql sqlDialect = new SqlForMysql(dataSource);
+		SqlForDialect sqlDialect = new SqlForHsqlDb(dataSource);
 		deletedEnriesDao.setSqlDialect(sqlDialect);
 		deletedEnriesDao.setPlatformTransactionManager(man);
 
@@ -59,38 +65,19 @@ public class DeleteTest {
 		contactDao.setPlatformTransactionManager(man);
 		contactDao.setDeletedEntriesDao(deletedEnriesDao);
 
-		DbCheckAspect mysqlCheck = new DbCheckAspect(dataSource);
+		DbCheckAspect mysqlCheck = new DbCheckAspect(dataSource,
+				DatabaseType.HSQLDB);
 		mysqlCheck.checkDb();
 	}
 
 	@After
-	public void tearDown() throws SQLException {
-
-		if (dataSource != null) {
-			Connection conn = dataSource.getConnection();
-			deleteTables(conn);
-			conn.close();
-		}
-
-	}
-
-	private void deleteTables(Connection conn) throws SQLException {
-
-		ResultSet rs = conn.getMetaData().getTables(conn.getCatalog(), null,
-				"%", new String[]{"TABLE"});
-		List<String> allSql = new ArrayList<String>();
-
-		while (rs.next()) {
-			String tableName = rs.getString("TABLE_NAME");
-			String type = rs.getString("TABLE_TYPE");
-			String sql = String.format("DROP %s %s", type, tableName);
-			allSql.add(sql);
-		}
-		rs.close();
-		Statement stm = conn.createStatement();
-		for (String sql : allSql) {
-			stm.execute(sql);
-		}
+	public void closeDb() throws SQLException {
+		Connection connection = dataSource.getConnection();
+		Statement stm = connection.createStatement();
+		stm.execute(
+				"TRUNCATE SCHEMA PUBLIC RESTART IDENTITY AND COMMIT NO CHECK");
+		stm.execute("DROP SCHEMA PUBLIC CASCADE");
+		connection.close();
 	}
 
 	@Test
@@ -99,10 +86,11 @@ public class DeleteTest {
 		Contact c = new Contact(-1L, "MOBILE", "555123456", 1L, created,
 				created);
 		c = contactDao.insert(c);
-		assertEquals(1L, c.getId().longValue());
+		long longValue = c.getId().longValue();
+		assertTrue(longValue >= 0);
 		c = new Contact(-1L, "MOBILE", "12345678", 1L, created, created);
 		c = contactDao.insert(c);
-		assertEquals(2L, c.getId().longValue());
+		assertEquals(longValue + 1, c.getId().longValue());
 
 		assertTrue(c + " not deleted!", contactDao.delete(c));
 
@@ -111,7 +99,7 @@ public class DeleteTest {
 		ResultSet rs = stm.executeQuery("SELECT * from contact");
 		assertTrue(rs.next());
 		assertTrue(rs.next());
-		assertEquals(2L, rs.getLong("id"));
+		assertEquals(longValue + 1, rs.getLong("id"));
 		Date deleted = rs.getDate("deleted");
 		assertNotNull(deleted);
 		assertTrue(deleted.getTime() > 0);
@@ -120,7 +108,7 @@ public class DeleteTest {
 		assertTrue("No Entries found in table", rs.next());
 		assertEquals(ContactDao.tableName, rs.getString("tablename"));
 
-		assertEquals(2L, rs.getLong("entryId"));
+		assertEquals(longValue + 1, rs.getLong("entryId"));
 	}
 
 	@Test

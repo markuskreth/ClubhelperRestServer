@@ -14,7 +14,6 @@ import javax.sql.DataSource;
 import org.hsqldb.jdbc.JDBCDataSource;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import de.kreth.clubhelperbackend.aspects.DbCheckAspect;
@@ -35,18 +34,14 @@ public abstract class AbstractDatabaseTests<T extends Data> {
 		super();
 	}
 
-	@BeforeClass
-	public static void initDbConnection() throws Exception {
+	@Before
+	public void setUp() throws Exception {
 		JDBCDataSource ds = new JDBCDataSource();
 		ds.setUrl("jdbc:hsqldb:mem:testdb");
 		ds.setUser("sa");
 
 		dataSource = ds;
-	}
 
-	@Before
-	public void setUp() throws Exception {
-		deleteTables(dataSource.getConnection());
 		dbCheck = new DbCheckAspect(dataSource, DatabaseType.HSQLDB);
 		dao = initDao();
 
