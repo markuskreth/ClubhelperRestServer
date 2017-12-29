@@ -77,7 +77,7 @@ public class HomeController {
 		return "home";
 	}
 
-	@RequestMapping(value = "/test", method = RequestMethod.GET)
+	@RequestMapping(value = {"/test", "/tests"}, method = RequestMethod.GET)
 	public String runTests() {
 		return "test";
 	}

@@ -20,7 +20,7 @@
 			assert.equal("Markus", person1.prename);
 			assert.equal("Kreth", person1.surname);
 			assert.equal("21.08.1973", person1.birthday());
-			assert.equal(1, person1.personId);
+			assert.equal(1, person1.id);
 		});
 
 		QUnit.test("Creating Person from Factory Method", function(assert) {
@@ -31,7 +31,7 @@
 				assert.equal("Markus", person1.prename);
 				assert.equal("Kreth", person1.surname);
 				assert.equal("21.08.1973", person1.birthday());
-				assert.equal(1, person1.personId);
+				assert.equal(1, person1.id);
 				done();
 			});
 
@@ -129,7 +129,7 @@
 						assert.equal("Markus", person1.prename, "prename found");
 						assert.equal("Kreth", person1.surname, "surname found");
 						assert.equal("21.08.1973", person1.birthday(), "birthday shown.");
-						assert.equal(1, person1.personId);
+						assert.equal(1, person1.id);
 						done();
 					});
 
@@ -148,7 +148,7 @@
 				
 				assert.ok(relPerson);
 				var expected = new PersonInstance(person51Response.id, person51Response);
-				assert.equal(expected.personId, relPerson.personId);
+				assert.equal(expected.id, relPerson.id);
 				assert.equal(expected.prename, relPerson.prename);
 				assert.equal(expected.surname, relPerson.surname);
 				assert.equal(expected.age(), relPerson.age());

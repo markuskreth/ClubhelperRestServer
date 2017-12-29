@@ -1,10 +1,8 @@
 package de.kreth.clubhelperbackend.google.spreadsheet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-
-import de.kreth.clubhelperbackend.google.spreadsheet.GoogleSpreadsheetsAdapter;
 
 public class GoogleSpreadsheetsAdapterTest {
 
