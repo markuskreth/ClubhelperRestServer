@@ -36,10 +36,16 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 				lock.lock();
 				try {
 					service = createService();
+					if(log.isInfoEnabled()) {
+						log.info(service.getClass().getName() + " created successfully.");
+					}
 				} catch (IOException e) {
 					log.error("unable to create service for " + getClass(), e);
 				} finally {
-					lock.unlock();					
+					lock.unlock();
+					if(log.isDebugEnabled()) {
+						log.debug("unlock " + CalendarAdapter.class.getName());
+					}
 				}
 			}
 			
