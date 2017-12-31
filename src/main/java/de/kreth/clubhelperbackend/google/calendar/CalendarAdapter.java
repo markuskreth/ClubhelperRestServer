@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.util.DateTime;
@@ -22,10 +24,27 @@ import de.kreth.clubhelperbackend.google.GoogleBaseAdapter;
 public class CalendarAdapter extends GoogleBaseAdapter {
 
 	com.google.api.services.calendar.Calendar service;
+	private Lock lock = new ReentrantLock();
 
 	public CalendarAdapter() throws GeneralSecurityException, IOException {
 		super();
-		service = createService();
+		ExecutorService exec = Executors.newSingleThreadExecutor();
+		exec.execute(new Runnable() {
+			
+			@Override
+			public void run() {
+				lock.lock();
+				try {
+					service = createService();
+				} catch (IOException e) {
+					log.error("unable to create service for " + getClass(), e);
+				} finally {
+					lock.unlock();					
+				}
+			}
+			
+		});
+		exec.shutdown();
 	}
 
 	private com.google.api.services.calendar.Calendar createService()
@@ -50,25 +69,32 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 			throw new IllegalStateException(
 					"Calendar " + calendarSummary + " not found!");
 		}
-		return service.calendars().get(calendarId).execute();
+		Calendar cal = service.calendars().get(calendarId).execute();
+		lock.unlock();
+		return cal;
 	}
 
-	public List<Event> getAllEvents() throws IOException {
-
-		List<CalendarListEntry> items = getCalendarList();
-		final long oldest = getOldest();
+	public List<Event> getAllEvents() throws IOException, InterruptedException {
 
 		final List<Event> events = new ArrayList<>();
-		ExecutorService exec = Executors.newFixedThreadPool(2);
-		exec.execute(new FetchEventsRunner(items, "mtv_wettkampf", events,
-				oldest, "color1"));
-		exec.execute(new FetchEventsRunner(items, "mtv_allgemein", events,
-				oldest, "color2"));
-		exec.shutdown();
-		try {
-			exec.awaitTermination(20, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-			log.error("Thread terminated - event list may be incomplete.", e);
+		if(lock.tryLock(10, TimeUnit.SECONDS)) {
+
+			List<CalendarListEntry> items = getCalendarList();
+			final long oldest = getOldest();
+
+			ExecutorService exec = Executors.newFixedThreadPool(2);
+			exec.execute(new FetchEventsRunner(items, "mtv_wettkampf", events,
+					oldest, "color1"));
+			exec.execute(new FetchEventsRunner(items, "mtv_allgemein", events,
+					oldest, "color2"));
+			exec.shutdown();
+			try { 
+				exec.awaitTermination(20, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				log.error("Thread terminated - event list may be incomplete.", e);
+			}
+		} else {
+			log.error("Unable to lock " + getClass() + " for Event List after");
 		}
 		return events;
 	}

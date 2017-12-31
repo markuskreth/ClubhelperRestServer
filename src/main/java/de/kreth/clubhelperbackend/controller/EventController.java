@@ -39,7 +39,7 @@ public class EventController {
 
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public List<Map<String, Object>> getEvents() throws IOException {
+	public List<Map<String, Object>> getEvents() throws IOException, InterruptedException {
 		List<Map<String, Object>> result = new ArrayList<>();
 		adapter.getAllEvents().forEach(e -> {
 			Map<String, Object> events = new HashMap<>();

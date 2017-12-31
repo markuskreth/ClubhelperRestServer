@@ -40,7 +40,7 @@ public enum SheetService {
 		}
 	}
 	
-	public static JumpHeightSheet get(String title) throws IOException {
+	public static JumpHeightSheet get(String title) throws IOException, InterruptedException {
 		if(INSTANCE.log.isDebugEnabled()) {
 			INSTANCE.log.debug("Getting " + Sheet.class.getName() + " for " + title);
 		}
@@ -52,7 +52,7 @@ public enum SheetService {
 		}
 	}
 
-	public static List<JumpHeightSheet> getSheets() throws IOException {
+	public static List<JumpHeightSheet> getSheets() throws IOException, InterruptedException {
 		List<JumpHeightSheet> result = new ArrayList<>();
 		for (Sheet s: getAllSheets()) {
 			try {
@@ -64,7 +64,7 @@ public enum SheetService {
 		return result;
 	}
 	
-	private static Sheet getForName(String title) throws IOException {
+	private static Sheet getForName(String title) throws IOException, InterruptedException {
 		List<Sheet> all = getAllSheets();
 
 		for (Sheet s: all) {
@@ -81,7 +81,7 @@ public enum SheetService {
 		throw new IOException("Sheet with title \"" + title + "\" not found.");
 	}
 
-	private static List<Sheet> getAllSheets() throws IOException {
+	private static List<Sheet> getAllSheets() throws IOException, InterruptedException {
 		INSTANCE.createService();
 		if(sheets != null && sheets.isEmpty() == false){
 			return sheets;
@@ -127,7 +127,7 @@ public enum SheetService {
 		return res;
 	}
 
-	public static JumpHeightSheet changeTitle(Sheet sheet, String name) throws IOException {
+	public static JumpHeightSheet changeTitle(Sheet sheet, String name) throws IOException, InterruptedException {
 		INSTANCE.createService();
 		INSTANCE.service.setSheetTitle(sheet, name);
 		sheets = null;

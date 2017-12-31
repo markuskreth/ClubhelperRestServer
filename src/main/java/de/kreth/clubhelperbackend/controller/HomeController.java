@@ -96,7 +96,7 @@ public class HomeController {
 	}
 
 	@RequestMapping(value="/googleauth", method=RequestMethod.GET)
-	public void getHtmlUri(HttpServletRequest req, HttpServletResponse response) throws IOException, GeneralSecurityException, URISyntaxException {
+	public void getHtmlUri(HttpServletRequest req, HttpServletResponse response) throws IOException, GeneralSecurityException, URISyntaxException, InterruptedException {
 
 		URI uri = new URI(req.getRequestURL().toString());
 		GoogleInitAdapter adapter = new GoogleInitAdapter(uri);
