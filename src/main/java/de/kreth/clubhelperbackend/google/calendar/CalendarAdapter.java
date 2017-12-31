@@ -70,7 +70,6 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 					"Calendar " + calendarSummary + " not found!");
 		}
 		Calendar cal = service.calendars().get(calendarId).execute();
-		lock.unlock();
 		return cal;
 	}
 
@@ -149,12 +148,15 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 		public void run() {
 
 			try {
+				log.debug("Fetching events of calendar \"" + summary + "\"");
 				Calendar calendar = getCalendarBySummaryName(items, summary);
 				DateTime timeMin = new DateTime(oldest);
 				List<Event> items = service.events().list(calendar.getId())
 						.setTimeMin(timeMin).execute().getItems();
 				items.forEach(item -> item.set("colorClass", colorClass));
 				events.addAll(items);
+				log.debug("Added " + items.size() + " Events for \"" + summary + "\"");
+				
 			} catch (IOException e) {
 				log.error("Unable to fetch Events from " + summary, e);
 			}
