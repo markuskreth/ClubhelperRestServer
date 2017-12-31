@@ -14,6 +14,7 @@
 	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 	<script src=<c:url value='/resources/js/libs/qunit-2.1.1.js' />></script>
 	<script charset="utf-8" src=<c:url value='/resources/js/ajax_base.js' />></script>
+	<script charset="utf-8" src=<c:url value='/resources/js/storage.js' />></script>
 	<script src=<c:url value='/resources/js/person.js' />></script>
 	<script src=<c:url value='/resources/js/testdata.js' />></script>
 	<script src=<c:url value='/resources/js/libs/log4javascript.js' />></script>
@@ -24,6 +25,7 @@
 		var log = log4javascript.getDefaultLogger();
 		log4javascript.setEnabled(false);
 	</script>
+	<script src=<c:url value='/resources/js/storage_js.qunit.js' />></script>
 	<script src=<c:url value='/resources/js/person_js.qunit.js' />></script>
 	<script src=<c:url value='/resources/js/person_write_js.qunit.js' />></script>
 </body>

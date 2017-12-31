@@ -1,16 +1,16 @@
 
 function Person(personId, targetFunction, relationId){
 	
-	var person = sessionStorage.getItem("personId" + personId);
+	var person = personStore.get(personId);
 	
 	if(person != null) {
-		log.debug("found " + person + " in Storage.");
-		targetFunction(new PersonInstance(personId, JSON.parse(person), relationId));
+		log.debug("found " + person.toString() + " in Storage.");
+		targetFunction(new PersonInstance(personId, person, relationId));
 	} else {
 		if(personId>=0) {
 			log.warn(personId + " not found in repo. Reloading...");
 			repo(baseUrl + "person/" + personId, function(response) {
-				sessionStorage.setItem("personId" + personId, JSON.stringify(response));
+				personStore.set(personId, response);
 				targetFunction(new PersonInstance(personId, response, relationId));
 			});
 		} else {
@@ -18,16 +18,16 @@ function Person(personId, targetFunction, relationId){
 			targetFunction(new PersonInstance(personId, null, null));
 		}
 	}
-} 
+}
 
 var allGroups = function(targetFunction) {
 
-	var groups = sessionStorage.getItem("allGroups");
+	var groups = groupStore.get();
 	if(groups != null) {
-		targetFunction(JSON.parse(groups));
+		targetFunction(groups);
 	} else {
 		repo(baseUrl + "group/", function(response) {
-			sessionStorage.setItem("allGroups", JSON.stringify(response));
+			groupStore.set(response);
 			targetFunction(response);
 		});
 		
@@ -76,7 +76,7 @@ PersonInstance.prototype.removeGroup = function (groupId) {
 			var index = i;
 			ajax(baseUrl + "persongroup/" + me.persGroups[i].id, me.persGroups[i], "delete", function(response) {
 				me.persGroups.splice(index, 1);
-				sessionStorage.setItem("personId" + me.id, JSON.stringify(me));
+				personStore.setItem(me, me.id);
 			});
 			break;
 		}
@@ -111,7 +111,7 @@ PersonInstance.prototype.groups = function (targetFunction) {
 		repo(baseUrl + "persongroup/for/" + me.id, function(response) {
 			me.persGroups = response;
 			var text = JSON.stringify(me);
-			sessionStorage.setItem("personId" + me.id, text);
+			personStore.set(me, me.id);
 			me.processGroups(targetFunction);
 		});
 	} else {
@@ -125,7 +125,7 @@ PersonInstance.prototype.updateContact = function (contact, targetFunction) {
 	var me = this;
 	ajax(url, contact, "put", function(con) {
 		var text = JSON.stringify(me);
-		sessionStorage.setItem("personId" + me.id, text);
+		personStore.set(me, me.id);
 		targetFunction(contact);
 	});
 }
@@ -155,7 +155,7 @@ PersonInstance.prototype.relatives = function (targetFunction) {
 
 		repo(baseUrl + "relative/for/" + me.id, function(response) {
 			me._relatives = response;
-			sessionStorage.setItem("personId" + me.id, JSON.stringify(me));
+			personStore.set(me, me.id);
 			me.processRelatives(targetFunction);
 		});
 	} else {
@@ -172,7 +172,7 @@ PersonInstance.prototype.contacts = function (targetFunction) {
 		var me = this;
 		repo(baseUrl + "contact/for/" + me.id, function(response) {
 			me._contacts = response;
-			sessionStorage.setItem("personId" + me.id, JSON.stringify(me));
+			personStore.set(me, me.id);
 			targetFunction(me._contacts);	
 		});
 	} else {
@@ -212,7 +212,7 @@ PersonInstance.prototype.update = function (targetFunction) {
 	if(this.id<0) {
 		call="post";
 
-		sessionStorage.removeItem("personId" + this.id);
+		personStore.remove(this);
 	}
 	var me = this;
 	ajax(baseUrl + "person/" + this.id, this, call, function(response) {
@@ -226,7 +226,7 @@ PersonInstance.prototype.update = function (targetFunction) {
 
 			response = me;
 		}
-		sessionStorage.setItem("personId" + response.id, JSON.stringify(response));
+		personStore.set(response, response.id);
 		if(targetFunction != null) {
 			targetFunction(new PersonInstance(response.id, response, null));
 			
@@ -241,9 +241,13 @@ PersonInstance.prototype.age = function () {
 
 PersonInstance.prototype.deletePerson = function (targetFunction) {
 	ajax(baseUrl + "person/" + this.id, this, "delete", function(response) {
-		sessionStorage.removeItem("personId" + this.id);
+		personStore.remove(this);
 		if(targetFunction != null) {
 			targetFunction();
 		}
 	})
+}
+
+PersonInstance.prototype.toString = function () {
+	return JSON.stringify(this);
 }

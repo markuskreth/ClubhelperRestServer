@@ -2,6 +2,9 @@
 var currentPersonId = null;
 var currentPerson = null;
 
+var personStore;
+var groupStore;
+
 $(document).ready(function() {
 	
 	$("#collapsibleRelations").collapsible({
@@ -10,6 +13,9 @@ $(document).ready(function() {
 		}
 	});
 
+	personStore = new Storage("person");
+	groupStore = new Storage("group");
+	
 	$("#sendAttendance").hide();
 	loadPersonList();
 	
@@ -46,27 +52,29 @@ function loadPersonList() {
 function createPersonListItems(itemCreator) {
 	$("#personList").empty();
 
+	
 	var x = readCookie('DataRefreshNotNessessary');
-	if (!x || sessionStorage.length==0) {
-		sessionStorage.clear();
+	
+	if (!x || personStore.length()==0) {
+		
+		personStore.clearAll();
+		
 		createCookie('DataRefreshNotNessessary','While existing, cached data is used.',1);
 
 		repo(baseUrl + "person/", function(response) {
 
+			
 			for ( var index in response) {
 				var person = response[index];
-				sessionStorage.setItem("personId" + person.id, JSON.stringify(person));
+				personStore.set(person, person.id);
 				itemCreator(person);
 			}
 		});
 
 	} else {
-		for (var i = 0; i < sessionStorage.length; i++){
-			var key = sessionStorage.key(i);
-			if(key.startsWith("personId")) {
-				var person = sessionStorage.getItem(key);
-				itemCreator(JSON.parse(person));
-			}
+		var p1 = personStore.get(1);
+		for (const person of personStore){
+			itemCreator(person);
 		}
 	}
 	
