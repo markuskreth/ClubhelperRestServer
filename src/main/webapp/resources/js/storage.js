@@ -8,6 +8,7 @@ function Storage(classname) {
 
 Storage.prototype.get = function (id) {
 
+	console.log("from storage " + this.classname + ", id=" + id);
 	if(id == null) {
 		return JSON.parse(sessionStorage.getItem(this.classname));
 	} else {
@@ -52,7 +53,9 @@ Storage.prototype[Symbol.iterator] = function() {
                 while (index < sessionStorage.length) {
                 	var key = sessionStorage.key(index++);
                 	if(key.startsWith(theClassName)) {
-                		return { value: JSON.parse(sessionStorage.getItem(key)), done: false  };
+                		var obj = JSON.parse(sessionStorage.getItem(key));
+                		console.log("from storage " + theClassName + ", key=" + key + ", id=" + obj.id + ", json=" + sessionStorage.getItem(key));
+                		return { value: obj, done: false  };
                 	}
                 } 
 
