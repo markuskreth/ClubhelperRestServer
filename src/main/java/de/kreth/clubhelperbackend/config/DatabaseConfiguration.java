@@ -54,12 +54,13 @@ public class DatabaseConfiguration {
 			case 0 :
 				createAll();
 				createWith(person, contact, relative, adress, attendance,
-						version, deletedEntries, group, persongroup);
+						version, deletedEntries, group, persongroup, personcompetition);
 				createAttendenceUniqueConstraint();
+				createPersonCompetitionUniqueConstraint();
 				break;
 			case 1 :
 				createAll();
-				createWith(deletedEntries, group, persongroup);
+				createWith(deletedEntries, group, persongroup, personcompetition);
 				addDeletedColumn(person, contact, relative, adress, attendance,
 						version);
 				addAuthColumns(person);
@@ -69,10 +70,11 @@ public class DatabaseConfiguration {
 				addDeleteColumnStm(person, new ColumnDefinition(DataType.TEXT,
 						"type", "NOT NULL"));
 				createAttendenceUniqueConstraint();
+				createPersonCompetitionUniqueConstraint();
 				break;
 			case 2 :
 				createAll();
-				createWith();
+				createWith(personcompetition);
 				addDeletedColumn(person, contact, relative, adress, attendance,
 						version, deletedEntries, group, persongroup);
 				addAuthColumns(person);
@@ -83,9 +85,11 @@ public class DatabaseConfiguration {
 				addDeleteColumnStm(person, new ColumnDefinition(DataType.TEXT,
 						"type", "NOT NULL"));
 				createAttendenceUniqueConstraint();
+				createPersonCompetitionUniqueConstraint();
 				break;
 			case 3 :
 				createAll();
+				createWith(personcompetition);
 				addAuthColumns(person);
 				statements.add(new DirectStatement(
 						"INSERT INTO `groupDef`(`name`,`changed`,`created`)VALUES('ADMIN',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)"));
@@ -94,30 +98,40 @@ public class DatabaseConfiguration {
 				addDeleteColumnStm(person, new ColumnDefinition(DataType.TEXT,
 						"type", "NOT NULL"));
 				createAttendenceUniqueConstraint();
+				createPersonCompetitionUniqueConstraint();
 				break;
 			case 4 :
+				createAll();
+				createWith(personcompetition);
 				addUniqueGroupName();
 				addUniquePersonGroup();
 				addDeleteColumnStm(person, new ColumnDefinition(DataType.TEXT,
 						"type", "NOT NULL"));
 				createAttendenceUniqueConstraint();
+				createPersonCompetitionUniqueConstraint();
 				break;
 			case 5 :
 				createAll();
+				createWith(personcompetition);
 				addDeleteColumnStm(person, new ColumnDefinition(DataType.TEXT,
 						"type", "NOT NULL"));
 				createAttendenceUniqueConstraint();
+				createPersonCompetitionUniqueConstraint();
 				break;
 			case 6 :
 				createAll();
+				createWith(personcompetition);
 				createAttendenceUniqueConstraint();
 				changeIdNamesInAllTables();
+				createPersonCompetitionUniqueConstraint();
 				break;
 			case 7 :
 				createAll();
+				createWith(personcompetition);
 				changeIdNamesInAllTables();
+				createPersonCompetitionUniqueConstraint();
 				break;
-			case 9: 
+			case 8: 
 				createAll();
 				createWith(personcompetition);
 				createPersonCompetitionUniqueConstraint();
@@ -141,7 +155,7 @@ public class DatabaseConfiguration {
 			}
 		});
 		statements.add(
-				new AddConstraint(attendance, new UniqueConstraint(columns)));
+				new AddConstraint(personcompetition, new UniqueConstraint(columns)));
 	}
 
 	private void changeIdNamesInAllTables() {
@@ -274,12 +288,14 @@ public class DatabaseConfiguration {
 		personcompetition = new TableDefinition("personcompetition", dbType, columns);
 		
 		allTables = Arrays.asList(person, contact, relative, adress, attendance,
-				version, deletedEntries, group, persongroup);
+				version, deletedEntries, group, persongroup, personcompetition);
 	}
 
 	private List<ColumnDefinition> createPersonCompetitionColumns() {
-		ColumnDefinition colPersId = new ColumnDefinition(DataType.INTEGER, "person_id", "NOT NULL");
-		ColumnDefinition colCompetitionId = new ColumnDefinition(DataType.VARCHAR100, "competition_id", "NOT NULL");
+		ColumnDefinition colPersId = new ColumnDefinition(DataType.INTEGER
+				, "person_id", "NOT NULL");
+		ColumnDefinition colCompetitionId = new ColumnDefinition(DataType.VARCHAR100
+				, "competition_id", "NOT NULL");
 		ColumnDefinition colParticipation = new ColumnDefinition(
 				DataType.VARCHAR255, "participation");
 		ColumnDefinition colRoutine = new ColumnDefinition(
