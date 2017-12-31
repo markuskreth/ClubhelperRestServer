@@ -17,7 +17,7 @@ import de.kreth.dbmanager.UniqueConstraint;
 
 public class DatabaseConfiguration {
 
-	private static final int LATEST_VERSION = 8;
+	private static final int LATEST_VERSION = 9;
 
 	private final Logger logger;
 	private final DatabaseType dbType;
@@ -33,6 +33,7 @@ public class DatabaseConfiguration {
 	private TableDefinition deletedEntries;
 	private TableDefinition group;
 	private TableDefinition persongroup;
+	private TableDefinition personcompetition;
 
 	private final List<MyStatement> statements;
 
@@ -116,6 +117,11 @@ public class DatabaseConfiguration {
 				createAll();
 				changeIdNamesInAllTables();
 				break;
+			case 9: 
+				createAll();
+				createWith(personcompetition);
+				createPersonCompetitionUniqueConstraint();
+				break;
 
 		}
 
@@ -123,6 +129,19 @@ public class DatabaseConfiguration {
 			logger.info("Prepared Datebase update from Version " + fromVersion
 					+ " to Version " + LATEST_VERSION);
 		}
+	}
+
+	private void createPersonCompetitionUniqueConstraint() {
+		ColumnDefinition[] columns = new ColumnDefinition[2];
+		personcompetition.getColumns().forEach(col -> {
+			if ("person_id".equals(col.getColumnName())) {
+				columns[0] = col;
+			} else if ("competition_id".equals(col.getColumnName())) {
+				columns[1] = col;
+			}
+		});
+		statements.add(
+				new AddConstraint(attendance, new UniqueConstraint(columns)));
 	}
 
 	private void changeIdNamesInAllTables() {
@@ -248,8 +267,33 @@ public class DatabaseConfiguration {
 		addCreateChangeColumn(columns);
 		addDeleteColumn(columns);
 		persongroup = new TableDefinition("persongroup", dbType, columns);
+
+		columns = createPersonCompetitionColumns();
+		addCreateChangeColumn(columns);
+		addDeleteColumn(columns);
+		personcompetition = new TableDefinition("personcompetition", dbType, columns);
+		
 		allTables = Arrays.asList(person, contact, relative, adress, attendance,
 				version, deletedEntries, group, persongroup);
+	}
+
+	private List<ColumnDefinition> createPersonCompetitionColumns() {
+		ColumnDefinition colPersId = new ColumnDefinition(DataType.INTEGER, "person_id", "NOT NULL");
+		ColumnDefinition colCompetitionId = new ColumnDefinition(DataType.VARCHAR100, "competition_id", "NOT NULL");
+		ColumnDefinition colParticipation = new ColumnDefinition(
+				DataType.VARCHAR255, "participation");
+		ColumnDefinition colRoutine = new ColumnDefinition(
+				DataType.VARCHAR255, "routine");
+		ColumnDefinition colComment = new ColumnDefinition(
+				DataType.VARCHAR255, "comment");
+		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
+		columns.add(colPersId);
+		columns.add(colCompetitionId);
+		columns.add(colParticipation);
+		columns.add(colRoutine);
+		columns.add(colComment);
+		
+		return columns;
 	}
 
 	private List<ColumnDefinition> createGroupColumns() {
