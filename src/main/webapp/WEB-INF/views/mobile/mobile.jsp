@@ -89,6 +89,7 @@
 										<select name="flip-checkbox-attendance" id="flip-checkbox-attendance" data-mini="true">
 											<option value="showPersonList">Personen</option>
 											<option value="showAttendanceList">Anwesenheit</option>
+											<option value="showCompetitionCompetitors">WK-Teilnehmer</option>
 										</select>
 									</li>
 									<li id="sendAttendance"><a href="#" onclick="sendAttendance()"
