@@ -4,6 +4,7 @@ var currentPerson = null;
 
 var personStore;
 var groupStore;
+var competitionStore;
 
 $(document).ready(function() {
 	
@@ -15,7 +16,8 @@ $(document).ready(function() {
 
 	personStore = new Storage("person");
 	groupStore = new Storage("group");
-	
+	competitionStore = new Storage("personCompetition");
+
 	$("#sendAttendance").hide();
 	listCreator.showPersonList();
 	
@@ -123,6 +125,17 @@ var listCreator = (function(){
 		
 	}
 
+	function addCompetitionCompetitorsToList(person) {
+
+		if(!person) return;
+		var id = "checkboxAttendance" + person.id;
+		var link = $("<input data-iconpos=\"left\" type=\"checkbox\"></input>");
+		link.attr("personId", person.id);
+		if(attendants.contains(link.attr("personId"))) {
+			link.attr("checked", true);
+		}
+	}
+
 	// public
 	return {
 		
@@ -205,7 +218,7 @@ function showCompetitionCompetitors() {
 	listCreator.showCompetitionCompetitorList();
 }
 
-function addPersonToList(person) {
+function sendCompetitionCompetitors() {
 	
 }
 
