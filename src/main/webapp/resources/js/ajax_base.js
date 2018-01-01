@@ -20,8 +20,8 @@ var ajax = function (requestUrl, object, type, resultFunction) {
 		withResultFunction = false;
 	}
 
-	log.trace("requesting " + requestUrl + ", withResultFunction=" + withResultFunction);
-	console.log("requesting " + requestUrl + ", withResultFunction=" + withResultFunction);
+	log.trace("requesting " + type + " " + requestUrl + ", withResultFunction=" + withResultFunction);
+	console.log("requesting " + type + " " + requestUrl + ", withResultFunction=" + withResultFunction);
 	
 	$.ajax(encodeURI(requestUrl),{
 	    'data': JSON.stringify(object), //{action:'x',params:['a','b','c']}
