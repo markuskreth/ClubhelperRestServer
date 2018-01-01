@@ -85,7 +85,7 @@
 								<ul>
 									<li class="ui-field-contain">
 										<select name="flip-checkbox-attendance" id="flip-checkbox-attendance" data-mini="true">
-											<option value="loadPersonList">Personen</option>
+											<option value="showPersonList">Personen</option>
 											<option value="showAttendanceList">Anwesenheit</option>
 										</select>
 									</li>
