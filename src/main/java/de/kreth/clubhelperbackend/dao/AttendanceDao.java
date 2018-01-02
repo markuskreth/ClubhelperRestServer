@@ -27,8 +27,6 @@ public class AttendanceDao extends AbstractDao<Attendance>
 	private static DaoConfig<Attendance> daoConfig = new DaoConfig<Attendance>(
 			"attendance", columnNames, new RowMapper(), null);
 
-	private PreparedStatement prepStm;
-
 	public AttendanceDao() {
 		super(daoConfig);
 	}
@@ -60,10 +58,8 @@ public class AttendanceDao extends AbstractDao<Attendance>
 
 	public List<Attendance> getAttendencesFor(Date day) throws SQLException {
 		JdbcTemplate jdbcTemplate = getJdbcTemplate();
-		if (prepStm == null) {
-			prepStm = jdbcTemplate.getDataSource().getConnection()
-					.prepareStatement(SQL_QUERY_ALL + " AND on_date=?");
-		}
+		PreparedStatement prepStm = jdbcTemplate.getDataSource().getConnection()
+				.prepareStatement(SQL_QUERY_ALL + " AND on_date=?");
 		prepStm.setDate(1, new java.sql.Date(day.getTime()));
 		PreparedStatementCreator psc = new PreparedStatementCreator() {
 

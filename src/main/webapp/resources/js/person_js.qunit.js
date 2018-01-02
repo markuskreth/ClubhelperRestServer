@@ -1,170 +1,175 @@
 
-		QUnit.module("Person List and Detail Tests", {
+var personStore;
 
-			beforeEach : function() {
-				sessionStorage.clear();
-				origRepo = repo;
-				origAjax = ajax;
-				repo = repoReplacement;
-				ajax = ajaxReplacement;
-			},
-			afterEach : function() {
-				repo = origRepo;
-				ajax = origAjax;
-			}
-		});
+QUnit.module("Person List and Detail Tests", {
 
-		QUnit.test("Creating Person from Ajax result", function(assert) {
+	beforeEach : function() {
+		sessionStorage.clear();
+		origRepo = repo;
+		origAjax = ajax;
+		repo = repoReplacement;
+		ajax = ajaxReplacement;
 
-			var person1 = new PersonInstance(1, personMarkusResponse);
-			assert.equal("Markus", person1.prename);
-			assert.equal("Kreth", person1.surname);
-			assert.equal("21.08.1973", person1.birthday());
-			assert.equal(1, person1.personId);
-		});
+		personStore = new Storage("person");
+		personStore.clearAll();
+	},
+	afterEach : function() {
+		repo = origRepo;
+		ajax = origAjax;
+		personStore.clearAll();
+	}
+});
 
-		QUnit.test("Creating Person from Factory Method", function(assert) {
+QUnit.test("Creating Person from Ajax result", function(assert) {
 
-			var done = assert.async();
+	var person1 = new PersonInstance(1, personMarkusResponse);
+	assert.equal("Markus", person1.prename);
+	assert.equal("Kreth", person1.surname);
+	assert.equal("21.08.1973", person1.birthday());
+	assert.equal(1, person1.id);
+});
 
-			Person(1, function(person1) {
-				assert.equal("Markus", person1.prename);
-				assert.equal("Kreth", person1.surname);
-				assert.equal("21.08.1973", person1.birthday());
-				assert.equal(1, person1.personId);
-				done();
-			});
+QUnit.test("Creating Person from Factory Method", function(assert) {
 
-		});
+	var done = assert.async();
 
-		QUnit.test("Contact Function Test", function(assert) {
+	Person(1, function(person1) {
+		assert.equal("Markus", person1.prename);
+		assert.equal("Kreth", person1.surname);
+		assert.equal("21.08.1973", person1.birthday());
+		assert.equal(1, person1.id);
+		done();
+	});
 
-			var person1 = new PersonInstance(1, personMarkusResponse);
-			person1.setContacts(contactsMarkusResponse);
+});
 
-			person1.contacts(function(items) {
-				assert.ok(items);
-				assert.equal(3, items.length);
+QUnit.test("Contact Function Test", function(assert) {
 
-				var item = items[0];
-				assert.equal("Telefon", item.type);
-				assert.equal("+495112618291", item.value);
+	var person1 = new PersonInstance(1, personMarkusResponse);
+	person1.setContacts(contactsMarkusResponse);
 
-				item = items[1];
-				assert.equal("Email", item.type);
-				assert.equal("markus.kreth@web.de", item.value);
+	person1.contacts(function(items) {
+		assert.ok(items);
+		assert.equal(3, items.length);
 
-				item = items[2];
-				assert.equal("Mobile", item.type);
-				assert.equal("01742521286", item.value);
-			});
-		});
+		var item = items[0];
+		assert.equal("Telefon", item.type);
+		assert.equal("+495112618291", item.value);
 
-		QUnit.test("Repo Replacement Test", function(assert) {
+		item = items[1];
+		assert.equal("Email", item.type);
+		assert.equal("markus.kreth@web.de", item.value);
 
-			var testfunction = function(items) {
+		item = items[2];
+		assert.equal("Mobile", item.type);
+		assert.equal("01742521286", item.value);
+	});
+});
 
-				assert.ok(items);
-				assert.equal(3, items.length);
+QUnit.test("Repo Replacement Test", function(assert) {
 
-				var item = items[0];
-				assert.equal("Telefon", item.type);
-				assert.equal("+495112618291", item.value);
+	var testfunction = function(items) {
 
-				item = items[1];
-				assert.equal("Email", item.type);
-				assert.equal("markus.kreth@web.de", item.value);
+		assert.ok(items);
+		assert.equal(3, items.length);
 
-				item = items[2];
-				assert.equal("Mobile", item.type);
-				assert.equal("01742521286", item.value);
+		var item = items[0];
+		assert.equal("Telefon", item.type);
+		assert.equal("+495112618291", item.value);
 
-			};
+		item = items[1];
+		assert.equal("Email", item.type);
+		assert.equal("markus.kreth@web.de", item.value);
 
-			repo("xxxx/contact/for/1", testfunction);
-		});
+		item = items[2];
+		assert.equal("Mobile", item.type);
+		assert.equal("01742521286", item.value);
 
-		QUnit.test("Contact Request Test", function(assert) {
+	};
 
-			var person1 = new PersonInstance(1, personMarkusResponse);
+	repo("xxxx/contact/for/1", testfunction);
+});
 
-			var done = assert.async();
+QUnit.test("Contact Request Test", function(assert) {
 
-			person1.contacts(function(items) {
+	var person1 = new PersonInstance(1, personMarkusResponse);
 
-				assert.ok(items);
-				assert.equal(3, items.length);
+	var done = assert.async();
 
-				var item = items[0];
-				assert.equal("Telefon", item.type);
-				assert.equal("+495112618291", item.value);
+	person1.contacts(function(items) {
 
-				item = items[1];
-				assert.equal("Email", item.type);
-				assert.equal("markus.kreth@web.de", item.value);
+		assert.ok(items);
+		assert.equal(3, items.length);
 
-				item = items[2];
-				assert.equal("Mobile", item.type);
-				assert.equal("01742521286", item.value);
+		var item = items[0];
+		assert.equal("Telefon", item.type);
+		assert.equal("+495112618291", item.value);
 
-				done();
-			});
-		});
+		item = items[1];
+		assert.equal("Email", item.type);
+		assert.equal("markus.kreth@web.de", item.value);
 
-		QUnit.test("Reload Person with contacts from SessionStorage", function(assert) {
+		item = items[2];
+		assert.equal("Mobile", item.type);
+		assert.equal("01742521286", item.value);
 
-			var done = assert.async();
+		done();
+	});
+});
+
+QUnit.test("Reload Person with contacts from SessionStorage", function(assert) {
+
+	var done = assert.async();
+	
+	Person(1, function(person0) {
+
+		person0.contacts(function(items) {
+			// nothing to do - checked in other tests
 			
-			Person(1, function(person0) {
+			// deactivating internet repo
+			repo = null;
+			
+			// now from Cache					
+			Person(1, function(person1) {
 
-				person0.contacts(function(items) {
-					// nothing to do - checked in other tests
-					
-					// deactivating internet repo
-					repo = null;
-					
-					// now from Cache					
-					Person(1, function(person1) {
-
-						assert.equal("Markus", person1.prename, "prename found");
-						assert.equal("Kreth", person1.surname, "surname found");
-						assert.equal("21.08.1973", person1.birthday(), "birthday shown.");
-						assert.equal(1, person1.personId);
-						done();
-					});
-
-				});
+				assert.equal("Markus", person1.prename, "prename found");
+				assert.equal("Kreth", person1.surname, "surname found");
+				assert.equal("21.08.1973", person1.birthday(), "birthday shown.");
+				assert.equal(1, person1.id);
+				done();
 			});
 
 		});
+	});
 
-		QUnit.test("Relative REquest Test", function(assert) {
+});
 
-			var person1 = new PersonInstance(1, personMarkusResponse);
+QUnit.test("Relative REquest Test", function(assert) {
 
-			var done = assert.async();
+	var person1 = new PersonInstance(1, personMarkusResponse);
 
-			person1.relatives(function(relPerson) {
-				
-				assert.ok(relPerson);
-				var expected = new PersonInstance(person51Response.id, person51Response);
-				assert.equal(expected.personId, relPerson.personId);
-				assert.equal(expected.prename, relPerson.prename);
-				assert.equal(expected.surname, relPerson.surname);
-				assert.equal(expected.age(), relPerson.age());
-				assert.equal(expected.birthday(), relPerson.birthday());
+	var done = assert.async();
 
-				relPerson.contacts(function(items) {
-					assert.ok(items);
-
-					assert.equal(3, items.length);
-
-					var item = items[0];
-					assert.equal("Telefon", item.type);
-					assert.equal("+49000000", item.value);
-
-					done();
-				});
-			});
-		});
+	person1.relatives(function(relPerson) {
 		
+		assert.ok(relPerson);
+		var expected = new PersonInstance(person51Response.id, person51Response);
+		assert.equal(expected.id, relPerson.id);
+		assert.equal(expected.prename, relPerson.prename);
+		assert.equal(expected.surname, relPerson.surname);
+		assert.equal(expected.age(), relPerson.age());
+		assert.equal(expected.birthday(), relPerson.birthday());
+
+		relPerson.contacts(function(items) {
+			assert.ok(items);
+
+			assert.equal(3, items.length);
+
+			var item = items[0];
+			assert.equal("Telefon", item.type);
+			assert.equal("+49000000", item.value);
+
+			done();
+		});
+	});
+});

@@ -37,8 +37,11 @@ public class AttendenceDaoTests extends AbstractDatabaseTests<Attendance> {
 		toInsert.setOnDate(now.getTime());
 		toInsert.setId(-1L);
 		dao.insert(toInsert);
-		
-		List<Attendance> list = ((AttendanceDao)dao).getAttendencesFor(getNowWithoutTime().getTime());
+
+		Date time = getNowWithoutTime().getTime();
+		List<Attendance> list = ((AttendanceDao)dao).getAttendencesFor(time);
+		assertEquals(2, list.size());
+		list = ((AttendanceDao)dao).getAttendencesFor(time);
 		assertEquals(2, list.size());
 	}
 	

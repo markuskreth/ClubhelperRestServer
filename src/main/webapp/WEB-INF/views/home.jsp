@@ -1,5 +1,5 @@
 <%@page import="java.util.Date"%>
-<%@page import="de.kreth.encryption.Encryptor"%>
+<%@page import="de.kreth.clubhelperbackend.config.Encryptor"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page session="false" %>
 

@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -25,11 +26,16 @@ public class AttendanceController extends AbstractController<Attendance> {
 		super(attendanceDao, Attendance.class);
 	}
 
-	@RequestMapping(value = "/{date}", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "/on", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
-	public List<Attendance> getAttendencesOn(@PathVariable("date") Date date)
+	public List<Attendance> getAttendencesOn(@RequestBody(required=false) Date date)
 			throws SQLException {
+
+		if(date == null) {
+			date = new Date();
+		}
 		AttendanceDao tmpDao = (AttendanceDao) dao;
+		
 		return tmpDao.getAttendencesFor(date);
 	}
 

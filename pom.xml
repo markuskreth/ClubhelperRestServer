@@ -32,11 +32,6 @@
 			<artifactId>databasedefinition</artifactId>
 			<version>0.0.8-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>de.kreth</groupId>
-			<artifactId>clubhelperdata</artifactId>
-			<version>1.0.7</version>
-		</dependency>
 
 		<!-- Spring -->
 		<dependency>
@@ -190,6 +185,12 @@
 			<version>2.2</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.googlecode.libphonenumber</groupId>
+			<artifactId>libphonenumber</artifactId>
+			<version>7.7.4</version>
+		</dependency>
+		
 		<!-- @Inject -->
 		<dependency>
 			<groupId>javax.inject</groupId>
@@ -302,7 +303,6 @@
 			<version>1.3</version>
 			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
 	<build>
 		<plugins>
@@ -347,19 +347,6 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-			<!-- <plugin> -->
-			<!-- <groupId>com.cj.qunit.mojo</groupId> -->
-			<!-- <artifactId>qunit-maven-plugin</artifactId> -->
-			<!-- <version>2.3.2</version> -->
-			<!-- <executions> -->
-			<!-- <execution> -->
-			<!-- <phase>test</phase> -->
-			<!-- <goals> -->
-			<!-- <goal>test</goal> -->
-			<!-- </goals> -->
-			<!-- </execution> -->
-			<!-- </executions> -->
-			<!-- </plugin> -->
 		</plugins>
 	</build>
 </project>

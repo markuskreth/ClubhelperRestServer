@@ -157,7 +157,7 @@ public class JumpHeightSheet {
 		dates = null;
 	}
 
-	public void setTitle(String name) throws IOException {
+	public void setTitle(String name) throws IOException, InterruptedException {
 		JumpHeightSheet result = SheetService.changeTitle(sheet, name);
 		update(result);
 	}

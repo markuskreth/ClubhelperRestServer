@@ -209,8 +209,7 @@ function addContact() {
 			ajax(url, con, "post",
 					function() {
 						me.setContacts(null);
-						var text = JSON.stringify(me);
-						sessionStorage.setItem("personId" + me.personId, text);
+						personStore.set(me, me.id);
 						updatePersonView();
 					});
 			
@@ -247,9 +246,7 @@ function deleteRelation(relativeId) {
 					ajax(url, relativePerson.relation, "delete",
 							function() {
 								me.deleteRelatives();
-								var text = JSON.stringify(me);
-								sessionStorage.setItem("personId"
-										+ me.personId, text);
+								personStore.set(me, me.id);
 								updatePersonView();
 							});
 				};
@@ -328,8 +325,7 @@ function deleteContact(contactId) {
 						ajax(url, con, "delete",
 								function() {
 									me.setContacts(null);
-									var text = JSON.stringify(me);
-									sessionStorage.setItem("personId" + me.personId, text);
+									personStore.set(me, me.id);
 									updatePersonView();
 								});
 					}
@@ -362,8 +358,7 @@ function editContact(contactId) {
 						ajax(url, con, "put",
 								function() {
 									me.setContacts(null);
-									var text = JSON.stringify(me);
-									sessionStorage.setItem("personId" + me.personId, text);
+									personStore.set(me, me.id);
 									updatePersonView();
 								});
 					};
@@ -439,7 +434,7 @@ function addPerson() {
 			currentPerson.birth = birthday.format("DD/MM/YYYY HH:mm:ss.SSS ZZ");
 			if(!currentPerson.type) {
 				log.error("New person has no type. Restart dialog.");
-				sessionStorage.setItem("personId" + currentPerson.id, JSON.stringify(currentPerson));
+				personStore.set(currentPerson, currentPerson.id);
 				alert("Bitte mind. eine Gruppe angeben. Die erste gewählte ist die Hauptgruppe.");
 				showPerson(currentPerson.id);
 				return;

@@ -3,7 +3,6 @@ package de.kreth.clubhelperbackend;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -19,7 +18,7 @@ import de.kreth.clubhelperbackend.google.spreadsheet.SheetService;
 public class JumpHeightSheetControllerTest {
 
 	@Test
-	public void DateComparissonMatches() throws IOException {
+	public void DateComparissonMatches() throws Exception {
 		List<CellValue<Date>> dates = SheetService.get("Langenhagen,Anna")
 				.getDates();
 		System.out.println(dates.get(0).getObject());

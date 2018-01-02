@@ -39,10 +39,10 @@ public class EventController {
 
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public List<Map<String, Object>> getEvents() throws IOException {
+	public List<Map<String, Object>> getEvents() throws IOException, InterruptedException {
 		List<Map<String, Object>> result = new ArrayList<>();
 		adapter.getAllEvents().forEach(e -> {
-			Map<String, Object> events = new HashMap<>();
+			Map<String, Object> properties = new HashMap<>();
 
 			adjustExcludedEndDate(e);
 			StringBuilder msg = new StringBuilder();
@@ -52,7 +52,7 @@ public class EventController {
 
 				Entry<String, Object> ev = map(entry);
 				if (ev != null) {
-					events.put(ev.getKey(), ev.getValue());
+					properties.put(ev.getKey(), ev.getValue());
 				} else if (log.isTraceEnabled()) {
 					msg.append("\n\t\"").append(entry.getKey()).append("\", value: ").append(entry.getValue());
 				}
@@ -60,7 +60,7 @@ public class EventController {
 			if (log.isTraceEnabled()) {
 				log.trace(msg.toString());
 			}
-			result.add(events);
+			result.add(properties);
 		});
 		return result;
 	}
