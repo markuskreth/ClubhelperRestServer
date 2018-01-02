@@ -40,11 +40,19 @@ public class ControllerLoggerAspect extends AbstractLoggerAspect {
 
 	@AfterReturning(pointcut = "invocation()", returning = "result")
 	public void logCall(JoinPoint joinPoint, Object result) throws Throwable {
-		logger.debug(generateLogMessage(joinPoint).append(" ==> ").append(result).toString());
+		logger.debug(generateLogMessage(joinPoint).append(" ==> ")
+				.append(result).toString());
 	}
 
 	@AfterReturning(pointcut = "deleteItem()", returning = "result")
-	public void logDelete(JoinPoint joinPoint, Object result) throws Throwable {
-		logger.warn(generateLogMessage(joinPoint).append(" ==> ").append(result).toString());
+	public void logDeleteSuccess(JoinPoint joinPoint, Object result)
+			throws Throwable {
+		logger.warn(generateLogMessage(joinPoint).append(" ==> ").append(result)
+				.toString());
+	}
+
+	@Before("deleteItem()")
+	public void logDeleteInvocation(JoinPoint joinPoint) throws Throwable {
+		logger.debug(generateLogMessage(joinPoint).toString());
 	}
 }
