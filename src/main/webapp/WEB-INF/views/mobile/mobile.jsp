@@ -13,23 +13,25 @@
 <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Inconsolata" />
 <link rel="stylesheet" href=<c:url value='/resources/css/clndr.css' /> />
 
-<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+<link rel="stylesheet" href=<c:url value='/resources/js/libs/jquery.mobile-1.4.5.min.css' /> />
 
 <!-- <link rel="stylesheet/less" type="text/css" href=<c:url value='/resources/css/clndr.less' /> /> -->
 <%-- <script src=<c:url value='/resources/js/less.js' />></script> --%>
 <%-- <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.2/less.min.js"></script> --%>
 
-<script src=<c:url value='/resources/js/moment-with-locales.min.js' />></script>
+<script src=<c:url value='/resources/js/libs/jquery-1.11.1.min.js' />></script>
+<script src=<c:url value='/resources/js/libs/jquery.mobile-1.4.5.min.js' />></script>
 
-<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+<script src=<c:url value='/resources/js/libs/moment-with-locales.min.js' />></script>
+<script charset="utf-8" src=<c:url value='/resources/js/libs/log4javascript.js' />></script>
+<script charset="utf-8" src=<c:url value='/resources/js/libs/clndr.min.js' />></script>
+<script charset="utf-8" src=<c:url value='/resources/js/libs/underscore-min.js' />></script>
 
-<script charset="utf-8" src=<c:url value='/resources/js/log4javascript.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/general.js' />></script>
+<script charset="utf-8" src=<c:url value='/resources/js/ajax_base.js' />></script>
+<script charset="utf-8" src=<c:url value='/resources/js/storage.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/jumpheights.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/person.js' />></script>
-<script charset="utf-8" src=<c:url value='/resources/js/clndr.min.js' />></script>
-<script charset="utf-8" src=<c:url value='/resources/js/underscore-min.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/mobile_business.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/mobile_calendar.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/mobile_edit_business.js' />></script>
@@ -83,7 +85,7 @@
 								<ul>
 									<li class="ui-field-contain">
 										<select name="flip-checkbox-attendance" id="flip-checkbox-attendance" data-mini="true">
-											<option value="loadPersonList">Personen</option>
+											<option value="showPersonList">Personen</option>
 											<option value="showAttendanceList">Anwesenheit</option>
 										</select>
 									</li>

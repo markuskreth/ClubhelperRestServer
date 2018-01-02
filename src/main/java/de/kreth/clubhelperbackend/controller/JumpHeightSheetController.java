@@ -45,7 +45,7 @@ public class JumpHeightSheetController {
 	@RequestMapping(value = "/tasks/{title}/{taskName}", method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
 	public List<String> addTask(@PathVariable("title") String title, @PathVariable("taskName") String taskName)
-			throws IOException {
+			throws IOException, InterruptedException {
 		return SheetService.get(title).addTask(taskName);
 	}
 
@@ -238,7 +238,7 @@ public class JumpHeightSheetController {
 
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public List<String> getTitles() throws IOException {
+	public List<String> getTitles() throws IOException, InterruptedException {
 		List<String> result = new ArrayList<>();
 		List<JumpHeightSheet> sheets = SheetService.getSheets();
 		sheets.sort(new Comparator<JumpHeightSheet>() {

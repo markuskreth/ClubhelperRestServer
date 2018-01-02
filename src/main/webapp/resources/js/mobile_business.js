@@ -2,6 +2,9 @@
 var currentPersonId = null;
 var currentPerson = null;
 
+var personStore;
+var groupStore;
+
 $(document).ready(function() {
 	
 	$("#collapsibleRelations").collapsible({
@@ -10,24 +13,23 @@ $(document).ready(function() {
 		}
 	});
 
+	personStore = new Storage("person");
+	groupStore = new Storage("group");
+	
 	$("#sendAttendance").hide();
-	loadPersonList();
+	listCreator.showPersonList();
 	
 	$( "#flip-checkbox-attendance" ).bind( "change", function(event, ui) {
 		ui = $( "#flip-checkbox-attendance" );
+		$("#sendAttendance").hide();
 		window[ui.val()]();
-		$("#sendAttendance").toggle();
-		});
+	});
 	$(document).on("pageshow", "#personDetails", function() {
 		if(currentPersonId == null) {
 			currentPersonId = readCookie('currentPersonId');
 		}
 		updateAllPersonDetailData();
 	});
-
-//	$(document).on("pageshow", "#personDetails", function() {
-//		loadPersonList();
-//	});
 
 	var split = location.pathname.replace(/^\/|\/$/g, '').split('/');
 	var id = parseInt(split[split.length - 1]);
@@ -39,106 +41,181 @@ $(document).ready(function() {
 
 });
 
-function loadPersonList() {
-	createPersonListItems(addPersonToList);
-}
-
-function createPersonListItems(itemCreator) {
-	$("#personList").empty();
-
-	var x = readCookie('DataRefreshNotNessessary');
-	if (!x || sessionStorage.length==0) {
-		sessionStorage.clear();
-		createCookie('DataRefreshNotNessessary','While existing, cached data is used.',1);
-
-		repo(baseUrl + "person/", function(response) {
-
-			for ( var index in response) {
-				var person = response[index];
-				sessionStorage.setItem("personId" + person.id, JSON.stringify(person));
-				itemCreator(person);
-			}
-		});
-
-	} else {
-		for (var i = 0; i < sessionStorage.length; i++){
-			var key = sessionStorage.key(i);
-			if(key.startsWith("personId")) {
-				var person = sessionStorage.getItem(key);
-				itemCreator(JSON.parse(person));
-			}
-		}
-	}
+var listCreator = (function(){
 	
-	$("#personList").listview().listview('refresh');
-	
-}
+	// private
 
-var attendants = [];
-function showAttendanceList() {
-	createPersonListItems(addAttendancePersonToList);
-}
+	function createPersonListItems(itemCreator) {
+		$("#personList").empty();
 
-function sendAttendance() {
-	ui = $( "#flip-checkbox-attendance" );
-	ui.val("loadPersonList");
-	window[ui.val()]();
-	$("#sendAttendance").hide();
-	attendants.forEach(function(item) {
-		ajax(baseUrl + "attendance/for/" + item, "", "post");
-	})
-	attendants = [];
-	
-}
+		
+		var x = readCookie('DataRefreshNotNessessary');
+		
+		if (!x || personStore.length()==0) {
+			
+			personStore.clearAll();
+			
+			createCookie('DataRefreshNotNessessary','While existing, cached data is used.',1);
 
-function addAttendancePersonToList(person) {
-	if(!person) return;
-	var id = "checkboxAttendance" + person.id;
-	var link = $("<input data-iconpos=\"left\" type=\"checkbox\"></input>");
-	link.attr("personId", person.id);
-	if(attendants.indexOf(link.attr("personId"))>-1) {
-		link.attr("checked", true);
-	}
-	link.attr("id", id);
-	link.attr("name", id);
-	link.click(function() {
-		var me = $(this);
-		var pId = me.attr("personId");
-		var checked = me.prop("checked")
-		if(checked) {
-			attendants.push(pId);
+			repo(baseUrl + "person/", function(response) {
+				
+				for ( var index in response) {
+					var person = response[index];
+					personStore.set(person, person.id);
+					itemCreator(person);
+				}
+			});
+
 		} else {
-			var index = attendants.indexOf(pId);
-			if (index > -1) {
-				attendants.splice(index, 1);
+			var p1 = personStore.get(1);
+			for (const person of personStore){
+				itemCreator(person);
 			}
 		}
 		
-	});
-	var hull = $("<div></div>");
-	var label = $("<label></label>").attr("for", id).text(person.prename + " " + person.surname);
-	hull.append(link);
-	hull.append(label);
-//	.append("<a href=\"#\" \r\n" + 
-//			"       data-icon=\"info\" \r\n" + 
-//			"       onclick=\"alert(\'Hello\')\"> This is a link though</a>")
-	var item = $("<li></li>").append(label.append(link));
+		$("#personList").listview().listview('refresh');
+		
+	}
 
-	$("#personList").append(item);
+	function addPersonToList(person) {
+
+		if(!person) return;
+		
+		var link = $("<a href='#' data-transition=\"flip\" ></a>").text(person.prename + " " + person.surname);
+		link.attr("personId", person.id);
+		link.click(function() {
+				var pId = $(this).attr("personId");
+				showPerson(pId);
+			});
+		var item = $("<li></li>").append(link);
+		$("#personList").append(item);
+	}
+	
+	function addAttendancePersonToList(person) {
+		if(!person) return;
+		var id = "checkboxAttendance" + person.id;
+		var link = $("<input data-iconpos=\"left\" type=\"checkbox\"></input>");
+		link.attr("personId", person.id);
+		if(attendants.contains(link.attr("personId"))) {
+			link.attr("checked", true);
+		}
+		link.attr("id", id);
+		link.attr("name", id);
+		link.click(function() {
+			var me = $(this);
+			var pId = me.attr("personId");
+			var checked = me.prop("checked")
+			if(checked) {
+				attendants.push(pId);
+			} else {
+				attendants.remove(pId);
+			}
+			
+		});
+		var hull = $("<div></div>");
+		var label = $("<label></label>").attr("for", id).text(person.prename + " " + person.surname);
+		hull.append(link);
+		hull.append(label);
+		var item = $("<li></li>").append(label.append(link));
+
+		$("#personList").append(item);
+		
+	}
+
+	// public
+	return {
+		
+		showPersonList: function(){
+			createPersonListItems(addPersonToList);			
+		},
+		showAttendanceList: function() {
+			createPersonListItems(addAttendancePersonToList);	
+		},
+		showCompetitionCompetitorList: function() {
+			createPersonListItems(addCompetitionCompetitorsToList);	
+		}
+	}
+})();
+
+var attendants = (function(){
+
+	// private
+	var currentAttendants = [];
+	var lastUpdate = null;
+	
+	function showList() {
+		listCreator.showAttendanceList();
+		if(!lastUpdate || moment().diff(lastUpdate, 'minutes')>10) {
+			loadServerAttendancesForToday();
+		}
+	}
+
+	function loadServerAttendancesForToday() {
+		var obj = moment().format("DD/MM/YYYY HH:mm:ss.SSS ZZ");
+		ajax(baseUrl + "attendance/on", obj, "post", function(list) {
+
+			lastUpdate = moment();
+			currentAttendants = [];
+			
+			list.forEach(function(item) {
+				currentAttendants.push({"val":item.personId, send:true});
+				$("#personList input[personId="+item.personId+"]").attr("checked", true);
+			})
+		});
+	}
+	
+	function send() {
+		ui = $( "#flip-checkbox-attendance" );
+		ui.val("showPersonList");
+		$("#sendAttendance").hide();
+		window[ui.val()]();
+		currentAttendants.forEach(function(item) {
+			if(!item.send) {
+				ajax(baseUrl + "attendance/for/" + item.val, "", "post");
+			}
+		})
+		currentAttendants = [];
+		
+	}
+
+	// public
+	return {
+		showAttendanceList : showList,
+		sendAttendance : send,
+		push : function (pId) {
+			currentAttendants.push({"val":pId});
+		},
+		contains: function(pId) {
+			return currentAttendants.findIndex(obj => obj.val==pId) >= 0;
+		},
+		remove: function(pId) {
+			var index = currentAttendants.indexOf(pId);
+			if (index > -1) {
+				currentAttendants.splice(index, 1);
+			}
+		}
+	};
+})();
+
+function showPersonList() {
+	listCreator.showPersonList();
+}
+
+function showAttendanceList() {
+	attendants.showAttendanceList();
+	$("#sendAttendance").show();
+}
+
+function sendAttendance() {
+	attendants.sendAttendance();
+}
+
+function showCompetitionCompetitors() {
+	listCreator.showCompetitionCompetitorList();
 }
 
 function addPersonToList(person) {
-
-	if(!person) return;
 	
-	var link = $("<a href='#' data-transition=\"flip\" ></a>").text(person.prename + " " + person.surname);
-	link.attr("personId", person.id);
-	link.click(function() {
-			var pId = $(this).attr("personId");
-			showPerson(pId);
-		});
-	var item = $("<li></li>").append(link);
-	$("#personList").append(item);
 }
 
 function showPerson(personId) {

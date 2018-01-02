@@ -3,8 +3,14 @@ package de.kreth.clubhelperbackend.google.spreadsheet;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.services.sheets.v4.Sheets;
@@ -30,18 +36,37 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
     static final String SPREADSHEET_ID = "1clDEc9NakRJTM-onxrjsuyB2Vby8P1j6NINdWelOrwg";
     
     private static final AtomicInteger instanceCount = new AtomicInteger(0);
+    private static final Lock lock = new ReentrantLock();
     
-    private final Sheets service;
+    private Sheets service;
 
     public GoogleSpreadsheetsAdapter() throws IOException, GeneralSecurityException {
     	super();
-    	service = getSheetsService();
-    	if(instanceCount.incrementAndGet() >1) {
-    		log.error("Initialized " + getClass().getName() + " #" + instanceCount.get() + ", may slow down system.");
-    	}
-    	if(log.isDebugEnabled()) {
-    		log.debug("Initialized " + getClass().getName() + " #"+ instanceCount.get());
-    	}
+    	ExecutorService exec = Executors.newSingleThreadExecutor();
+		exec.execute(new Runnable() {
+
+			@Override
+			public void run() {
+
+				lock.lock();
+				try {
+					service = getSheetsService();
+
+					if (instanceCount.incrementAndGet() > 1) {
+						log.error("Initialized " + getClass().getName() + " #" + instanceCount.get()
+								+ ", may slow down system.");
+					}
+					if (log.isDebugEnabled()) {
+						log.debug("Initialized " + getClass().getName() + " #" + instanceCount.get());
+					}
+				} catch (IOException e) {
+					log.error("Unable to init " + getClass(), e);
+				} finally {
+					lock.unlock();
+				}
+			}
+		});
+    	exec.shutdown();
 	}
     
 	/**
@@ -67,9 +92,13 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
 		return response;
 	}
     
-    public List<Sheet> getSheets() throws IOException {
+    public List<Sheet> getSheets() throws IOException, InterruptedException {
     	if(log.isTraceEnabled()) {
     		log.trace("Loading Sheets");
+    	}
+    	if(lock.tryLock(10, TimeUnit.SECONDS) == false) {
+    		log.error("Error fetching Sheets! Using empty result.");
+    		return Collections.emptyList();
     	}
         Spreadsheet sheet = loadSheet();
         return sheet.getSheets();
@@ -98,7 +127,7 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
 		return sheet;
 	}
     
-	public Sheet dublicateTo(String originalTitle, String title) throws IOException {
+	public Sheet dublicateTo(String originalTitle, String title) throws IOException, InterruptedException {
         Spreadsheet sheet = loadSheet();
         List<Sheet> sheets=sheet.getSheets();
         Integer sourceSheetId = null;

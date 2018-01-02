@@ -38,8 +38,7 @@ public abstract class GoogleBaseAdapter {
 	/**
 	 * Global instance of the scopes required by this quickstart.
 	 *
-	 * If modifying these scopes, delete your previously saved credentials at
-	 * ~/.credentials/sheets.googleapis.com-java-quickstart
+	 * If modifying these scopes, delete your previously saved credentials
 	 */
 	static final List<String> SCOPES = Arrays.asList(SheetsScopes.SPREADSHEETS, CalendarScopes.CALENDAR);
 
@@ -122,12 +121,6 @@ public abstract class GoogleBaseAdapter {
 
 		credential.setExpiresInSeconds(Long.valueOf(691200L));
 
-		boolean refreshToken = credential.refreshToken();
-		if (refreshToken == false && log.isWarnEnabled()) {
-			log.warn("Refresh of google access token failed after initialization!");
-		} else if (log.isDebugEnabled()) {
-			log.debug("Initial Refresh of google access Token " + (refreshToken ? "was successful." : "failed."));
-		}
 		return credential;
 	}
 
