@@ -235,7 +235,8 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 
 	@Override
 	public T insert(T obj) {
-		Assert.notNull(transactionTemplate);
+		Assert.notNull(transactionTemplate,
+				"Transaction Template not set yet.");
 
 		boolean withId = obj.getId() != null && obj.getId() >= 0;
 
@@ -313,7 +314,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 	@Override
 	public boolean delete(long id) {
 
-		Assert.notNull(deletedEntriesDao);
+		Assert.notNull(deletedEntriesDao, "deletedEntriesDao not set yet.");
 
 		Date date = new Date();
 		int inserted = getJdbcTemplate().update(SQL_DELETE, date, id);
@@ -329,7 +330,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 	@Override
 	public boolean undelete(long id) {
 
-		Assert.notNull(deletedEntriesDao);
+		Assert.notNull(deletedEntriesDao, "deletedEntriesDao not set yet.");
 		int updated = getJdbcTemplate().update(SQL_DELETE, null, id);
 
 		if (updated == 1) {
