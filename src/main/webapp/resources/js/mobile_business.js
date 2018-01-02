@@ -23,7 +23,7 @@ $(document).ready(function() {
 		ui = $( "#flip-checkbox-attendance" );
 		$("#sendAttendance").hide();
 		window[ui.val()]();
-		});
+	});
 	$(document).on("pageshow", "#personDetails", function() {
 		if(currentPersonId == null) {
 			currentPersonId = readCookie('currentPersonId');
@@ -58,7 +58,6 @@ var listCreator = (function(){
 			createCookie('DataRefreshNotNessessary','While existing, cached data is used.',1);
 
 			repo(baseUrl + "person/", function(response) {
-
 				
 				for ( var index in response) {
 					var person = response[index];
@@ -146,13 +145,23 @@ var attendants = (function(){
 	
 	function showList() {
 		listCreator.showAttendanceList();
-		if(!lastUpdate || lastUpdate.diff(moment(), 'minutes')>10) {
+		if(!lastUpdate || moment().diff(lastUpdate, 'minutes')>10) {
 			loadServerAttendancesForToday();
 		}
 	}
 
 	function loadServerAttendancesForToday() {
-		
+		var obj = moment().format("DD/MM/YYYY HH:mm:ss.SSS ZZ");
+		ajax(baseUrl + "attendance/on", obj, "post", function(list) {
+
+			lastUpdate = moment();
+			currentAttendants = [];
+			
+			list.forEach(function(item) {
+				currentAttendants.push({"val":item.personId, send:true});
+				$("#personList input[personId="+item.personId+"]").attr("checked", true);
+			})
+		});
 	}
 	
 	function send() {
