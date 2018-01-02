@@ -107,7 +107,7 @@ public class DbStateAndUpdateTests extends AbstractDatabaseTests<Person> {
 
 		rs.close();
 
-		assertEquals(9, tables.size());
+		assertEquals("Found tables: " + tables, 10, tables.size());
 
 		assertTrue("Person Table not found!",
 				tables.contains(Person.class.getSimpleName().toLowerCase()));
@@ -126,6 +126,8 @@ public class DbStateAndUpdateTests extends AbstractDatabaseTests<Person> {
 		assertTrue("DeletedEntries Table not found!",
 				tables.contains(DeletedEntriesDao.TABLE_NAME.toLowerCase()));
 		assertTrue("version Table not found!", tables.contains("version"));
+		assertTrue("personcompetition Table not found!",
+				tables.contains("personcompetition"));
 
 	}
 
