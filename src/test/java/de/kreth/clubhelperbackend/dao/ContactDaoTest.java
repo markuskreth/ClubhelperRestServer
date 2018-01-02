@@ -128,8 +128,9 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 
 		String where = "personid=1";
 
-		Matcher<String> sqlMatcher = sqlMatcher(Arrays.asList("select", "*",
-				"from", "tablename", "where", "personid=1"));
+		Matcher<String> sqlMatcher = sqlMatcher(
+				Arrays.asList("select", "*", "from", "tablename", "where",
+						"deleted", "is", "null", "and", "personid=1"));
 		dao.getByWhere(where);
 
 		verify(jdbcTemplate).query(Matchers.argThat(sqlMatcher),
