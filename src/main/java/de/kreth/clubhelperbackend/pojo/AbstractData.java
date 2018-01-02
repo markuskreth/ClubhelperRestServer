@@ -4,6 +4,8 @@ import java.util.Date;
 
 public abstract class AbstractData implements Data {
 
+	private static final long serialVersionUID = -6879650233333766171L;
+
 	private Long id;
 	private java.util.Date changed;
 	private java.util.Date created;
