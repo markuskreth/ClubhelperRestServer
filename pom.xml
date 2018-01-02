@@ -10,7 +10,7 @@
 
 	<parent>
 		<groupId>de.kreth</groupId>
-		<version>1.0.7-SNAPSHOT</version>
+		<version>1.0.7</version>
 		<artifactId>clubhelper-parent</artifactId>
 	</parent>
 
