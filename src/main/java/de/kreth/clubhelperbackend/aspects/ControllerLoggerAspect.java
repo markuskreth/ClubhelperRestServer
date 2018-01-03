@@ -1,20 +1,20 @@
 package de.kreth.clubhelperbackend.aspects;
 
+import static de.kreth.clubhelperbackend.aspects.AbstractLoggerAspect.LogLevel.DEBUG;
+import static de.kreth.clubhelperbackend.aspects.AbstractLoggerAspect.LogLevel.INFO;
+import static de.kreth.clubhelperbackend.aspects.AbstractLoggerAspect.LogLevel.WARN;
+
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 @Aspect
 public class ControllerLoggerAspect extends AbstractLoggerAspect {
-
-	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Pointcut("execution (public * de.kreth.clubhelperbackend.controller..*.delete(..))")
 	private void deleteItem() {
@@ -30,7 +30,7 @@ public class ControllerLoggerAspect extends AbstractLoggerAspect {
 
 	@Before("invocation()")
 	public void logDao(JoinPoint joinPoint) throws Throwable {
-		logger.info(generateLogMessage(joinPoint).toString());
+		log(INFO, joinPoint);
 	}
 
 	@AfterThrowing(pointcut = "invocation()", throwing = "ex")
@@ -40,19 +40,17 @@ public class ControllerLoggerAspect extends AbstractLoggerAspect {
 
 	@AfterReturning(pointcut = "invocation()", returning = "result")
 	public void logCall(JoinPoint joinPoint, Object result) throws Throwable {
-		logger.debug(generateLogMessage(joinPoint).append(" ==> ")
-				.append(result).toString());
+		log(DEBUG, joinPoint, result);
 	}
 
 	@AfterReturning(pointcut = "deleteItem()", returning = "result")
 	public void logDeleteSuccess(JoinPoint joinPoint, Object result)
 			throws Throwable {
-		logger.warn(generateLogMessage(joinPoint).append(" ==> ").append(result)
-				.toString());
+		log(WARN, joinPoint, result);
 	}
 
 	@Before("deleteItem()")
 	public void logDeleteInvocation(JoinPoint joinPoint) throws Throwable {
-		logger.debug(generateLogMessage(joinPoint).toString());
+		log(DEBUG, joinPoint);
 	}
 }
