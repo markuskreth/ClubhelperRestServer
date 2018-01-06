@@ -24,13 +24,13 @@ public class GroupDao extends AbstractDao<Group> implements Dao<Group> {
 		super(config);
 	}
 
-	private static class GroupRowMapper implements RowMapper<Group> {
+	private static class GroupRowMapper extends RowMapper<Group> {
 
 		@Override
 		public Group mapRow(ResultSet rs, int rowNum) throws SQLException {
 			Group g = new Group(rs.getLong("id"), rs.getString("name"),
 					rs.getTimestamp("changed"), rs.getTimestamp("created"));
-			return g;
+			return appendDefault(g, rs);
 		}
 
 		@Override

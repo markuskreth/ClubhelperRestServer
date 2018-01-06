@@ -27,7 +27,7 @@ public class ContactDao extends AbstractDao<Contact> implements Dao<Contact> {
 		super(daoConfig);
 	}
 
-	public static class ContactRowMapper implements RowMapper<Contact> {
+	public static class ContactRowMapper extends RowMapper<Contact> {
 
 		@Override
 		public Contact mapRow(ResultSet rs, int rowNo) throws SQLException {
@@ -35,7 +35,7 @@ public class ContactDao extends AbstractDao<Contact> implements Dao<Contact> {
 					rs.getString("type"), rs.getString("value"),
 					rs.getLong("person_id"), rs.getTimestamp("changed"),
 					rs.getTimestamp("created"));
-			return c;
+			return appendDefault(c, rs);
 		}
 
 		@Override

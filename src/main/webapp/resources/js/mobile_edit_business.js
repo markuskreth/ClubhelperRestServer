@@ -190,7 +190,7 @@ function showPersonEditView(viewElement) {
 function deletePerson() {
 	currentPerson.deletePerson(function() {
 		$.mobile.changePage("#personList");
-		loadPersonList();
+		listCreator.showPersonList();
 	});
 }
 

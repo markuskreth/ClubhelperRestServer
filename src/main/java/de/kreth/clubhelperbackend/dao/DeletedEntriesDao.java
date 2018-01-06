@@ -26,15 +26,16 @@ public class DeletedEntriesDao extends AbstractDao<DeletedEntries> {
 	}
 
 	private static class DeletedEntriesRowMapper
-			implements
+			extends
 				AbstractDao.RowMapper<DeletedEntries> {
 
 		@Override
 		public DeletedEntries mapRow(ResultSet rs, int rowNum)
 				throws SQLException {
-			return new DeletedEntries(rs.getLong("id"),
+			return appendDefault(new DeletedEntries(rs.getLong("id"),
 					rs.getString("tablename"), rs.getLong("entryId"),
-					rs.getTimestamp("changed"), rs.getTimestamp("created"));
+					rs.getTimestamp("changed"), rs.getTimestamp("created")),
+					rs);
 		}
 
 		@Override

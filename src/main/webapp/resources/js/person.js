@@ -240,8 +240,9 @@ PersonInstance.prototype.age = function () {
 }
 
 PersonInstance.prototype.deletePerson = function (targetFunction) {
+	var me = this;
 	ajax(baseUrl + "person/" + this.id, this, "delete", function(response) {
-		personStore.remove(this);
+		personStore.remove(me);
 		if(targetFunction != null) {
 			targetFunction();
 		}

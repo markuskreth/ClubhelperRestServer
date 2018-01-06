@@ -20,4 +20,8 @@ public interface Data extends Serializable {
 
 	void setCreated(Date created);
 
+	boolean isDeleted();
+
+	void setDeleted(boolean deleted);
+
 }
