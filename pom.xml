@@ -4,7 +4,7 @@
 	<artifactId>clubhelperbackend</artifactId>
 	<name>ClubHelperBackend</name>
 	<packaging>war</packaging>
-	<version>1.0.7.5-SNAPSHOT</version>
+	<version>1.0.7.5</version>
 	<description>Clubhelper Rest Service</description>
 
 	<parent>
