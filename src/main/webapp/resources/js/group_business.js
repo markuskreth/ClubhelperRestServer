@@ -5,7 +5,7 @@ var allGroups = function(targetFunction) {
 
 	var groups = groupStore.get();
 	
-	if(groups != null) {
+	if(groups !== null) {
 		targetFunction(groups);
 	} else {
 		repo(baseUrl + "group/", function(response) {
@@ -14,5 +14,4 @@ var allGroups = function(targetFunction) {
 		});
 		
 	}
-}
-
+};

@@ -7,23 +7,15 @@ var competitionParticipants = (function () {
 	
 	// private
 	var compId;
-	var participants = [];
 		
 	// public
-	return {
+	const instance = {
 		competition: function (competitionId) {
 			compId = competitionId;
-		},
-		push: function (pId) {
-			participants.push(pId);
-		},
-		remove: function (pId) {
-			var index = participants.indexOf(pId);
-			if (index > -1) {
-				participants.splice(index, 1);
-			}
 		}
 	};
+	instance.prototype = Object.create(ExtendableItemList.prototype);
+	return instance;
 })();
 
 function ExtendableItemList () {

@@ -40,3 +40,10 @@ QUnit.test("Iterate in for loop ExtendableItemList", function(assert) {
 
 	assert.equal(sum, 6);
 });
+
+QUnit.test("competitionParticipants use competitionId, add, remove", function(assert) {
+	assert.ok(competitionParticipants);
+	competitionParticipants.competition("competitionId");
+	competitionParticipants.push(1);
+	competitionParticipants.push(2);
+});
