@@ -30,10 +30,6 @@ public abstract class AbstractDatabaseTests<T extends Data> {
 	protected static DataSource dataSource;
 	protected AbstractDao<T> dao;
 
-	public AbstractDatabaseTests() {
-		super();
-	}
-
 	@Before
 	public void setUp() throws Exception {
 		JDBCDataSource ds = new JDBCDataSource();

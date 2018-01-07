@@ -30,6 +30,7 @@
 	</definition>
 	
 	<definition name="test" template="/WEB-INF/tests/QUnit.jsp" />
+	<definition name="mobile/test" template="/WEB-INF/tests/QUnit.jsp" />
 	
 	<definition name="mobile/PersonAll" template="/WEB-INF/views/mobile/mobile.jsp" />
 	

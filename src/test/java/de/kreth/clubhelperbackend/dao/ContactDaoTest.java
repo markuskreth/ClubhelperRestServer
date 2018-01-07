@@ -50,9 +50,8 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 	@Test
 	public void testGetById() {
 
-		Matcher<String> sqlMatcher = sqlMatcher(
-				Arrays.asList("select", "*", "from", "tablename", "where",
-						"deleted", "is", "null", "and", "id=?"));
+		Matcher<String> sqlMatcher = sqlMatcher(Arrays.asList("select", "*",
+				"from", "tablename", "where", "id=?"));
 		long id = 1;
 
 		dao.getById(id);
@@ -129,14 +128,11 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 
 		String where = "personid=1";
 
-		String regex = "(?iu)select\\s+\\*\\s+from\\s+tablename\\s+where\\s+deleted\\s+is\\s+null\\s+and\\s+personid=1\\s+AND\\s+deleted\\s+is\\s+null";
-
-		Matcher<String> sqlMatcher = sqlMatcher(
-				Arrays.asList("select", "*", "from", "tablename", "where",
-						"deleted", "is", "null", "and", "personid=1"));
+		Matcher<String> sqlMatcher = sqlMatcher(Arrays.asList("select", "*",
+				"from", "tablename", "where", "personid=1"));
 		dao.getByWhere(where);
 
-		verify(jdbcTemplate).query(Matchers.matches(regex),
+		verify(jdbcTemplate).query(Matchers.argThat(sqlMatcher),
 				Matchers.<RowMapper<Contact>>any());
 
 	}

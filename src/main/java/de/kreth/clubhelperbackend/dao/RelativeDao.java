@@ -28,7 +28,7 @@ public class RelativeDao extends AbstractDao<Relative>
 		super(daoConfig);
 	}
 
-	private static class RelativeRowMapper implements RowMapper<Relative> {
+	private static class RelativeRowMapper extends RowMapper<Relative> {
 
 		@Override
 		public Relative mapRow(ResultSet rs, int rowNo) throws SQLException {
@@ -37,7 +37,7 @@ public class RelativeDao extends AbstractDao<Relative>
 					rs.getString("TO_PERSON1_RELATION"),
 					rs.getString("TO_PERSON2_RELATION"),
 					rs.getTimestamp("changed"), rs.getTimestamp("created"));
-			return r;
+			return appendDefault(r, rs);
 		}
 
 		@Override

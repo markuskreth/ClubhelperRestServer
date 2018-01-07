@@ -31,16 +31,15 @@ public class AttendanceDao extends AbstractDao<Attendance>
 		super(daoConfig);
 	}
 
-	private static class RowMapper
-			implements
-				AbstractDao.RowMapper<Attendance> {
+	private static class RowMapper extends AbstractDao.RowMapper<Attendance> {
 
 		@Override
 		public Attendance mapRow(ResultSet rs, int rowNr) throws SQLException {
 			Attendance a = new Attendance(rs.getLong("id"),
 					rs.getTimestamp("on_date"), rs.getLong("person_id"),
 					rs.getTimestamp("changed"), rs.getTimestamp("created"));
-			return a;
+
+			return appendDefault(a, rs);
 		}
 
 		@Override

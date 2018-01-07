@@ -1,6 +1,8 @@
 package de.kreth.clubhelperbackend.dao;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -17,7 +19,7 @@ public class PersonDaoDbTest extends AbstractDatabaseTests<Person> {
 
 	@Test
 	public void insertDelete() throws Exception {
-		Person p1 = TestDataPerson.INSTANCE.person;
+		Person p1 = TestDataPerson.getPerson();
 
 		Person p2 = SerializationUtils.clone(p1);
 
@@ -42,6 +44,26 @@ public class PersonDaoDbTest extends AbstractDatabaseTests<Person> {
 	}
 
 	@Test
+	public void getDeleted() throws Exception {
+		Person p1 = TestDataPerson.getPerson();
+		Person p2 = TestDataPerson.getPerson2();
+
+		p1 = dao.insert(p1);
+		p2 = dao.insert(p2);
+		assertFalse(p1.isDeleted());
+		assertFalse(p2.isDeleted());
+		assertEquals(2, dao.getAll().size());
+
+		dao.delete(p1);
+		dao.delete(p2);
+
+		p1 = dao.getById(p1.getId());
+		p2 = dao.getById(p2.getId());
+		assertTrue(p1.isDeleted());
+		assertTrue(p2.isDeleted());
+	}
+
+	@Test
 	public void personListIsSorted() throws Exception {
 
 		dbCheck.checkDb();
@@ -51,7 +73,7 @@ public class PersonDaoDbTest extends AbstractDatabaseTests<Person> {
 				new DataSourceTransactionManager(dataSource));
 
 		dao.setSqlDialect(new SqlForMysql(dataSource));
-		Person p1 = TestDataPerson.INSTANCE.person;
+		Person p1 = TestDataPerson.getPerson();
 		Person p2 = SerializationUtils.clone(p1);
 
 		assertEquals(p1, p2);

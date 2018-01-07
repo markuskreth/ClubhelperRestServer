@@ -1,11 +1,16 @@
 {
-  "ecmaVersion": 5,
+  "ecmaVersion": 6,
   "plugins": {
     "guess-types": {
       
     },
     "outline": {
       
+    },
+    "jshint": {
+      "config": {
+        
+      }
     },
     "jquery-ui1-12": {
       
