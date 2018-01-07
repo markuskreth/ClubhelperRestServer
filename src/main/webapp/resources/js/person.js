@@ -1,3 +1,4 @@
+/*jshint esversion: 6 */
 
 function Person(personId, targetFunction, relationId){
 	

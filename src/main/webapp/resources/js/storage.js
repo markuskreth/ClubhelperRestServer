@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+
 /**
  * Storage Class for local Browser storage.
  */

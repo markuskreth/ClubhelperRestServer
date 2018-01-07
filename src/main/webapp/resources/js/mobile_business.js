@@ -1,3 +1,4 @@
+/*jshint esversion: 6 */
 
 var currentPersonId = null;
 var currentPerson = null;
