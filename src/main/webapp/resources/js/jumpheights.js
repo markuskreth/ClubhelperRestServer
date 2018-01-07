@@ -87,7 +87,7 @@ function showTaskDialog(headText, mainView, okAction) {
 	dlg.find("#TaskHeadText").text(headText);
 	dlg.find("#TaskContentText").empty();
 	dlg.find("#TaskContentText").append(mainView);
-	if(okAction == null) {
+	if(okAction === null) {
 		dlg.find("#TaskOkbutton").hide();
 	} else {
 		dlg.find("#TaskOkbutton").show();

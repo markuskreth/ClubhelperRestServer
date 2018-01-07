@@ -3,7 +3,7 @@ $(document).ready(function() {
 
 	$(document).on("pageshow", "#personEdit", function() {
 
-		if(currentPersonId == null) {
+		if(currentPersonId === null) {
 			currentPersonId = readCookie('currentPersonId');
 
 			Person(
@@ -15,7 +15,7 @@ $(document).ready(function() {
 					$.mobile.activePage.find(".ui-header [data-rel=back]").click(function () {
 
 						if(currentPerson.hasChanges()) {
-							if(currentPerson.type == null) {
+							if(currentPerson.type === null) {
 								askForGroup("Gruppen definieren");
 							}
 							currentPerson.update(function (person) {
@@ -48,7 +48,7 @@ function editPerson() {
 			$.mobile.activePage.find(".ui-header [data-rel=back]").click(function () {
 
 				if(currentPerson.hasChanges()) {
-					if(currentPerson.type == null) {
+					if(currentPerson.type === null) {
 						askForGroup("Gruppen definieren");
 					}
 					currentPerson.update(function (person) {
@@ -95,7 +95,7 @@ function updatePersonView() {
 			obj.append(element);
 		}
 		obj.trigger("create");
-	})
+	});
 
 	currentPerson
 			.relatives(function(relativePerson) {
@@ -105,9 +105,9 @@ function updatePersonView() {
 				link.attr("data-role", "button");
 				link.attr("data-iconpos", "right");
 				link.attr("href", "#");
-				link.text(relativePerson.relation.name + ": "
-						+ relativePerson.prename + " "
-						+ relativePerson.surname);
+				link.text(relativePerson.relation.name + 
+						": " + relativePerson.prename + 
+						" " + relativePerson.surname);
 				link.click(function() {
 					showPerson(relativePerson.id);
 				});
@@ -219,13 +219,14 @@ function addContact() {
 
 function addRelation() {
 
-		alert("addRelation to " + currentPerson.prename + " "
-				+ currentPerson.surname);
+		alert("addRelation to " + currentPerson.prename + 
+				" " + currentPerson.surname);
 }
 
 function addAdress() {
-		alert("addAdress to " + currentPerson.prename + " "
-				+ currentPerson.surname);
+		alert("addAdress to " + 
+				currentPerson.prename + 
+				" " + currentPerson.surname);
 }
 
 function deleteRelation(relativeId) {
@@ -235,10 +236,10 @@ function deleteRelation(relativeId) {
 			if (relativePerson.relation.id == relativeId) {
 
 				var headText = unescape("Beziehung l%F6schen%3F");
-				var contentText = relativeId + "--> "
-						+ relativePerson.relation.name + ": "
-						+ relativePerson.prename + " "
-						+ relativePerson.surname;
+				var contentText = relativeId + "--> " + 
+					relativePerson.relation.name + ": " + 
+					relativePerson.prename + " " + 
+					relativePerson.surname;
 				var action = function() {
 
 					var url = baseUrl + "/relative/" + relativeId;
@@ -252,7 +253,7 @@ function deleteRelation(relativeId) {
 				};
 				showDialog(null, headText, contentText, action);
 			}
-		})
+		});
 
 }
 
@@ -294,7 +295,7 @@ function renderEditContact(contact) {
 				.attr("data-role", "button")
 				.attr("data-iconpos", "notext")
 				.click(function() {
-					deleteContact(contact.id)
+					deleteContact(contact.id);
 				})
 				.attr("data-icon", "delete")
 				.text("delete"));
@@ -316,8 +317,8 @@ function deleteContact(contactId) {
 				if (con.id == contactId) {
 
 					var headText = unescape("Kontakt l%F6schen%3F");
-					var contentText = contactId + "--> " + con.type + ": "
-							+ con.value;
+					var contentText = contactId + "--> " + con.type + 
+						": " + con.value;
 					var action = function() {
 
 						var url = baseUrl + "contact/" + contactId;
@@ -328,7 +329,7 @@ function deleteContact(contactId) {
 									personStore.set(me, me.id);
 									updatePersonView();
 								});
-					}
+					};
 
 					showDialog(null, headText, contentText, action);
 				}
@@ -414,7 +415,7 @@ function changeContact(contactId) {
 					});
 				}
 			}
-		})
+		});
 }
 
 function addPerson() {
@@ -444,7 +445,7 @@ function addPerson() {
 				currentPersonId = createdPerson.id;
 				createCookie("currentPersonId", currentPersonId, 1); 
 				
-				createdPerson.persGroups = currentPerson.persGroups
+				createdPerson.persGroups = currentPerson.persGroups;
 				currentPerson = createdPerson;
 				for ( var index in createdPerson.persGroups) {
 					createdPerson.persGroups[index].personId = createdPerson.id;
@@ -458,7 +459,6 @@ function addPerson() {
 			});
 		});
 	$.mobile.changePage("#editDialog", {
-        transition: "pop"
-        , role: "dialog" 
+        transition: "pop", role: "dialog" 
 	});
 }

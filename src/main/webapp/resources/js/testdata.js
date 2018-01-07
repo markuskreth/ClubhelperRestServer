@@ -132,7 +132,8 @@ var repoReplacement = function(requestUrl, targetFunction) {
 		targetFunction(person54Response);
 	}
 
-}
+};
+
 var ajaxHistory = [];
 
 var ajaxReplacement = function (requestUrl, object, type, resultFunction) {
@@ -144,5 +145,5 @@ var ajaxReplacement = function (requestUrl, object, type, resultFunction) {
 	
 	ajaxHistory.push(obj);
 	resultFunction(object);
-}
+};
 

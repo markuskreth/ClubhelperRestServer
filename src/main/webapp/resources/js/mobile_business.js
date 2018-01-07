@@ -25,7 +25,7 @@ $(document).ready(function() {
 		window[ui.val()]();
 	});
 	$(document).on("pageshow", "#personDetails", function() {
-		if(currentPersonId == null) {
+		if(currentPersonId === null) {
 			currentPersonId = readCookie('currentPersonId');
 		}
 		updateAllPersonDetailData();
@@ -51,7 +51,7 @@ var listCreator = (function(){
 		
 		var x = readCookie('DataRefreshNotNessessary');
 		
-		if (!x || personStore.length()==0) {
+		if (!x || personStore.length()===0) {
 			
 			personStore.clearAll();
 			
@@ -104,7 +104,7 @@ var listCreator = (function(){
 		link.click(function() {
 			var me = $(this);
 			var pId = me.attr("personId");
-			var checked = me.prop("checked")
+			var checked = me.prop("checked");
 			if(checked) {
 				attendants.push(pId);
 			} else {
@@ -134,7 +134,7 @@ var listCreator = (function(){
 		showCompetitionCompetitorList: function() {
 			createPersonListItems(addCompetitionCompetitorsToList);	
 		}
-	}
+	};
 })();
 
 var attendants = (function(){
@@ -160,7 +160,7 @@ var attendants = (function(){
 			list.forEach(function(item) {
 				currentAttendants.push({"val":item.personId, send:true});
 				$("#personList input[personId="+item.personId+"]").attr("checked", true);
-			})
+			});
 		});
 	}
 	
@@ -173,7 +173,7 @@ var attendants = (function(){
 			if(!item.send) {
 				ajax(baseUrl + "attendance/for/" + item.val, "", "post");
 			}
-		})
+		});
 		currentAttendants = [];
 		
 	}
@@ -258,7 +258,13 @@ function showGroups(withDelete) {
 		
 		var part = $("<div></div>").attr("data-role","controlgroup").attr("id","personGroups");
 		content.append(part);
-		
+		var i;
+		var deleteGroupFunction = function(group) {
+			return function(e) {
+				currentPerson.removeGroup($(group).attr("groupid"));
+				$(group).parent().remove();
+			};
+		};
 		for (i = 0, len=groups.length; i<len; i++) {
 			if(withDelete) {
 				part.attr("data-type","horizontal");
@@ -285,7 +291,7 @@ function showGroups(withDelete) {
 			content.append($("<H3 />").attr("class","ui-bar ui-bar-a").html("Verfügbar"));
 			var wrapper = $("<div  class=\"ui-body\"></div>").attr("data-role","controlgroup");
 			content.append(wrapper);
-			for (var i = 0, allLen = allGroupResult.length; i < allLen; i++) {
+			for (i = 0, allLen = allGroupResult.length; i < allLen; i++) {
 				wrapper.append($("<button></button>")
 						.attr("data-mini","true")
 						.attr("data-icon","add")
@@ -324,7 +330,7 @@ function showGroups(withDelete) {
 			}
 		}
 
-		showDialog("#editGroupDialog", "Gruppen für\n" + currentPerson.prename + " " + currentPerson.surname, content, function(){log.debug("Clicked ok for Persongroup.")});
+		showDialog("#editGroupDialog", "Gruppen für\n" + currentPerson.prename + " " + currentPerson.surname, content, function(){log.debug("Clicked ok for Persongroup.");});
 	});
 }
 
@@ -398,7 +404,7 @@ function showPersonContacts(person) {
 			obj.append(element);
 		}
 		obj.trigger("create");
-	})
+	});
 }
 
 function renderContact(contact) {
@@ -452,7 +458,7 @@ function showDialog(dialogId, headText, contentText, action) {
 			.append($("<div data-role=\"main\" class=\"ui-content\"></div>")
 			.append($("<P></P>").append(contentText)));
 
-	if(action != null) {
+	if(action !== null) {
 		editDialog.append($("<a></a>")
 				.attr("href", "#")
 				.attr("data-role", "button")
@@ -472,10 +478,10 @@ function showDialog(dialogId, headText, contentText, action) {
 			.text("Abbrechen"));
 
 	$.mobile.changePage(dialogId, {
-        transition: "pop"
-        , role: "dialog"
-//        , closeBtn: "right"
-        , overlayTheme: "b"
+        transition: "pop",
+        role: "dialog",
+//        closeBtn: "right",
+        overlayTheme: "b"
 	});
 }
 

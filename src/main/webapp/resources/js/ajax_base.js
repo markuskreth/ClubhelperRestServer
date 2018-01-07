@@ -12,11 +12,11 @@ var repo = function (requestUrl, targetFunction) {
 	    },
 		success : targetFunction
 	});
-}
+};
 
 var ajax = function (requestUrl, object, type, resultFunction) {
 	var withResultFunction = true;
-	if(resultFunction == null) {
+	if(resultFunction === null) {
 		withResultFunction = false;
 	}
 
@@ -34,5 +34,5 @@ var ajax = function (requestUrl, object, type, resultFunction) {
 	    },
 	    'contentType': 'application/json; charset=utf-8' //typically 'application/x-www-form-urlencoded', but the service you are calling may expect 'text/json'... check with the service to see what they expect as content-type in the HTTP header.
 	});
-}
+};
 
