@@ -31,10 +31,10 @@ Storage.prototype.key = function (i) {
 };
 
 Storage.prototype.set = function (obj, id) {
-	if(id == null) {
+	if(!id) {
 		id = obj.id;
 	}
-	if(id == null) {
+	if(!id) {
 		sessionStorage.setItem(this.classname, JSON.stringify(obj));
 	} else {
 		sessionStorage.setItem(this.classname + id, JSON.stringify(obj));
