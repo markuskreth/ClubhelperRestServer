@@ -20,6 +20,24 @@ QUnit.module("Person List and Detail Tests", {
 	}
 });
 
+QUnit.test("External function definition Test", function(assert) {
+	var items = [];
+	var expected = 3;
+	var f = function() {
+		items.push(this);
+	};
+	
+	for(var i=0; i<expected; i++) {
+		var item = {
+				id: i,
+				func: f
+		};
+		item.func();
+	}
+
+	assert.equal(3, items.length);
+});
+
 QUnit.test("Creating Person from Ajax result", function(assert) {
 
 	var person1 = new PersonInstance(1, personMarkusResponse);

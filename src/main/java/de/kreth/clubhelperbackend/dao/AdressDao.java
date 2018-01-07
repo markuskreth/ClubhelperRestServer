@@ -25,7 +25,7 @@ public class AdressDao extends AbstractDao<Adress> {
 		super(daoConfig);
 	}
 
-	private static class AdressRowMapper implements RowMapper<Adress> {
+	private static class AdressRowMapper extends RowMapper<Adress> {
 
 		@Override
 		public Adress mapRow(ResultSet rs, int rowNr) throws SQLException {
@@ -34,7 +34,7 @@ public class AdressDao extends AbstractDao<Adress> {
 					rs.getString("plz"), rs.getString("city"),
 					rs.getLong("person_id"), rs.getTimestamp("changed"),
 					rs.getTimestamp("created"));
-			return a;
+			return appendDefault(a, rs);
 		}
 
 		@Override
@@ -47,6 +47,7 @@ public class AdressDao extends AbstractDao<Adress> {
 			values.add(obj.getPersonId());
 			return values;
 		}
+
 	};
 
 	public static class AdressWrapper extends Adress {

@@ -4,11 +4,11 @@ function showJumpHeights () {
 
 	tasks = null;
 	repo(baseUrl + "jumpheights/" + currentPerson.prename + "/" + currentPerson.surname, function(response) {
-		tasks = response['tasks'];
+		tasks = response.tasks;
 		if(!tasks) {
 			ajax(baseUrl + "jumpheights/" + currentPerson.prename + "/" + currentPerson.surname, null, "post", function(response){
 
-				tasks = response['tasks'];
+				tasks = response.tasks;
 				if(tasks) {
 					showTaskPage();
 				} else {
@@ -87,7 +87,7 @@ function showTaskDialog(headText, mainView, okAction) {
 	dlg.find("#TaskHeadText").text(headText);
 	dlg.find("#TaskContentText").empty();
 	dlg.find("#TaskContentText").append(mainView);
-	if(okAction == null) {
+	if(okAction === null) {
 		dlg.find("#TaskOkbutton").hide();
 	} else {
 		dlg.find("#TaskOkbutton").show();

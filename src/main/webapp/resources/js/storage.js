@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+
 /**
  * Storage Class for local Browser storage.
  */
@@ -8,41 +10,40 @@ function Storage(classname) {
 Storage.prototype.get = function (id) {
 
 	console.log("from storage " + this.classname + ", id=" + id);
-	
-	if(id == null) {
+	if(id === null) {
 		return JSON.parse(sessionStorage.getItem(this.classname));
 	} else {
 		return JSON.parse(sessionStorage.getItem(this.classname + id));
 	}
 	
-}
+};
 
 Storage.prototype.clearAll = function () {
 	sessionStorage.clear();
-}
+};
 
 Storage.prototype.length = function () {
 	return sessionStorage.length;
-}
+};
 
 Storage.prototype.key = function (i) {
 	return sessionStorage.key(i);
-}
+};
 
 Storage.prototype.set = function (obj, id) {
-	if(!id) {
+	if(id == null) {
 		id = obj.id;
 	}
-	if(!id) {
+	if(id == null) {
 		sessionStorage.setItem(this.classname, JSON.stringify(obj));
 	} else {
 		sessionStorage.setItem(this.classname + id, JSON.stringify(obj));
 	}
-}
+};
 
 Storage.prototype.remove = function (obj) {
 	sessionStorage.removeItem(this.classname + obj.id);
-}
+};
 
 Storage.prototype[Symbol.iterator] = function() {
 
@@ -63,4 +64,4 @@ Storage.prototype[Symbol.iterator] = function() {
             }
         };
     return iterator;
-}
+};

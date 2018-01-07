@@ -26,7 +26,7 @@ public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 		super(config);
 	}
 
-	private static class PersonRowMapper implements RowMapper<Person> {
+	private static class PersonRowMapper extends RowMapper<Person> {
 
 		@Override
 		public Person mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -34,7 +34,7 @@ public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 					rs.getString("prename"), rs.getString("surname"),
 					rs.getTimestamp("birth"), rs.getTimestamp("changed"),
 					rs.getTimestamp("created"));
-			return p;
+			return appendDefault(p, rs);
 		}
 
 		@Override

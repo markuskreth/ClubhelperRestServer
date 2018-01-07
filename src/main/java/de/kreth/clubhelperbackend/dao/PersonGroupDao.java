@@ -23,9 +23,7 @@ public class PersonGroupDao extends AbstractDao<PersonGroup> {
 		super(config);
 	}
 
-	private static class PersonGroupRowMapper
-			implements
-				RowMapper<PersonGroup> {
+	private static class PersonGroupRowMapper extends RowMapper<PersonGroup> {
 
 		@Override
 		public PersonGroup mapRow(ResultSet rs, int rowNum)
@@ -33,7 +31,7 @@ public class PersonGroupDao extends AbstractDao<PersonGroup> {
 			PersonGroup p = new PersonGroup(rs.getLong("id"),
 					rs.getLong("person_id"), rs.getLong("group_id"),
 					rs.getTimestamp("changed"), rs.getTimestamp("created"));
-			return p;
+			return appendDefault(p, rs);
 		}
 
 		@Override

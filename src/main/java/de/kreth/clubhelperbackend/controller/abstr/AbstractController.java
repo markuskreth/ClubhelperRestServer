@@ -25,7 +25,9 @@ import de.kreth.clubhelperbackend.pojo.Data;
  * @param <T>
  *            Data type
  */
-public abstract class AbstractController<T extends Data> implements ClubController<T> {
+public abstract class AbstractController<T extends Data>
+		implements
+			ClubController<T> {
 
 	protected Dao<T> dao;
 	private Class<T> elementClass;
@@ -39,7 +41,8 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 	@Override
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'STAFF')")
-	public String getAsView(@PathVariable("id") long id, @RequestParam(required = false) boolean ajax, Device device,
+	public String getAsView(@PathVariable("id") long id,
+			@RequestParam(required = false) boolean ajax, Device device,
 			Model m) {
 		String mapping = elementClass.getSimpleName();
 		m.addAttribute(mapping, getById(id));
@@ -47,9 +50,10 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 	}
 
 	@Override
-	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET)
+	@RequestMapping(value = {"/", ""}, method = RequestMethod.GET)
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'STAFF')")
-	public String getAllAsView(@RequestParam(required = false) boolean ajax, Device device, Model m) {
+	public String getAllAsView(@RequestParam(required = false) boolean ajax,
+			Device device, Model m) {
 		String mapping = elementClass.getSimpleName();
 		m.addAttribute(mapping + "List", getAll());
 		return mapping + "All" + (ajax ? "Ajax" : "");
@@ -64,7 +68,8 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 	}
 
 	@Override
-	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = {"/",
+			""}, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public List<T> getAll() {
 		return dao.getAll();
@@ -97,7 +102,8 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 			changed = new DateTime(toUpdate.getChanged().getTime());
 		}
 
-		if (changed == null || Minutes.minutesBetween(created, changed).getMinutes() < 1)
+		if (changed == null
+				|| Minutes.minutesBetween(created, changed).getMinutes() < 1)
 			toUpdate.setChanged(new Date());
 
 		dao.update(id, toUpdate);
@@ -108,8 +114,10 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json")
 	public ResponseEntity<T> delete(@PathVariable("id") long id) {
 		T byId = getById(id);
-		dao.delete(id);
-		return ResponseEntity.ok(byId);
+		if (byId.isDeleted() == false) {
+			dao.delete(id);
+		}
+		return ResponseEntity.ok(getById(id));
 	}
 
 	@Override
@@ -123,7 +131,7 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 	@RequestMapping(value = "/{id}", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
 	public T post(@PathVariable("id") Long id, @RequestBody T toCreate) {
-		if(id == null) {
+		if (id == null) {
 			id = -1L;
 		}
 		toCreate.setId(id);
@@ -131,7 +139,8 @@ public abstract class AbstractController<T extends Data> implements ClubControll
 
 		toCreate.setChanged(now);
 
-		if (toCreate.getCreated() == null || toCreate.getCreated().getTime() == 0) {
+		if (toCreate.getCreated() == null
+				|| toCreate.getCreated().getTime() == 0) {
 			toCreate.setCreated(now);
 		}
 

@@ -2,6 +2,9 @@ package de.kreth.clubhelperbackend.dao.abstr;
 
 import static org.apache.commons.lang3.StringUtils.join;
 
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -42,21 +45,24 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 		implements
 			Dao<T> {
 
-	private SqlForDialect sqlDialect;
-	protected String SQL_QUERY_ALL;
-
-	final String SQL_QUERY_BY_ID;
-	final String SQL_QUERY_CHANGED;
-	final String SQL_UPDATE;
-	final String SQL_DELETE;
-	final String SQL_INSERTWithoutId;
-	final String SQL_INSERTWithId;
-	final RowMapper<T> mapper;
 	final String tableName;
+	private SqlForDialect sqlDialect;
+
+	protected String SQL_QUERY_ALL;
+	protected String SQL_QUERY_ALL_WITHDELETED;
+
+	private final String SQL_QUERY_BY_ID;
+	private final String SQL_QUERY_CHANGED;
+	private final String SQL_UPDATE;
+	private final String SQL_DELETE;
+	private final String SQL_INSERTWithId;
+	private final RowMapper<T> mapper;
 	private final Logger log;
 
 	private DeletedEntriesDao deletedEntriesDao;
 	private TransactionTemplate transactionTemplate;
+
+	final String SQL_INSERTWithoutId;
 
 	/**
 	 * Constructs this {@link Dao} implemetation.
@@ -91,12 +97,18 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 
 		this.SQL_QUERY_ALL = "select * from " + config.tableName
 				+ " WHERE deleted is null";
-		this.SQL_QUERY_BY_ID = SQL_QUERY_ALL + " AND id=?";
-		this.SQL_QUERY_CHANGED = SQL_QUERY_ALL + " AND changed>?";
+
+		this.SQL_QUERY_ALL_WITHDELETED = "select * from " + config.tableName;
+
+		this.SQL_QUERY_BY_ID = SQL_QUERY_ALL_WITHDELETED + " WHERE id=?";
+		this.SQL_QUERY_CHANGED = SQL_QUERY_ALL_WITHDELETED + " WHERE changed>?";
+
 		this.mapper = config.mapper;
 		this.tableName = config.tableName;
 		if (config.orderBy != null) {
 			this.SQL_QUERY_ALL += " ORDER BY " + join(config.orderBy, ", ");
+			this.SQL_QUERY_ALL_WITHDELETED += " ORDER BY "
+					+ join(config.orderBy, ", ");
 		}
 	}
 
@@ -168,10 +180,24 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 	 * @param <X>
 	 *            Obect type to be mapped
 	 */
-	public interface RowMapper<X extends Data>
-			extends
+	public static abstract class RowMapper<X extends Data>
+			implements
 				org.springframework.jdbc.core.RowMapper<X> {
 
+		static String DELETE_COLUMN = "deleted";
+
+		protected X appendDefault(X obj, ResultSet rs) throws SQLException {
+			ResultSetMetaData meta = rs.getMetaData();
+
+			for (int i = 0; i < meta.getColumnCount(); i++) {
+				if (DELETE_COLUMN.equalsIgnoreCase(meta.getColumnName(i + 1))) {
+					obj.setDeleted(true);
+					break;
+				}
+			}
+
+			return obj;
+		}
 		/**
 		 * Maps the given object to a value array.
 		 * 
@@ -179,7 +205,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 		 *            Object to map Values from
 		 * @return values of the object in correct order of the table columns.
 		 */
-		Collection<Object> mapObject(X obj);
+		public abstract Collection<Object> mapObject(X obj);
 	}
 
 	public SqlForDialect getSqlDialect() {
@@ -213,8 +239,10 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 	@Override
 	public T getById(long id) {
 		try {
-			return getJdbcTemplate().queryForObject(SQL_QUERY_BY_ID, mapper,
+			T obj = getJdbcTemplate().queryForObject(SQL_QUERY_BY_ID, mapper,
 					id);
+
+			return obj;
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
@@ -222,9 +250,8 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 
 	@Override
 	public List<T> getByWhere(String where) {
-		return getJdbcTemplate().query(
-				SQL_QUERY_ALL + " AND " + where + " AND deleted is null",
-				mapper);
+		return getJdbcTemplate().query(SQL_QUERY_ALL_WITHDELETED + " WHERE "
+				+ where + " AND deleted is null", mapper);
 	}
 
 	@Override
@@ -314,7 +341,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 	@Override
 	public boolean delete(long id) {
 
-		Assert.notNull(deletedEntriesDao, "deletedEntriesDao not set yet.");
+		Assert.notNull(deletedEntriesDao);
 
 		Date date = new Date();
 		int inserted = getJdbcTemplate().update(SQL_DELETE, date, id);
@@ -330,7 +357,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 	@Override
 	public boolean undelete(long id) {
 
-		Assert.notNull(deletedEntriesDao, "deletedEntriesDao not set yet.");
+		Assert.notNull(deletedEntriesDao);
 		int updated = getJdbcTemplate().update(SQL_DELETE, null, id);
 
 		if (updated == 1) {
@@ -348,6 +375,10 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 
 	@Override
 	public List<T> getAll() {
+		return getAll(false);
+	}
+
+	public List<T> getAll(boolean withDeleted) {
 		return getJdbcTemplate().query(SQL_QUERY_ALL, mapper);
 	}
 }

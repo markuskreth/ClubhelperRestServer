@@ -1,9 +1,10 @@
+/*jshint esversion: 6 */
 
 function Person(personId, targetFunction, relationId){
 	
 	var person = personStore.get(personId);
 	
-	if(person != null) {
+	if(person !== null) {
 		log.debug("found " + person.toString() + " in Storage.");
 		targetFunction(new PersonInstance(personId, person, relationId));
 	} else {
@@ -20,10 +21,24 @@ function Person(personId, targetFunction, relationId){
 	}
 }
 
+var allGroups = function(targetFunction) {
+
+	var groups = groupStore.get();
+	if(groups !== null) {
+		targetFunction(groups);
+	} else {
+		repo(baseUrl + "group/", function(response) {
+			groupStore.set(response);
+			targetFunction(response);
+		});
+		
+	}
+};
+
 class PersonInstance {
 	constructor(personId, response, relation) {
 		this.id = personId;
-		if(response!=null) {
+		if(response!==null) {
 			this.id = response.id;
 			this.prename = response.prename;
 			this.surname = response.surname;
@@ -56,17 +71,19 @@ class PersonInstance {
 
 PersonInstance.prototype.removeGroup = function (groupId) {
 	var me = this;
+	var deleteResultFunc = function(response) {
+		me.persGroups.splice(index, 1);
+		personStore.setItem(me, me.id);
+	};
+	
 	for (var i = 0, len = me.persGroups.length; i < len; i++) {
 		if (me.persGroups[i].groupId==groupId) {
 			var index = i;
-			ajax(baseUrl + "persongroup/" + me.persGroups[i].id, me.persGroups[i], "delete", function(response) {
-				me.persGroups.splice(index, 1);
-				personStore.setItem(me, me.id);
-			});
+			ajax(baseUrl + "persongroup/" + me.persGroups[i].id, me.persGroups[i], "delete", deleteResultFunc);
 			break;
 		}
 	}
-}
+};
 
 PersonInstance.prototype.processGroups = function (targetFunction) {
 	var me = this;
@@ -88,10 +105,10 @@ PersonInstance.prototype.processGroups = function (targetFunction) {
 		}
 		targetFunction(personGroups, allGroupResult);
 	});
-}
+};
 
 PersonInstance.prototype.groups = function (targetFunction) {
-	if(this.persGroups == null) {
+	if(this.persGroups === null) {
 		var me = this;
 		repo(baseUrl + "persongroup/for/" + me.id, function(response) {
 			me.persGroups = response;
@@ -102,7 +119,7 @@ PersonInstance.prototype.groups = function (targetFunction) {
 	} else {
 		this.processGroups(targetFunction);
 	}
-}
+};
 
 
 PersonInstance.prototype.updateContact = function (contact, targetFunction) {
@@ -113,7 +130,7 @@ PersonInstance.prototype.updateContact = function (contact, targetFunction) {
 		personStore.set(me, me.id);
 		targetFunction(contact);
 	});
-}
+};
 
 PersonInstance.prototype.processRelatives = function (targetFunction) {
 
@@ -132,10 +149,10 @@ PersonInstance.prototype.processRelatives = function (targetFunction) {
 		
 		Person(relId, targetFunction, rel);
 	}
-}
+};
 
 PersonInstance.prototype.relatives = function (targetFunction) {
-	if(this._relatives == null) {
+	if(this._relatives === null) {
 		var me = this;
 
 		repo(baseUrl + "relative/for/" + me.id, function(response) {
@@ -146,32 +163,32 @@ PersonInstance.prototype.relatives = function (targetFunction) {
 	} else {
 		this.processRelatives(targetFunction);
 	}
-}
+};
 
 PersonInstance.prototype.deleteRelatives = function () {
 	this._relatives = null;
-}
+};
 
 PersonInstance.prototype.contacts = function (targetFunction) {
-	if (this._contacts == null) {
+	if (this._contacts) {
+		targetFunction(this._contacts);
+	} else {
 		var me = this;
 		repo(baseUrl + "contact/for/" + me.id, function(response) {
 			me._contacts = response;
 			personStore.set(me, me.id);
 			targetFunction(me._contacts);	
 		});
-	} else {
-		targetFunction(this._contacts);	
 	}
-}
+};
 
 PersonInstance.prototype.birthday = function () {
 	return this._bday.format('L');
-}
+};
 
 PersonInstance.prototype.birthdayAsDate = function () {
 	return this._bday.format('YYYY-MM-DD');
-}
+};
 
 PersonInstance.prototype.updateGroup = function (groupIndex) {
 	this.changed = null;
@@ -184,11 +201,11 @@ PersonInstance.prototype.updateGroup = function (groupIndex) {
 	log.debug("Updating persongroup: id=" + group.id + ", personId=" + group.personId  + ", groupId=" + group.groupId);
 	ajax(baseUrl + "persongroup/" + group.id, group, call, null);
 	this._changed = false;
-}
+};
 
 PersonInstance.prototype.setContacts = function (response) {
 	this._contacts = response;
-}
+};
 
 PersonInstance.prototype.update = function (targetFunction) {
 	this.changed = null;
@@ -212,27 +229,28 @@ PersonInstance.prototype.update = function (targetFunction) {
 			response = me;
 		}
 		personStore.set(response, response.id);
-		if(targetFunction != null) {
+		if(targetFunction !== null) {
 			targetFunction(new PersonInstance(response.id, response, null));
 			
 		}
-	})
+	});
 	this._changed = false;
-}
+};
 
 PersonInstance.prototype.age = function () {
 	return this._bday.fromNow(true);
-}
+};
 
 PersonInstance.prototype.deletePerson = function (targetFunction) {
+	var me = this;
 	ajax(baseUrl + "person/" + this.id, this, "delete", function(response) {
-		personStore.remove(this);
-		if(targetFunction != null) {
+		personStore.remove(me);
+		if(targetFunction !== null) {
 			targetFunction();
 		}
-	})
-}
+	});
+};
 
 PersonInstance.prototype.toString = function () {
 	return JSON.stringify(this);
-}
+};

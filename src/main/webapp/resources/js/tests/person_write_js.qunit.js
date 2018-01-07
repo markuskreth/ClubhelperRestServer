@@ -36,6 +36,6 @@ QUnit.test("Set Contact on Person", function(assert) {
 			assert.equal("testvalue",  ajaxCall.object.value);
 
 			done();
-		})
-	})
+		});
+	});
 });
