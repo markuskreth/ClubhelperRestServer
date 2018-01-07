@@ -72,13 +72,15 @@ class PersonInstance {
 
 PersonInstance.prototype.removeGroup = function (groupId) {
 	var me = this;
+	var deleteResultFunc = function(response) {
+		me.persGroups.splice(index, 1);
+		personStore.setItem(me, me.id);
+	};
+	
 	for (var i = 0, len = me.persGroups.length; i < len; i++) {
 		if (me.persGroups[i].groupId==groupId) {
 			var index = i;
-			ajax(baseUrl + "persongroup/" + me.persGroups[i].id, me.persGroups[i], "delete", function(response) {
-				me.persGroups.splice(index, 1);
-				personStore.setItem(me, me.id);
-			});
+			ajax(baseUrl + "persongroup/" + me.persGroups[i].id, me.persGroups[i], "delete", deleteResultFunc);
 			break;
 		}
 	}

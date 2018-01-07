@@ -266,6 +266,11 @@ function showGroups(withDelete) {
 				$(group).parent().remove();
 			};
 		};
+		var removeThisGroup = function(e) {
+			currentPerson.removeGroup($(this).attr("groupid"));
+			$(this).parent().remove();
+		};
+		
 		for (i = 0, len=groups.length; i<len; i++) {
 			if(withDelete) {
 				part.attr("data-type","horizontal");
@@ -280,10 +285,7 @@ function showGroups(withDelete) {
 				.attr("data-icon","delete")
 				.attr("data-iconpos","notext")
 				.attr("groupid", groups[i].id)
-				.on("click", function(e) {
-					currentPerson.removeGroup($(this).attr("groupid"));
-					$(this).parent().remove();
-				})
+				.on("click", removeThisGroup)
 				.text(groups[i].name);
 				part.append(delBtn);
 			}
@@ -292,6 +294,35 @@ function showGroups(withDelete) {
 			content.append($("<H3 />").attr("class","ui-bar ui-bar-a").html("Verfügbar"));
 			var wrapper = $("<div  class=\"ui-body\"></div>").attr("data-role","controlgroup");
 			content.append(wrapper);
+			var btnAddGroup = function(e) {
+				var me = $(this);
+				if(me.attr("lastEventTimestamp") == e.timeStamp) {
+					return;
+				}
+				var added = $("<div></div>")
+					.attr("data-role","controlgroup")
+					.attr("data-type","horizontal")
+					.append($("<button></button>")
+							.attr("data-mini","true")
+							.attr("data-icon","delete")
+							.attr("data-iconpos","notext")
+							.attr("groupid", me.attr("groupid"))
+							.on("click", function(e) {
+//								currentPerson.removeGroup(me.attr("groupid"));
+								me.parent().remove();
+							})
+							.text(me.attr("Groupname")).trigger("create"));
+				added.trigger("create");
+				$("#personGroups").append(added);
+				currentPerson.persGroups.push({"id":-1, "personId":currentPerson.id, "groupId":me.attr("groupid")});
+				if(!currentPerson.type) {
+					currentPerson.processGroups(function(groups, allGroups) {
+						currentPerson.type=groups[0].name;
+					});
+				}
+				me.attr("lastEventTimestamp", e.timeStamp);
+			};
+			
 			for (i = 0, allLen = allGroupResult.length; i < allLen; i++) {
 				wrapper.append($("<button></button>")
 						.attr("data-mini","true")
@@ -299,34 +330,7 @@ function showGroups(withDelete) {
 						.text(allGroupResult[i].name)
 						.attr("Groupname", allGroupResult[i].name)
 						.attr("groupid", allGroupResult[i].id)
-						.on("click", function(e) {
-							var me = $(this);
-							if(me.attr("lastEventTimestamp") == e.timeStamp) {
-								return;
-							}
-							var added = $("<div></div>")
-								.attr("data-role","controlgroup")
-								.attr("data-type","horizontal")
-								.append($("<button></button>")
-										.attr("data-mini","true")
-										.attr("data-icon","delete")
-										.attr("data-iconpos","notext")
-										.attr("groupid", me.attr("groupid"))
-										.on("click", function(e) {
-//											currentPerson.removeGroup(me.attr("groupid"));
-											me.parent().remove();
-										})
-										.text(me.attr("Groupname")).trigger("create"));
-							added.trigger("create");
-							$("#personGroups").append(added);
-							currentPerson.persGroups.push({"id":-1, "personId":currentPerson.id, "groupId":me.attr("groupid")});
-							if(!currentPerson.type) {
-								currentPerson.processGroups(function(groups, allGroups) {
-									currentPerson.type=groups[0].name;
-								});
-							}
-							me.attr("lastEventTimestamp", e.timeStamp);
-						}));
+						.on("click", btnAddGroup));
 
 			}
 		}

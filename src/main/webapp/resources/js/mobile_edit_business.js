@@ -311,6 +311,19 @@ function editRelation(relativeId) {
 function deleteContact(contactId) {
 
 		currentPerson.contacts(function(items) {
+
+			var action = function() {
+
+				var url = baseUrl + "contact/" + contactId;
+				var me = currentPerson;
+				ajax(url, con, "delete",
+						function() {
+							me.setContacts(null);
+							personStore.set(me, me.id);
+							updatePersonView();
+						});
+			};
+			
 			for ( var index in items) {
 
 				var con = items[index];
@@ -319,17 +332,6 @@ function deleteContact(contactId) {
 					var headText = unescape("Kontakt l%F6schen%3F");
 					var contentText = contactId + "--> " + con.type + 
 						": " + con.value;
-					var action = function() {
-
-						var url = baseUrl + "contact/" + contactId;
-						var me = currentPerson;
-						ajax(url, con, "delete",
-								function() {
-									me.setContacts(null);
-									personStore.set(me, me.id);
-									updatePersonView();
-								});
-					};
 
 					showDialog(null, headText, contentText, action);
 				}
@@ -343,26 +345,27 @@ function editContact(contactId) {
 
 		currentPerson.contacts(function(items) {
 
+			var action = function() {
+
+				con.value = $("#changeContactText").val();
+				con.type = $("#changeContactTypeSelect").val();
+
+				var url = baseUrl + "contact/" + con.id;
+				var me = currentPerson;
+				ajax(url, con, "put",
+						function() {
+							me.setContacts(null);
+							personStore.set(me, me.id);
+							updatePersonView();
+						});
+			};
+			
 			for ( var index in items) {
 				var con = items[index];
 				if (con.id == contactId) {
 					var headText = unescape("Kontakt anlegen.");
 
 					var content = createEditContactContent(con);
-					var action = function() {
-
-						con.value = $("#changeContactText").val();
-						con.type = $("#changeContactTypeSelect").val();
-
-						var url = baseUrl + "contact/" + con.id;
-						var me = currentPerson;
-						ajax(url, con, "put",
-								function() {
-									me.setContacts(null);
-									personStore.set(me, me.id);
-									updatePersonView();
-								});
-					};
 					showDialog(null, headText, content, action);
 					break;
 				}
@@ -405,14 +408,16 @@ function changeContact(contactId) {
 	var value = $("#changeContactText").val();
 
 	currentPerson.contacts(function(contacts) {
+		var doUpdate = function(contact) {
+			updatePersonView();
+		};
+		
 			for (var i = 0; i < contacts.length; i++) {
 				var con = contacts[i];
 				if (con.id == contactId) {
 					con.type = type;
 					con.value = value;
-					currentPerson.updateContact(con, function(contact) {
-						updatePersonView();
-					});
+					currentPerson.updateContact(con, doUpdate);
 				}
 			}
 		});
