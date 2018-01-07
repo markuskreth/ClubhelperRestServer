@@ -168,15 +168,15 @@ PersonInstance.prototype.deleteRelatives = function () {
 };
 
 PersonInstance.prototype.contacts = function (targetFunction) {
-	if (this._contacts === null) {
+	if (this._contacts) {
+		targetFunction(this._contacts);
+	} else {
 		var me = this;
 		repo(baseUrl + "contact/for/" + me.id, function(response) {
 			me._contacts = response;
 			personStore.set(me, me.id);
 			targetFunction(me._contacts);	
 		});
-	} else {
-		targetFunction(this._contacts);	
 	}
 };
 

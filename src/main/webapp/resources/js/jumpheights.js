@@ -4,11 +4,11 @@ function showJumpHeights () {
 
 	tasks = null;
 	repo(baseUrl + "jumpheights/" + currentPerson.prename + "/" + currentPerson.surname, function(response) {
-		tasks = response['tasks'];
+		tasks = response.tasks;
 		if(!tasks) {
 			ajax(baseUrl + "jumpheights/" + currentPerson.prename + "/" + currentPerson.surname, null, "post", function(response){
 
-				tasks = response['tasks'];
+				tasks = response.tasks;
 				if(tasks) {
 					showTaskPage();
 				} else {
