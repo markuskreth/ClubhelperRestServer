@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+
 /**
  * 
  */
@@ -11,15 +13,30 @@ QUnit.module("ExtendableItemList Tests", {
 });
 
 QUnit.test("Add items to ExtendableItemList", function(assert) {
-	this.list = new ExtendableItemList();
-	this.list.push(1);
-	this.list.push(1);
-	this.list.push(3);
-	assert.equal(this.list.length(), 3);
+	var list = new ExtendableItemList();
+	list.push(1);
+	list.push(1);
+	list.push(3);
+	assert.equal(list.length(), 3);
 });
 
 QUnit.test("Inner List of ExtendableItemList invisible", function(assert) {
-	this.list = new ExtendableItemList();
-	this.list.push(1);
-	assert.notOk(this.list._list);
+	var list = new ExtendableItemList();
+	list.push(1);
+	assert.notOk(list.__list);
+	assert.notOk(list._list);
+	assert.notOk(list.list);
+});
+
+QUnit.test("Iterate in for loop ExtendableItemList", function(assert) {
+	var list = new ExtendableItemList();
+	list.push(1);
+	list.push(2);
+	list.push(3);
+	var sum = 0;
+	for(const item of list) {
+		sum += item;
+	}
+
+	assert.equal(sum, 6);
 });

@@ -26,35 +26,57 @@ var competitionParticipants = (function () {
 	};
 })();
 
-class ExtendableItemList {
-	constructor() {
-		this._list = [];
-		this.push = function (item) {
-			this._list.push(item);
-		};
-		this.length = function() {
-			return this._list.length;
-		};
-		this.remove = function (item) {
-			var index = this._list.indexOf(pId);
+function ExtendableItemList () {
+	
+	var _list = [];
+	
+	const instance = {
+		push: function (item) {
+			_list.push(item);
+		},
+		length: function() {
+			return _list.length;
+		},
+		remove: function (item) {
+			var index = _list.indexOf(pId);
 			if (index > -1) {
-				this._list.splice(index, 1);
+				_list.splice(index, 1);
 			}
-		};
-		this[Symbol.iterator] = function() {
+		},
+		[Symbol.iterator]: function() {
 
 			var index = 0;
 
 		    const iterator = {
 		            next() {
-		                while (index < this._list.length) {
-		                	return this._list[index++];
+		                while (index < _list.length) {
+		                	return { value: _list[index++], done: false  };
 		                } 
 
 		                return { done: true };
 		            }
 		        };
 		    return iterator;
-		};
-	}
+		}
+	};
+
+//	instance.prototype;
+	return instance;
 }
+
+
+ExtendableItemList.prototype[Symbol.iterator] = function() {
+
+	var index = 0;
+
+    const iterator = {
+            next() {
+                while (index < _list.length) {
+                	return _list[index++];
+                } 
+
+                return { done: true };
+            }
+        };
+    return iterator;
+};
