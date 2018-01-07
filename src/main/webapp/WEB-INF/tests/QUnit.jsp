@@ -20,6 +20,7 @@
 		<script src=<c:url value='/resources/js/group_business.js' />></script>
 		<script src=<c:url value='/resources/js/person_detail_business.js' />></script>
 		<script src=<c:url value='/resources/js/person.js' />></script>
+		<script src=<c:url value='/resources/js/competition_business.js' />></script>
 		<script src=<c:url value='/resources/js/libs/log4javascript.js' />></script>
 		<script
 			src=<c:url value='/resources/js/libs/moment-with-locales.min.js' />></script>
@@ -31,6 +32,7 @@
 		</script>
 		<script src=<c:url value='/resources/js/tests/testdata.js' />></script>
 		<script src=<c:url value='/resources/js/tests/storage_js.qunit.js' />></script>
+		<script src=<c:url value='/resources/js/tests/extendedlist_js.qunit.js' />></script>
 		<script src=<c:url value='/resources/js/tests/person_js.qunit.js' />></script>
 		<script
 			src=<c:url value='/resources/js/tests/person_write_js.qunit.js' />></script>

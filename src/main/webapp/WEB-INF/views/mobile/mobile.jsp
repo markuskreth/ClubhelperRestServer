@@ -32,6 +32,7 @@
 <script charset="utf-8" src=<c:url value='/resources/js/storage.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/jumpheights.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/person.js' />></script>
+<script charset="utf-8" src=<c:url value='/resources/js/competition_business.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/group_business.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/person_detail_business.js' />></script>
 <script charset="utf-8" src=<c:url value='/resources/js/mobile_business.js' />></script>
