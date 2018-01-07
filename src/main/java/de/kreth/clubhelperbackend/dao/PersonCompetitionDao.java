@@ -16,23 +16,27 @@ public class PersonCompetitionDao extends AbstractDao<PersonCompetition> {
 	}
 
 	private static DaoConfig<PersonCompetition> createConfig() {
-		String[] columnNames = {"person_id", "competition_id"
-				, "participation", "routine", "comment"};
+		String[] columnNames = {"person_id", "competition_id", "participation",
+				"routine", "comment"};
 		Mapper mapper = new Mapper();
 		String[] orderBy = {"competition_id", "person_id"};
-		return new DaoConfig<>("personcompetition", columnNames, mapper, orderBy);
+		return new DaoConfig<>("personcompetition", columnNames, mapper,
+				orderBy);
 	}
-	
-	private static class Mapper implements AbstractDao.RowMapper<PersonCompetition> {
+
+	private static class Mapper
+			extends
+				AbstractDao.RowMapper<PersonCompetition> {
 
 		@Override
-		public PersonCompetition mapRow(ResultSet rs, int rowNr) throws SQLException {
-			
-			return new PersonCompetition(rs.getLong("id"), 
-					rs.getLong("person_id"), rs.getString("competition_id")
-					, rs.getString("participation"), rs.getString("routine")
-					, rs.getString("comment"), rs.getTimestamp("changed"),
-					rs.getTimestamp("created"));
+		public PersonCompetition mapRow(ResultSet rs, int rowNr)
+				throws SQLException {
+
+			return appendDefault(new PersonCompetition(rs.getLong("id"),
+					rs.getLong("person_id"), rs.getString("competition_id"),
+					rs.getString("participation"), rs.getString("routine"),
+					rs.getString("comment"), rs.getTimestamp("changed"),
+					rs.getTimestamp("created")), rs);
 		}
 
 		@Override
@@ -45,6 +49,6 @@ public class PersonCompetitionDao extends AbstractDao<PersonCompetition> {
 			values.add(obj.getComment());
 			return values;
 		}
-		
+
 	}
 }
