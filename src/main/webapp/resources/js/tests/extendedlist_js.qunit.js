@@ -43,7 +43,9 @@ QUnit.test("Iterate in for loop ExtendableItemList", function(assert) {
 
 QUnit.test("competitionParticipants use competitionId, add, remove", function(assert) {
 	assert.ok(competitionParticipants);
-	competitionParticipants.competition("competitionId");
+	competitionParticipants.competition("comp12345Id");
 	competitionParticipants.push(1);
 	competitionParticipants.push(2);
+	var serialized = JSON.stringify(competitionParticipants);
+	assert.equal(serialized, "{\"competitionId\":\"comp12345Id\",\"list\":[1,2]}");
 });
