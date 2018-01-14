@@ -13,16 +13,27 @@ var competitionParticipants = (function () {
 		this.competition = function (compId) {
 			competitionId = compId;
 		};
-		this.toJSON = function() {
+
+		this[Symbol.iterator] = function() {
+
+			var index = 0;
 			var sub = [];
 			for(var el of this) {
 				sub.push(el);
 			}
 
-			var item = {competitionId, list: sub};
-			
-			return item;
+		    const iterator = {
+	            next() {
+	                while (index < sub.length) {
+	                	return { value: {competitionId, personId:sub[index++]}, done: false  };
+	                } 
+
+	                return { done: true };
+	            }
+	        };
+		    return iterator;
 		};
+		
 	}
 	
 	CompetitorList.prototype = new ExtendableItemList();
