@@ -4,19 +4,44 @@
  * 
  */
 var competitionParticipants = (function () {
-	
+
 	// private
-	var compId;
+	var competitionId;
 		
+	function CompetitorList() {
+		
+		this.competition = function (compId) {
+			competitionId = compId;
+		};
+
+		this[Symbol.iterator] = function() {
+
+			var index = 0;
+			var sub = [];
+			for(var el of this) {
+				sub.push(el);
+			}
+
+		    const iterator = {
+	            next() {
+	                while (index < sub.length) {
+	                	return { value: {competitionId, personId:sub[index++]}, done: false  };
+	                } 
+
+	                return { done: true };
+	            }
+	        };
+		    return iterator;
+		};
+		
+	}
+	
+	CompetitorList.prototype = new ExtendableItemList();
+	
 	// public
-	const instance = {
-		competition: function (competitionId) {
-			compId = competitionId;
-		}
-	};
-	instance.prototype = Object.create(ExtendableItemList.prototype);
-	return instance;
+	return new CompetitorList();
 })();
+
 
 function ExtendableItemList () {
 	
@@ -34,6 +59,9 @@ function ExtendableItemList () {
 			if (index > -1) {
 				_list.splice(index, 1);
 			}
+		},
+		toJSON : function () {
+			return _list;
 		},
 		[Symbol.iterator]: function() {
 
