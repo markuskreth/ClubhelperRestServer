@@ -44,12 +44,16 @@ public class DbCheckAspect implements Database {
 		logger = LoggerFactory.getLogger(getClass());
 		this.dbType = dbType;
 		if (logger.isDebugEnabled()) {
-			logger.debug("init with " + dataSource);
+			try {
+				logger.debug("init with " + dataSource.getConnection().getMetaData().getURL());
+			} catch (SQLException e) {
+				logger.error("Cannot get Connection from dataSource!",e);
+			}
 		}
 		try {
 			con = dataSource.getConnection();
 			if (logger.isInfoEnabled()) {
-				logger.info("finished db init, got con to " + con.getCatalog());
+				logger.info("finished db init, got con to " + con.getMetaData().getURL());
 			}
 			checkDb(false);
 		} catch (SQLException e) {

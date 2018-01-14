@@ -9,7 +9,7 @@
     },
     "jshint": {
       "config": {
-        
+        "maxerr": 50
       }
     },
     "jquery-ui1-12": {
