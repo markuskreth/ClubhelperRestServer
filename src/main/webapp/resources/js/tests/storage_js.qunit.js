@@ -41,6 +41,11 @@ QUnit.test("Test iteration", function(assert) {
 		persons.push(p);
 	}
 	assert.equal(persons.length, 3);
+	persons.sort(function(a,b) {
+	    var x = a.prename.toLowerCase();
+	    var y = b.prename.toLowerCase();
+	    return x < y ? -1 : x > y ? 1 : 0;
+	});
 	assert.equal(persons[0].prename, "Test1");
 	assert.equal(persons[1].prename, "Test2");
 	assert.equal(persons[2].prename, "Test3");
