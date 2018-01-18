@@ -52,19 +52,21 @@ public class AbstractLoggerAspect {
 					} else {
 						logger.warn(msg.toString(), exception);
 					}
+					break;
 				case DEBUG :
 					if (exception == null) {
 						logger.debug(msg.toString());
 					} else {
 						logger.debug(msg.toString(), exception);
 					}
+					break;
 				case INFO :
 					if (exception == null) {
 						logger.info(msg.toString());
 					} else {
 						logger.info(msg.toString(), exception);
 					}
-
+					break;
 				default :
 					if (exception == null) {
 						logger.trace(msg.toString());
