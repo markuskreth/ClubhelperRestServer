@@ -20,11 +20,13 @@ $(document).ready(function() {
 	competitionStore = new Storage("personCompetition");
 
 	$("#sendAttendance").hide();
+	$("#chooseCompetition").hide();
 	listCreator.showPersonList();
 	
 	$( "#flip-checkbox-attendance" ).bind( "change", function(event, ui) {
 		ui = $( "#flip-checkbox-attendance" );
 		$("#sendAttendance").hide();
+		$("#chooseCompetition").hide();
 		window[ui.val()]();
 	});
 	$(document).on("pageshow", "#personDetails", function() {
@@ -247,6 +249,7 @@ function sendAttendance() {
 
 function showCompetitionCompetitors() {
 	listCreator.showCompetitionCompetitorList();
+	initCompetitionSelector();
 }
 
 function sendCompetitionCompetitors() {

@@ -79,7 +79,7 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 		return cal;
 	}
 
-	public List<Event> getAllEvents() throws IOException, InterruptedException {
+	public List<Event> getAllEvents(String calendarName) throws IOException, InterruptedException {
 
 		final List<Event> events = new ArrayList<>();
 		if(lock.tryLock(10, TimeUnit.SECONDS)) {
@@ -89,11 +89,19 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 				List<CalendarListEntry> items = getCalendarList();
 				final long oldest = getOldest();
 
-				ExecutorService exec = Executors.newFixedThreadPool(2);
-				exec.execute(new FetchEventsRunner(items, "mtv_wettkampf", events,
-						oldest, "color1"));
-				exec.execute(new FetchEventsRunner(items, "mtv_allgemein", events,
-						oldest, "color2"));
+				ExecutorService exec;
+				if(calendarName == null) {
+					exec = Executors.newFixedThreadPool(2);
+					exec.execute(new FetchEventsRunner(items, "mtv_wettkampf", events,
+							oldest, "color1"));
+					exec.execute(new FetchEventsRunner(items, "mtv_allgemein", events,
+							oldest, "color2"));
+					
+				} else {
+					exec = Executors.newSingleThreadExecutor();
+					exec.execute(new FetchEventsRunner(items, calendarName, events,
+							oldest, "color1"));
+				}
 				exec.shutdown();
 				try { 
 					exec.awaitTermination(20, TimeUnit.SECONDS);

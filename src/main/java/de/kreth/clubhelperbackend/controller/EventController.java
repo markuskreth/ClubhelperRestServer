@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -40,9 +41,16 @@ public class EventController {
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public List<Map<String, Object>> getEvents() throws IOException, InterruptedException {
+		return getEvents(null);
+	}
+	
+	@RequestMapping(value = { "/{calendarName}", "" }, method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public List<Map<String, Object>> getEvents(@PathVariable("calendarName") String calendarName) throws IOException, InterruptedException {
 		List<Map<String, Object>> result = new ArrayList<>();
-		adapter.getAllEvents().forEach(e -> {
+		adapter.getAllEvents(calendarName).forEach(e -> {
 			Map<String, Object> properties = new HashMap<>();
+
 
 			adjustExcludedEndDate(e);
 			StringBuilder msg = new StringBuilder();

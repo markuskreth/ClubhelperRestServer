@@ -68,8 +68,7 @@
 						class="ui-btn ui-icon-bulletes ui-btn-icon-left">Listen</a></li>
 				</ul>
 			</div>
-		</div>
-		<!-- /header -->
+		</div>		<!-- /header -->
 
 		<div role="main" class="ui-content">
 			<div>
@@ -95,6 +94,10 @@
 									</li>
 									<li id="sendAttendance"><a href="#" onclick="sendAttendance()"
 										class="ui-btn ui-btn-icon-left ui-icon-action">Abschicken</a></li>
+									<li id="chooseCompetition">
+										<select name="choosen-competition" id="choosen-competition" data-mini="true">
+										</select>
+									</li>
 								</ul>
 							</div>
 							<div>

@@ -42,7 +42,6 @@ var competitionParticipants = (function () {
 	return new CompetitorList();
 })();
 
-
 function ExtendableItemList () {
 	
 	var _list = [];
@@ -84,7 +83,6 @@ function ExtendableItemList () {
 	return instance;
 }
 
-
 ExtendableItemList.prototype[Symbol.iterator] = function() {
 
 	var index = 0;
@@ -100,3 +98,14 @@ ExtendableItemList.prototype[Symbol.iterator] = function() {
         };
     return iterator;
 };
+function initCompetitionSelector(){
+
+	repo(baseUrl + "events/mtv_wettkampf", function(response) {
+		var selector = $("#choosen-competition");
+		response.forEach(function(event){
+			selector.append($("<option></option>").text(event.title + " " + moment(event.start).format("DD.MM.YY")).attr("value", event.id));
+		});
+
+		$("#chooseCompetition").show();
+	});
+}
