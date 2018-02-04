@@ -7,6 +7,7 @@ public class PersonCompetition extends AbstractData {
 	private static final long serialVersionUID = 7197621720102586079L;
 
 	private Long personId;
+	private String eventId;
 	private String calenderId;
 	private String participation;
 	private String routine;
@@ -17,10 +18,11 @@ public class PersonCompetition extends AbstractData {
 		super();
 	}
 
-	public PersonCompetition(Long id, Long personId, String calenderId, String participation
+	public PersonCompetition(Long id, Long personId, String eventId, String calenderId, String participation
 			, String routine, String comment, Date changed, Date created) {
 		super(id, changed, created);
 		this.personId = personId;
+		this.eventId = eventId;
 		this.calenderId = calenderId;
 		this.participation = participation;
 		this.routine = routine;
@@ -33,6 +35,14 @@ public class PersonCompetition extends AbstractData {
 
 	public void setPersonId(Long personId) {
 		this.personId = personId;
+	}
+
+	public String getEventId() {
+		return eventId;
+	}
+
+	public void setEventId(String eventId) {
+		this.eventId = eventId;
 	}
 
 	public String getCalenderId() {

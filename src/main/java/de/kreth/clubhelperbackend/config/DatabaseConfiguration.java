@@ -295,7 +295,9 @@ public class DatabaseConfiguration {
 		ColumnDefinition colPersId = new ColumnDefinition(DataType.INTEGER
 				, "person_id", "NOT NULL");
 		ColumnDefinition colCompetitionId = new ColumnDefinition(DataType.VARCHAR100
-				, "competition_id", "NOT NULL");
+				, "event_id", "NOT NULL");
+		ColumnDefinition colCalendarId = new ColumnDefinition(DataType.VARCHAR100
+				, "calendar_id", "NOT NULL");
 		ColumnDefinition colParticipation = new ColumnDefinition(
 				DataType.VARCHAR255, "participation");
 		ColumnDefinition colRoutine = new ColumnDefinition(
@@ -305,6 +307,7 @@ public class DatabaseConfiguration {
 		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
 		columns.add(colPersId);
 		columns.add(colCompetitionId);
+		columns.add(colCalendarId);
 		columns.add(colParticipation);
 		columns.add(colRoutine);
 		columns.add(colComment);

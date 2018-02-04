@@ -16,7 +16,7 @@ public class PersonCompetitionDao extends AbstractDao<PersonCompetition> {
 	}
 
 	private static DaoConfig<PersonCompetition> createConfig() {
-		String[] columnNames = {"person_id", "competition_id", "participation",
+		String[] columnNames = {"person_id", "event_id", "calendar_id", "participation",
 				"routine", "comment"};
 		Mapper mapper = new Mapper();
 		String[] orderBy = {"competition_id", "person_id"};
@@ -33,7 +33,7 @@ public class PersonCompetitionDao extends AbstractDao<PersonCompetition> {
 				throws SQLException {
 
 			return appendDefault(new PersonCompetition(rs.getLong("id"),
-					rs.getLong("person_id"), rs.getString("competition_id"),
+					rs.getLong("person_id"), rs.getString("event_id"), rs.getString("calendar_id"),
 					rs.getString("participation"), rs.getString("routine"),
 					rs.getString("comment"), rs.getTimestamp("changed"),
 					rs.getTimestamp("created")), rs);
@@ -43,6 +43,7 @@ public class PersonCompetitionDao extends AbstractDao<PersonCompetition> {
 		public Collection<Object> mapObject(PersonCompetition obj) {
 			List<Object> values = new ArrayList<Object>();
 			values.add(obj.getPersonId());
+			values.add(obj.getEventId());
 			values.add(obj.getCalenderId());
 			values.add(obj.getParticipation());
 			values.add(obj.getRoutine());
