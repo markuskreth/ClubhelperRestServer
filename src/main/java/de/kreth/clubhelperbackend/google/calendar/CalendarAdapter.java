@@ -84,19 +84,24 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 		final List<Event> events = new ArrayList<>();
 		if(lock.tryLock(10, TimeUnit.SECONDS)) {
 
-			List<CalendarListEntry> items = getCalendarList();
-			final long oldest = getOldest();
+			try {
 
-			ExecutorService exec = Executors.newFixedThreadPool(2);
-			exec.execute(new FetchEventsRunner(items, "mtv_wettkampf", events,
-					oldest, "color1"));
-			exec.execute(new FetchEventsRunner(items, "mtv_allgemein", events,
-					oldest, "color2"));
-			exec.shutdown();
-			try { 
-				exec.awaitTermination(20, TimeUnit.SECONDS);
-			} catch (InterruptedException e) {
-				log.error("Thread terminated - event list may be incomplete.", e);
+				List<CalendarListEntry> items = getCalendarList();
+				final long oldest = getOldest();
+
+				ExecutorService exec = Executors.newFixedThreadPool(2);
+				exec.execute(new FetchEventsRunner(items, "mtv_wettkampf", events,
+						oldest, "color1"));
+				exec.execute(new FetchEventsRunner(items, "mtv_allgemein", events,
+						oldest, "color2"));
+				exec.shutdown();
+				try { 
+					exec.awaitTermination(20, TimeUnit.SECONDS);
+				} catch (InterruptedException e) {
+					log.error("Thread terminated - event list may be incomplete.", e);
+				}
+			} finally {
+				lock.unlock();
 			}
 		} else {
 			log.error("Unable to lock " + getClass() + " for Event List after");
