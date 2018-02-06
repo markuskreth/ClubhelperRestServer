@@ -146,12 +146,14 @@ public class DatabaseConfiguration {
 	}
 
 	private void createPersonCompetitionUniqueConstraint() {
-		ColumnDefinition[] columns = new ColumnDefinition[2];
+		ColumnDefinition[] columns = new ColumnDefinition[3];
 		personcompetition.getColumns().forEach(col -> {
 			if ("person_id".equals(col.getColumnName())) {
 				columns[0] = col;
-			} else if ("competition_id".equals(col.getColumnName())) {
+			} else if ("event_id".equals(col.getColumnName())) {
 				columns[1] = col;
+			} else if ("calendar_id".equals(col.getColumnName())) {
+				columns[2] = col;
 			}
 		});
 		statements.add(

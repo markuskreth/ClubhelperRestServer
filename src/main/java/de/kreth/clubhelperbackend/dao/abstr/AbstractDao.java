@@ -63,6 +63,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 	private TransactionTemplate transactionTemplate;
 
 	final String SQL_INSERTWithoutId;
+	private final String SQL_QUERY_BY_WHERE;
 
 	/**
 	 * Constructs this {@link Dao} implemetation.
@@ -101,6 +102,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 		this.SQL_QUERY_ALL_WITHDELETED = "select * from " + config.tableName;
 
 		this.SQL_QUERY_BY_ID = SQL_QUERY_ALL_WITHDELETED + " WHERE id=?";
+		this.SQL_QUERY_BY_WHERE = SQL_QUERY_ALL_WITHDELETED + " WHERE %s";
 		this.SQL_QUERY_CHANGED = SQL_QUERY_ALL_WITHDELETED + " WHERE changed>?";
 
 		this.mapper = config.mapper;
@@ -250,8 +252,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 
 	@Override
 	public List<T> getByWhere(String where) {
-		return getJdbcTemplate().query(SQL_QUERY_ALL_WITHDELETED + " WHERE "
-				+ where + " AND deleted is null", mapper);
+		return getJdbcTemplate().query(String.format(SQL_QUERY_BY_WHERE, where), mapper);
 	}
 
 	@Override

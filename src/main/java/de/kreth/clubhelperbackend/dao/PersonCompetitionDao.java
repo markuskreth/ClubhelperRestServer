@@ -6,9 +6,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.stereotype.Repository;
+
 import de.kreth.clubhelperbackend.dao.abstr.AbstractDao;
 import de.kreth.clubhelperbackend.pojo.PersonCompetition;
 
+@Repository
 public class PersonCompetitionDao extends AbstractDao<PersonCompetition> {
 
 	public PersonCompetitionDao() {

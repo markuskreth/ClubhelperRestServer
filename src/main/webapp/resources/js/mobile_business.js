@@ -127,38 +127,6 @@ var listCreator = (function(){
 		
 	}
 
-	function addCompetitionCompetitorsToList(person) {
-
-		if(!person) return;
-		var id = "checkboxAttendance" + person.id;
-		var link = $("<input data-iconpos=\"left\" type=\"checkbox\"></input>");
-		link.attr("personId", person.id);
-		if(attendants.contains(link.attr("personId"))) {
-			link.attr("checked", true);
-		}
-
-		link.attr("id", id);
-		link.attr("name", id);
-		link.click(function() {
-			var me = $(this);
-			var pId = me.attr("personId");
-			var checked = me.prop("checked");
-			if(checked) {
-				competitionParticipants.push(pId);
-			} else {
-				competitionParticipants.remove(pId);
-			}
-			
-		});
-		var hull = $("<div></div>");
-		var label = $("<label></label>").attr("for", id).text(person.prename + " " + person.surname);
-		hull.append(link);
-		hull.append(label);
-		var item = $("<li></li>").append(label.append(link));
-
-		$("#personList").append(item);
-	}
-
 	// public
 	return {
 		
@@ -169,7 +137,7 @@ var listCreator = (function(){
 			createPersonListItems(addAttendancePersonToList);	
 		},
 		showCompetitionCompetitorList: function() {
-			createPersonListItems(addCompetitionCompetitorsToList);	
+			createPersonListItems(addCompetitionCompetitorsToList);
 		}
 	};
 })();

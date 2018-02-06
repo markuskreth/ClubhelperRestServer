@@ -172,7 +172,10 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 				DateTime timeMin = new DateTime(oldest);
 				List<Event> items = service.events().list(calendar.getId())
 						.setTimeMin(timeMin).execute().getItems();
-				items.forEach(item -> item.set("colorClass", colorClass));
+				items.forEach(item -> {
+					item.set("colorClass", colorClass);
+					item.set("calendarName", summary);
+				});
 				events.addAll(items);
 				log.debug("Added " + items.size() + " Events for \"" + summary + "\"");
 				

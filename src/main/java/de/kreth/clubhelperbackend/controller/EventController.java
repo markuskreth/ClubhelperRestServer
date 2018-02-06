@@ -51,7 +51,6 @@ public class EventController {
 		adapter.getAllEvents(calendarName).forEach(e -> {
 			Map<String, Object> properties = new HashMap<>();
 
-
 			adjustExcludedEndDate(e);
 			StringBuilder msg = new StringBuilder();
 			msg.append("Event: ").append(e.getSummary()).append(", Start=").append(e.getStart())
@@ -105,6 +104,7 @@ public class EventController {
 		case "location":
 		case "description":
 		case "sequence":
+		case "calendarName":
 		case "attendees":
 			entry = Maps.immutableEntry(entry.getKey(), value);
 			break;
