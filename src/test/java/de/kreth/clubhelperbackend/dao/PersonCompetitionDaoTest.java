@@ -29,7 +29,7 @@ public class PersonCompetitionDaoTest extends AbstractDatabaseTests<PersonCompet
 	
 	@Test
 	public void createAndRead() {
-		PersonCompetition obj = new PersonCompetition(-1L, 1L, "googleCalenderId", "participation", "routine", "comment", null, null);
+		PersonCompetition obj = new PersonCompetition(-1L, 1L, "googleCalenderId", "participation", "routine", "comment", null, null, null);
 		PersonCompetition result = dao.insert(obj);
 		obj.setId(result.getId());
 		obj.setChanged(result.getChanged());

@@ -22,7 +22,7 @@ public class PersonCompetitionDao extends AbstractDao<PersonCompetition> {
 		String[] columnNames = {"person_id", "event_id", "calendar_id", "participation",
 				"routine", "comment"};
 		Mapper mapper = new Mapper();
-		String[] orderBy = {"competition_id", "person_id"};
+		String[] orderBy = {"calendar_id", "person_id"};
 		return new DaoConfig<>("personcompetition", columnNames, mapper,
 				orderBy);
 	}
