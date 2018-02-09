@@ -46,6 +46,9 @@ public class CellRange {
 			} else {
 				row = values.get(rowIndex);
 			}
+			while(columnIndex>row.size()) {
+				row.add("");
+			}
 			row.add(columnIndex, value);
 			return this;
 		}

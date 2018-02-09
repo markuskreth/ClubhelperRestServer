@@ -11,7 +11,8 @@ public class CellValue<T> {
 	
 	public CellValue(T object, int column, int row) {
 		super();
-		assert (object != null);
+		assert object != null:"Value Object must not be null!";
+
 		this.object = object;
 		this.column = column;
 		this.row = row;
@@ -36,8 +37,8 @@ public class CellValue<T> {
 		stringBuilder.append(GoogleSpreadsheetsAdapter.intToColumn(column));
 		stringBuilder.append(row);
 		stringBuilder.append("=");
-		stringBuilder.append((object instanceof Date?DateFormat.getDateTimeInstance().format(object):object));
-		stringBuilder.append("]");
+		stringBuilder.append((object instanceof Date?DateFormat.getDateTimeInstance().format(object):object.toString()));
+
 		return stringBuilder.toString();
 	}
 
@@ -46,7 +47,7 @@ public class CellValue<T> {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + column;
-		result = prime * result + ((object == null) ? 0 : object.hashCode());
+		result = prime * result + object.hashCode();
 		result = prime * result + row;
 		return result;
 	}
@@ -63,14 +64,13 @@ public class CellValue<T> {
 		CellValue<T> other = (CellValue<T>) obj;
 		if (column != other.column)
 			return false;
+		if (row != other.row)
+			return false;
 		if (object == null) {
 			if (other.object != null)
 				return false;
-		} else if (!object.equals(other.object))
-			return false;
-		if (row != other.row)
-			return false;
-		return true;
+		} 
+		return object.equals(other.object);
 	}
 	
 }

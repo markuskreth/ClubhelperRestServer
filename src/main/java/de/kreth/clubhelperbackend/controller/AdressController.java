@@ -1,6 +1,6 @@
 package de.kreth.clubhelperbackend.controller;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class AdressController extends AbstractController<Adress> {
 
 	@Override
 	public List<Adress> getByParentId(long id) {
-		return new ArrayList<Adress>();
+		return Collections.emptyList();
 	}
 
 }
