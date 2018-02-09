@@ -3,70 +3,66 @@ package de.kreth.clubhelperbackend.google.calendar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.api.client.util.DateTime;
+import com.google.api.services.calendar.Calendar.Calendars;
+import com.google.api.services.calendar.Calendar.Calendars.Get;
 import com.google.api.services.calendar.model.Calendar;
+import com.google.api.services.calendar.model.CalendarList;
 import com.google.api.services.calendar.model.CalendarListEntry;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventAttendee;
 import com.google.api.services.calendar.model.EventDateTime;
 
-@Ignore
 public class CalendarAdapterTest {
 
 	private static final String summaryText = "AutomatedTestCalendar";
 
 	private CalendarAdapter adapter;
 	private Calendar current;
-
+	private com.google.api.services.calendar.Calendar service;
+	
 	@Before
 	public void initAdapter() throws GeneralSecurityException, IOException {
-		adapter = new CalendarAdapter();
-		assertNotNull(adapter.service);
-	}
+		service= mock(com.google.api.services.calendar.Calendar.class);
 
-	@After
-	public void deleteCreatedCalendars() throws IOException {
-		if (current != null) {
-			adapter.service.calendars().delete(current.getId()).execute();
-		}
-	}
-
-	@AfterClass
-	public static void deleteAllCreatedCalendars()
-			throws IOException, GeneralSecurityException {
-		CalendarAdapter calendarAdapter = new CalendarAdapter();
-		List<CalendarListEntry> items = calendarAdapter.getCalendarList();
-		items.forEach(calEntr -> {
-			if (summaryText.equals(calEntr.getSummary())) {
-				System.out.println("Deleting " + calEntr.getSummary() + ": "
-						+ calEntr.getId());
-				try {
-					calendarAdapter.service.calendars().delete(calEntr.getId())
-							.execute();
-				} catch (IOException e) {
-					System.err.println(e);
-					throw new RuntimeException(e);
-				}
+		assertNotNull(service);
+		final com.google.api.services.calendar.Calendar mockedService = service;
+		adapter = new CalendarAdapter(true) {
+			@Override
+			com.google.api.services.calendar.Calendar createService() throws IOException {
+				return mockedService;
 			}
-		});
-
+			@Override
+			protected void checkRefreshToken() throws IOException {
+			}
+		};
 	}
 
 	@Test
 	public void testInit() throws GeneralSecurityException, IOException {
 
+		CalendarListEntry entry = new CalendarListEntry();
+		entry.setSummary("mtv_wettkampf");
+		entry.setId("TestIdForCalendar");
+		
+		mockServiceWith(entry);
+
+		Calendar resultCalendar = mock(Calendar.class);
+		mockServiceWith(resultCalendar, entry.getId());
+		
 		List<CalendarListEntry> items = adapter.getCalendarList();
 		assertTrue(items.size() > 0);
 		Calendar wettkampf = adapter.getCalendarBySummaryName(items,
@@ -74,25 +70,36 @@ public class CalendarAdapterTest {
 		assertNotNull(wettkampf);
 	}
 
-	@Test
-	public void getWettkampfEvents() throws IOException {
-		Calendar wettkampf = adapter.getCalendarBySummaryName(
-				adapter.getCalendarList(), "mtv_wettkampf");
-		List<Event> events = adapter.service.events().list(wettkampf.getId())
-				.execute().getItems();
-		assertNotNull(events);
-		assertTrue("No events found!", events.size() > 0);
-		Event first = events.get(0);
-		System.out.println(String.join(", ",
-				first.getStart().getDateTime().toStringRfc3339(),
-				first.getEnd().getDateTime().toStringRfc3339(),
-				first.getSummary(), first.getLocation(),
-				first.getCreator().getDisplayName()));
-		System.out.println(first.toPrettyString());
-		System.out.println("found: " + events.size());
+	private void mockServiceWith(Calendar resultCalendar, String calId) throws IOException {
+
+		Calendars value = mock(Calendars.class);
+		when(service.calendars()).thenReturn(value);
+		Get mockedGet = mock(Get.class);
+		when(value.get(calId)).thenReturn(mockedGet);
+		when(mockedGet.execute()).thenReturn(resultCalendar);
+		
+	}
+
+	private void mockServiceWith(CalendarListEntry... entries) throws IOException {
+
+		CalendarList list = mock(CalendarList.class);
+		List<CalendarListEntry> values = new ArrayList<>();
+		for(CalendarListEntry e: entries) {
+			values.add(e);
+		}
+		when(list.getItems()).thenReturn(values);
+
+		com.google.api.services.calendar.Calendar.CalendarList listQuery = mock(com.google.api.services.calendar.Calendar.CalendarList.class);
+		assertNotNull(listQuery);
+		when(service.calendarList()).thenReturn(listQuery);
+		assertNotNull(service);
+		com.google.api.services.calendar.Calendar.CalendarList.List queryExecutor = mock(com.google.api.services.calendar.Calendar.CalendarList.List.class);
+		when(listQuery.list()).thenReturn(queryExecutor);
+		when(queryExecutor.execute()).thenReturn(list);
 	}
 
 	@Test
+	@Ignore
 	public void testCreateCalendar()
 			throws GeneralSecurityException, IOException {
 
@@ -109,6 +116,7 @@ public class CalendarAdapterTest {
 	}
 
 	@Test
+	@Ignore
 	public void addAttendeeToEvent() throws Exception {
 
 		current = adapter.service.calendars().insert(createTestCalendar())
@@ -147,6 +155,7 @@ public class CalendarAdapterTest {
 	}
 
 	@Test
+	@Ignore
 	public void addInvalidAttendeeToEvent() throws Exception {
 
 		current = adapter.service.calendars().insert(createTestCalendar())

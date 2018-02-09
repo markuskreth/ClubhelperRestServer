@@ -27,6 +27,10 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 	private Lock lock = new ReentrantLock();
 
 	public CalendarAdapter() throws GeneralSecurityException, IOException {
+		this(false);
+	}
+	
+	public CalendarAdapter(boolean awaitCreateService) throws GeneralSecurityException, IOException {
 		super();
 		ExecutorService exec = Executors.newSingleThreadExecutor();
 		exec.execute(new Runnable() {
@@ -37,7 +41,7 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 				try {
 					service = createService();
 					if(log.isInfoEnabled()) {
-						log.info(service.getClass().getName() + " created successfully.");
+						log.info(com.google.api.services.calendar.Calendar.class.getName() + " created successfully.");
 					}
 				} catch (IOException e) {
 					log.error("unable to create service for " + getClass(), e);
@@ -51,9 +55,16 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 			
 		});
 		exec.shutdown();
+		if(awaitCreateService) {
+			try {
+				exec.awaitTermination(15, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+		}
 	}
 
-	private com.google.api.services.calendar.Calendar createService()
+	com.google.api.services.calendar.Calendar createService()
 			throws IOException {
 		Credential credential = authorize();
 		return new com.google.api.services.calendar.Calendar.Builder(
@@ -131,8 +142,10 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 	List<CalendarListEntry> getCalendarList() throws IOException {
 		checkRefreshToken();
 		CalendarList calendarList;
+		com.google.api.services.calendar.Calendar.CalendarList calendarList2 = service.calendarList();
 		try {
-			calendarList = service.calendarList().list().execute();
+			com.google.api.services.calendar.Calendar.CalendarList.List list = calendarList2.list();
+			calendarList = list.execute();
 		} catch (IOException e) {
 			if (log.isWarnEnabled()) {
 				log.warn("Error fetching Calendar List, trying token refresh",
@@ -142,7 +155,7 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 			if (log.isInfoEnabled()) {
 				log.info("Successfully refreshed Google Security Token.");
 			}
-			calendarList = service.calendarList().list().execute();
+			calendarList = calendarList2.list().execute();
 		}
 		return calendarList.getItems();
 	}

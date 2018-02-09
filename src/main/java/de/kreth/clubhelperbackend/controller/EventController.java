@@ -34,7 +34,11 @@ public class EventController {
 	private final Logger log;
 
 	public EventController() throws GeneralSecurityException, IOException {
-		adapter = new CalendarAdapter();
+		this(new CalendarAdapter());
+	}
+	
+	public EventController(CalendarAdapter adapter) throws GeneralSecurityException, IOException {
+		this.adapter = adapter;
 		log = LoggerFactory.getLogger(getClass());
 	}
 
@@ -44,7 +48,7 @@ public class EventController {
 		return getEvents(null);
 	}
 	
-	@RequestMapping(value = { "/{calendarName}", "" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = { "/{calendarName}" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public List<Map<String, Object>> getEvents(@PathVariable("calendarName") String calendarName) throws IOException, InterruptedException {
 		List<Map<String, Object>> result = new ArrayList<>();
@@ -92,6 +96,8 @@ public class EventController {
 			break;
 		case "start":
 		case "end":
+			entry = Maps.immutableEntry(entry.getKey(), dateTimeValue(value));
+			break;
 		case "creator":
 		case "organizer":
 			entry = Maps.immutableEntry(entry.getKey(), firstValue(value));
@@ -114,10 +120,20 @@ public class EventController {
 		return entry;
 	}
 
+	private Object dateTimeValue(Object value) {
+		EventDateTime date = (EventDateTime) value;
+		DateTime time = date.getDateTime();
+		if(time == null) {
+			time = date.getDate();
+		}
+		return time.toString();
+	}
+
 	private String firstValue(Object value) {
 		int index = -1;
-		index = value.toString().indexOf(':') + 2;
-		String substring = value.toString().substring(index, value.toString().indexOf('\"', index));
+		String string = value.toString();
+		index = string.indexOf(':') + 2;
+		String substring = string.substring(index, string.indexOf('\"', index));
 		return substring;
 	}
 

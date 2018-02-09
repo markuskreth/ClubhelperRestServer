@@ -296,7 +296,9 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 						obj.setId(id);
 					}
 				} else {
-					status.setRollbackOnly();
+					if(status !=null) {
+						status.setRollbackOnly();
+					}
 					throw new IllegalStateException(
 							"insert could not successfully create the database entity");
 				}

@@ -5,7 +5,7 @@ import static org.mockito.Mockito.when;
 
 import org.junit.After;
 import org.junit.Before;
-import org.mockito.Matchers;
+import org.mockito.ArgumentCaptor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -24,6 +24,8 @@ public abstract class AbstractDaoTest<T extends Data> {
 	protected PlatformTransactionManager transMan;
 	protected DeletedEntriesDao deletedEnriesDao;
 	protected Long objectId = 100L;
+	protected ArgumentCaptor<String> sqlCaptor;
+	protected ArgumentCaptor<Long> idCaptor;
 
 	public AbstractDaoTest() {
 		super();
@@ -38,13 +40,17 @@ public abstract class AbstractDaoTest<T extends Data> {
 
 		dao = configureDao();
 
-		when(dialect.queryForIdentity(Matchers.eq(DaoPackageMemberAccessor.getTableName(dao)))).thenReturn("queryForIdentity");
+		when(dialect.queryForIdentity(DaoPackageMemberAccessor.getTableName(dao))).thenReturn("queryForIdentity");
 		when(jdbcTemplate.queryForObject("queryForIdentity", null, Long.class)).thenReturn(objectId);
 		
 		dao.setJdbcTemplate(jdbcTemplate);
 		dao.setPlatformTransactionManager(transMan);
 		dao.setDeletedEntriesDao(deletedEnriesDao);
 		dao.setSqlDialect(dialect);
+		sqlCaptor = ArgumentCaptor.forClass(String.class);
+
+		idCaptor = ArgumentCaptor.forClass(Long.class);
+		
 	}
 
 	@After
