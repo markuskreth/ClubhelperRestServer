@@ -81,7 +81,7 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
                 .build();
     }
 
-	private BatchUpdateSpreadsheetResponse sendRequest(Request request, Boolean includeSpreadsheetInResponse) throws IOException {
+	BatchUpdateSpreadsheetResponse sendRequest(Request request, Boolean includeSpreadsheetInResponse) throws IOException {
 		BatchUpdateSpreadsheetRequest content = new BatchUpdateSpreadsheetRequest();
 		List<Request> requests = new ArrayList<>();
 		requests.add(request);

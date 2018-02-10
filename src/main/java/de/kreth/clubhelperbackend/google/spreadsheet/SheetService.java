@@ -25,6 +25,10 @@ public enum SheetService {
 		createService();
 	}
 
+	void setService(GoogleSpreadsheetsAdapter service) {
+		this.service = service;
+	}
+	
 	private void createService() {
 		if(service != null) {
 			return;
