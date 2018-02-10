@@ -1,10 +1,9 @@
 package de.kreth.clubhelperbackend.controller.abstr;
 
+import static java.time.temporal.ChronoUnit.MINUTES;
 import java.util.Date;
 import java.util.List;
 
-import org.joda.time.DateTime;
-import org.joda.time.Minutes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -95,15 +94,16 @@ public abstract class AbstractController<T extends Data>
 	@ResponseBody
 	public T put(@PathVariable("id") long id, @RequestBody T toUpdate) {
 
-		DateTime created = new DateTime(toUpdate.getCreated().getTime());
-		DateTime changed = null;
+		Date created = toUpdate.getCreated();
+		Date changed = null;
 
 		if (toUpdate.getChanged() != null) {
-			changed = new DateTime(toUpdate.getChanged().getTime());
+			changed = toUpdate.getChanged();
 		}
 
+		long minutes = MINUTES.between(created.toInstant(), changed.toInstant());
 		if (changed == null
-				|| Minutes.minutesBetween(created, changed).getMinutes() < 1)
+				|| minutes < 1)
 			toUpdate.setChanged(new Date());
 
 		dao.update(id, toUpdate);
