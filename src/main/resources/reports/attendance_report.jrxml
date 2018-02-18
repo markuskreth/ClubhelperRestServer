@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.5.1.final using JasperReports Library version 6.5.1  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="attendance_report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="12806e6e-20bc-447c-a6d6-c2f0720ff0a4">
+	<property name="com.jaspersoft.studio.data.sql.tables">
+		<![CDATA[bWFya3Vza3JldGguYXR0ZW5kYW5jZSAsMTQ2LDU0LDQwYWY5Nzk5LWRlMzktNDI0Ni04MjUyLWE0
+ZjBiZmY5MzVjNTttYXJrdXNrcmV0aC5wZXJzb24gLDE1LDE1LDQ5YjVjYWY2LTdkZGYtNGU4NS05
+ODliLTMxZTU0MGEyMThlMzs=
+]]>
+	</property>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="ClubhelperAttendence"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT markuskreth.attendance.on_date,
+	markuskreth.person.prename,
+	markuskreth.person.surname
+FROM markuskreth.attendance
+	left join markuskreth.person ON 
+	 markuskreth.person.id = markuskreth.attendance.person_id 
+ORDER BY markuskreth.person.surname DESC,
+	markuskreth.person.prename DESC,
+	markuskreth.attendance.on_date DESC]]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
