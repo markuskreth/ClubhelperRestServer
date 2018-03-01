@@ -15,7 +15,7 @@ import org.junit.Test;
 
 import com.ibm.icu.util.Calendar;
 
-import de.kreth.clubhelperbackend.testutils.TestResultset;
+import de.kreth.testutils.sql.TestResultset;
 
 public class AttendenceBeanCollectorTest {
 
