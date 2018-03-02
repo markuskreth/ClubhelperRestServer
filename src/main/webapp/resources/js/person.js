@@ -44,7 +44,6 @@ class PersonInstance {
 			this.surname = response.surname;
 			this.created = response.created;
 			this.changed = response.changed;
-			this.type = response.type;
 			this.relation = relation;
 
 			this.birth=response.birth;

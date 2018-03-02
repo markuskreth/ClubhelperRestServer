@@ -3,7 +3,6 @@
 /**
  * Storage Class for local Browser storage.
  */
-
 function Storage(classname) {
 	this.classname = classname;
 }
@@ -32,10 +31,10 @@ Storage.prototype.key = function (i) {
 };
 
 Storage.prototype.set = function (obj, id) {
-	if(id === null) {
+	if(id == null) {
 		id = obj.id;
 	}
-	if(id === null) {
+	if(id == null) {
 		sessionStorage.setItem(this.classname, JSON.stringify(obj));
 	} else {
 		sessionStorage.setItem(this.classname + id, JSON.stringify(obj));

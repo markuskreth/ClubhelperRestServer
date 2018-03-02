@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>clubhelperbackend</artifactId>
 	<name>ClubHelperBackend</name>
@@ -9,7 +10,7 @@
 
 	<parent>
 		<groupId>de.kreth</groupId>
-		<version>1.0.7</version>
+		<version>1.0.7-SNAPSHOT</version>
 		<artifactId>clubhelper-parent</artifactId>
 	</parent>
 
@@ -169,7 +170,7 @@
 			<artifactId>libphonenumber</artifactId>
 			<version>7.7.4</version>
 		</dependency>
-		
+
 		<!-- @Inject -->
 		<dependency>
 			<groupId>javax.inject</groupId>
@@ -233,11 +234,6 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.2.1</version>
 		</dependency>
-		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
-			<version>2.9.4</version>
-		</dependency>
 
 		<!-- Test -->
 		<dependency>
@@ -272,6 +268,21 @@
 			<artifactId>hamcrest-all</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>6.5.1</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports-fonts</artifactId>
+			<version>6.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>de.kreth.testutils</groupId>
+			<artifactId>TestUtils</artifactId>
+			<version>0.0.2-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -302,8 +313,8 @@
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.2</version>
 				<configuration>
-					<url>http://spallek.com:8080/manager/text</url>
-					<server>SpellakTomcat</server>
+					<url>http://kreth-development.de:8080/manager/text</url>
+					<server>kreth</server>
 					<path>/ClubHelperBackend</path>
 				</configuration>
 			</plugin>
