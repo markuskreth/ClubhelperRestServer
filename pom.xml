@@ -269,16 +269,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.jasperreports</groupId>
-			<artifactId>jasperreports</artifactId>
-			<version>6.5.1</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.jasperreports</groupId>
-			<artifactId>jasperreports-fonts</artifactId>
-			<version>6.0.0</version>
-		</dependency>
-		<dependency>
 			<groupId>de.kreth.testutils</groupId>
 			<artifactId>TestUtils</artifactId>
 			<version>0.0.2-SNAPSHOT</version>

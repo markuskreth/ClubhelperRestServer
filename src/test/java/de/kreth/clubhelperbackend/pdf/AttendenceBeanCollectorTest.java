@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -15,8 +16,6 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import com.ibm.icu.util.Calendar;
 
 import de.kreth.testutils.sql.TestResultset;
 

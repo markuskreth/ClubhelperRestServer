@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,8 +17,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.springframework.context.ApplicationContext;
-
-import com.ibm.icu.util.Calendar;
 
 import de.kreth.testutils.sql.TestResultset;
 
