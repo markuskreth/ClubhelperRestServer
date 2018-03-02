@@ -281,7 +281,7 @@
 		<dependency>
 			<groupId>de.kreth.testutils</groupId>
 			<artifactId>TestUtils</artifactId>
-			<version>0.0.1</version>
+			<version>0.0.2-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<build>

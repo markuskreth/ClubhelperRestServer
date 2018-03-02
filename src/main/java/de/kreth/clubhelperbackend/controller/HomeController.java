@@ -101,11 +101,12 @@ public class HomeController implements ApplicationContextAware {
 					"order by surname, prename, on_date");
 			AttendenceBeanCollector coll = new AttendenceBeanCollector();
 			List<AttendenceBean> list = coll.getList(rs);
+			String text = coll.format(list);
 			System.out.println();
-			for (AttendenceBean b: list) {
-				System.out.println(b.toString());
-				txt.append(b.toString());
-			}
+
+			System.out.println(text);
+			txt.append(text);
+			
 			System.out.println();
 		} catch (SQLException e) {
 			logger.error("Error fetching data", e);
