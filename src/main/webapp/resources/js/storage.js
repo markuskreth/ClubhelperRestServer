@@ -10,7 +10,8 @@ function Storage(classname) {
 Storage.prototype.get = function (id) {
 
 	console.log("from storage " + this.classname + ", id=" + id);
-	if(id === null) {
+	
+	if(id == null) {
 		return JSON.parse(sessionStorage.getItem(this.classname));
 	} else {
 		return JSON.parse(sessionStorage.getItem(this.classname + id));
@@ -31,10 +32,10 @@ Storage.prototype.key = function (i) {
 };
 
 Storage.prototype.set = function (obj, id) {
-	if(id == null) {
+	if(!id) {
 		id = obj.id;
 	}
-	if(id == null) {
+	if(!id) {
 		sessionStorage.setItem(this.classname, JSON.stringify(obj));
 	} else {
 		sessionStorage.setItem(this.classname + id, JSON.stringify(obj));
