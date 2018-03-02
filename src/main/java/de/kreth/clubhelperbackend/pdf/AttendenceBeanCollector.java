@@ -6,10 +6,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class AttendenceBeanCollector {
@@ -17,6 +20,7 @@ public class AttendenceBeanCollector {
 	
 	public List<AttendenceBean> getList(ResultSet rs) throws SQLException {
 		Set<Date> dates = new HashSet<>();
+		Map<String, Set<Date>> nameDateMap = new HashMap<>();
 		
 		List<AttendenceBean> tmp = new ArrayList<>();
 		while (rs.next()) {
@@ -27,27 +31,42 @@ public class AttendenceBeanCollector {
 			b.date = date;
 			b.set = true;
 			tmp.add(b);
+
+			Set<Date> nameDateSet;
+			if(nameDateMap.keySet().contains(b.name)) {
+				nameDateSet = nameDateMap.get(b.name);
+			} else {
+				nameDateSet = new HashSet<>();
+				nameDateMap.put(b.name, nameDateSet);
+			}
+			nameDateSet.add(date);
 		}
 
+		tmp.sort(comparatorByNameAndDate);
+		List<Date> sortedDate = new ArrayList<>(dates);
+		Collections.sort(sortedDate);
 		List<AttendenceBean> result = new ArrayList<>();
 		for (AttendenceBean b: tmp) {
 			result.add(b);
-			for (Date d: dates) {
-				if(DAYS.between(b.date.toInstant(), d.toInstant())!=0) {
+			Set<Date> personDateList = nameDateMap.get(b.name);
+			for (Date d: sortedDate) {
+				boolean isPersonDate = personDateList.contains(d);
+				if(!isPersonDate && DAYS.between(b.date.toInstant(), d.toInstant())!=0) {
 					AttendenceBean n = new AttendenceBean();
 					n.name = b.name;
 					n.date = d;
 					n.set = false;
 					result.add(n);
+					personDateList.add(d);
 				}
 			}
 		}
+		result.sort(comparatorByNameAndDate);
 		return result;
 	}
 
 	public String format(List<AttendenceBean> list) {
 		DateFormat df = DateFormat.getDateInstance();
-		list.sort(comparatorByNameAndDate);
 
 		Set<Date> dates = new HashSet<>();
 		for (AttendenceBean b : list) {

@@ -57,8 +57,9 @@ public class HomeControllerTest {
 		when(stm.executeQuery(Matchers.anyString())).thenReturn(rs);
 		String csv = controller.getAttendenceGeneral();
 		assertFalse(csv.trim().isEmpty());
-		String[] split = csv.split("\n");
-		assertEquals(4, split.length);
+		assertEquals(";01.01.2018;02.01.2018\n" + 
+				"Surname1, Prename1;X;\n" + 
+				"Surname2, Prename2;;X", csv);
 	}
 
 }
