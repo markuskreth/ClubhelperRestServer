@@ -283,6 +283,7 @@
 				<version>3.0.0</version>
 				<configuration>
 					<webXml>${project.basedir}\src\main\webapp\WEB-INF\web.xml</webXml>
+					<warName>ClubHelperBackend##${project.version}</warName>
 				</configuration>
 			</plugin>
 			<plugin>
