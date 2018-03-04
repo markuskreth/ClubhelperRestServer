@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>clubhelperbackend</artifactId>
 	<name>ClubHelperBackend</name>
@@ -17,8 +18,8 @@
 		<connection>scm:git:https://github.com/markuskreth/ClubhelperRestServer.git</connection>
 		<developerConnection>scm:git:https://github.com/markuskreth/ClubhelperRestServer.git</developerConnection>
 		<url>http://github.com/markuskreth/ClubhelperRestServer</url>
-	  <tag>clubhelperbackend-1.0.7.7</tag>
-  </scm>
+		<tag>clubhelperbackend-1.0.7.7</tag>
+	</scm>
 
 	<properties>
 		<google-api-version>1.23.0</google-api-version>
@@ -283,7 +284,6 @@
 				<version>3.0.0</version>
 				<configuration>
 					<webXml>${project.basedir}\src\main\webapp\WEB-INF\web.xml</webXml>
-					<warName>ClubHelperBackend##${project.version}</warName>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -307,7 +307,7 @@
 				<configuration>
 					<url>http://kreth-development.de:8080/manager/text</url>
 					<server>kreth</server>
-					<path>/ClubHelperBackend</path>
+					<path>/ClubHelperBackend##${project.version}</path>
 				</configuration>
 			</plugin>
 			<plugin>
