@@ -11,7 +11,6 @@ public class EmailUtils {
 	private static final Pattern pattern = Pattern.compile(EMAIL_PATTERN);
 
 	public static boolean isValidEmailadress(String email) {
-		System.out.println(email);
 		Matcher matcher = pattern.matcher(email);
 		return matcher.matches();
 	}

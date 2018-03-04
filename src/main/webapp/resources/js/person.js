@@ -21,20 +21,6 @@ function Person(personId, targetFunction, relationId){
 	}
 }
 
-var allGroups = function(targetFunction) {
-
-	var groups = groupStore.get();
-	if(groups !== null) {
-		targetFunction(groups);
-	} else {
-		repo(baseUrl + "group/", function(response) {
-			groupStore.set(response);
-			targetFunction(response);
-		});
-		
-	}
-};
-
 class PersonInstance {
 	constructor(personId, response, relation) {
 		this.id = personId;

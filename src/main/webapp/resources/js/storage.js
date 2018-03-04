@@ -10,7 +10,8 @@ function Storage(classname) {
 Storage.prototype.get = function (id) {
 
 	console.log("from storage " + this.classname + ", id=" + id);
-	if(id === null) {
+	
+	if(id == null) {
 		return JSON.parse(sessionStorage.getItem(this.classname));
 	} else {
 		return JSON.parse(sessionStorage.getItem(this.classname + id));

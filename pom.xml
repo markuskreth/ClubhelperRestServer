@@ -5,12 +5,12 @@
 	<artifactId>clubhelperbackend</artifactId>
 	<name>ClubHelperBackend</name>
 	<packaging>war</packaging>
-	<version>1.0.7.7-SNAPSHOT</version>
+	<version>1.0.7.7</version>
 	<description>Clubhelper Rest Service with jquery mobile ui</description>
 
 	<parent>
 		<groupId>de.kreth</groupId>
-		<version>1.0.7-SNAPSHOT</version>
+		<version>1.0.10</version>
 		<artifactId>clubhelper-parent</artifactId>
 	</parent>
 
@@ -18,7 +18,8 @@
 		<connection>scm:git:https://github.com/markuskreth/ClubhelperRestServer.git</connection>
 		<developerConnection>scm:git:https://github.com/markuskreth/ClubhelperRestServer.git</developerConnection>
 		<url>http://github.com/markuskreth/ClubhelperRestServer</url>
-	</scm>
+	  <tag>clubhelperbackend-1.0.7.7</tag>
+  </scm>
 
 	<properties>
 		<google-api-version>1.23.0</google-api-version>
@@ -234,11 +235,6 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.2.1</version>
 		</dependency>
-		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
-			<version>2.9.4</version>
-		</dependency>
 
 		<!-- Test -->
 		<dependency>
@@ -269,9 +265,10 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>2.13.0</version>
+			<groupId>de.kreth.testutils</groupId>
+			<artifactId>TestUtils</artifactId>
+			<version>0.0.2</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>
@@ -282,6 +279,7 @@
 				<version>3.0.0</version>
 				<configuration>
 					<webXml>${project.basedir}\src\main\webapp\WEB-INF\web.xml</webXml>
+					<warName>ClubHelperBackend##${project.version}</warName>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -289,8 +287,8 @@
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.2</version>
 				<configuration>
-					<url>http://spallek.com:8080/manager/text</url>
-					<server>SpellakTomcat</server>
+					<url>http://kreth-development.de:8080/manager/text</url>
+					<server>kreth</server>
 					<path>/ClubHelperBackend</path>
 				</configuration>
 			</plugin>
