@@ -305,8 +305,8 @@
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.2</version>
 				<configuration>
-					<url>http://kreth-development.de:8080/manager/text</url>
-					<server>kreth</server>
+					<url>http://localhost:8080/manager/text</url>
+					<server>krethtomcat</server>
 					<path>/ClubHelperBackend##${project.version}</path>
 				</configuration>
 			</plugin>
