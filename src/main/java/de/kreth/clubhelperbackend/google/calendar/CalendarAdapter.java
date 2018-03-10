@@ -34,7 +34,7 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 	@Override
 	protected void checkRefreshToken(ServletRequest request) throws IOException {
 		super.checkRefreshToken(request);
-		if (service == null) {
+		if (service == null && credential != null) {
 			service = new com.google.api.services.calendar.Calendar
 					.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
 					.setApplicationName(APPLICATION_NAME)

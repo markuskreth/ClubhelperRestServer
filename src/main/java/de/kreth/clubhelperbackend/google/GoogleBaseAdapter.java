@@ -70,7 +70,7 @@ public abstract class GoogleBaseAdapter {
 				log.debug("Token refresh " + (result ? "successfull." : "failed."));
 			}
 		} else {
-			authorize(request);
+			credential = authorize(request);
 		}
 	}
 
@@ -81,7 +81,7 @@ public abstract class GoogleBaseAdapter {
 	 * @return an authorized Credential object.
 	 * @throws IOException
 	 */
-	protected synchronized Credential authorize(ServletRequest request) throws IOException {
+	private synchronized Credential authorize(ServletRequest request) throws IOException {
 		if (credential != null
 				&& (credential.getExpiresInSeconds() != null && credential.getExpiresInSeconds() < 3600)) {
 			credential.refreshToken();
@@ -117,7 +117,7 @@ public abstract class GoogleBaseAdapter {
 				.setPort(GOOGLE_SECRET_PORT)
 				.build();
 		
-		credential = new AuthorizationCodeInstalledApp(flow, localServerReceiver).authorize("user");
+		Credential credential = new AuthorizationCodeInstalledApp(flow, localServerReceiver).authorize("user");
 		if (log.isDebugEnabled()) {
 			log.debug("Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
 		}
