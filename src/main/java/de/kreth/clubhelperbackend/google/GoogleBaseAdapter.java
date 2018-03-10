@@ -65,8 +65,8 @@ public abstract class GoogleBaseAdapter {
 			if (log.isDebugEnabled()) {
 				log.debug("Security needs refresh, trying.");
 			}
-			boolean result = credential.refreshToken();
 			if (log.isDebugEnabled()) {
+				boolean result = credential.refreshToken();
 				log.debug("Token refresh " + (result ? "successfull." : "failed."));
 			}
 		} else {
@@ -94,7 +94,9 @@ public abstract class GoogleBaseAdapter {
 			return null;
 		}
 		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
-		log.trace("client secret json resource loaded.");
+		if(log.isTraceEnabled()) {
+			log.trace("client secret json resource loaded.");
+		}
 		
 		// Build flow and trigger user authorization request.
 		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow
@@ -103,9 +105,15 @@ public abstract class GoogleBaseAdapter {
 				.setAccessType("offline")
 				.setApprovalPrompt("force")
 				.build();
+		
+		String serverName = request.getServerName();
+		if(log.isDebugEnabled()) {
+			log.debug("Configuring google LocalServerReceiver on " + serverName + ":" + GOOGLE_SECRET_PORT);
+		}
+		
 		LocalServerReceiver localServerReceiver = new LocalServerReceiver
 				.Builder()
-				.setHost(request.getServerName())
+				.setHost(serverName)
 				.setPort(GOOGLE_SECRET_PORT)
 				.build();
 		
