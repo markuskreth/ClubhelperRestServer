@@ -4,9 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +26,8 @@ import com.google.api.services.sheets.v4.SheetsScopes;
 
 public abstract class GoogleBaseAdapter {
 
+	private static final int GOOGLE_SECRET_PORT = 59431;
+	
 	/** Application name. */
 	protected static final String APPLICATION_NAME = "ClubHelperBackend";
 	/** Directory to store user credentials for this application. */
@@ -87,33 +86,26 @@ public abstract class GoogleBaseAdapter {
 		}
 		// Load client secrets.
 		InputStream in = getClass().getResourceAsStream("/client_secret.json");
+		if (in == null) {
+			log.error("Failed to load client_secret.json. Download from google console.");
+			return null;
+		}
 		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 		log.trace("client secret json resource loaded.");
+		
 		// Build flow and trigger user authorization request.
-		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY,
-				clientSecrets, SCOPES).setDataStoreFactory(DATA_STORE_FACTORY).setAccessType("offline")
-						.setApprovalPrompt("force").build();
-		LocalServerReceiver.Builder builder = new LocalServerReceiver.Builder();
-		builder.setPort(59431);
-		try {
+		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow
+				.Builder(HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
+				.setDataStoreFactory(DATA_STORE_FACTORY)
+				.setAccessType("offline")
+				.setApprovalPrompt("force")
+				.build();
 
-			InetAddress localHost = InetAddress.getLocalHost();
-			if (false == (localHost.isAnyLocalAddress() || localHost.isSiteLocalAddress()
-					|| localHost.isLinkLocalAddress() || localHost.isLoopbackAddress())) {
-
-				String hostName = localHost.getHostName();
-				URI uri = new URI(new StringBuilder("http://").append(hostName).toString());
-				if (uri != null) {
-					builder.setHost(uri.getHost());
-				}
-			}
-		} catch (URISyntaxException e) {
-			if (log.isWarnEnabled()) {
-				log.warn("Unable to determine Hostname. Using default localhost.", e);
-			}
-		}
-
-		LocalServerReceiver localServerReceiver = builder.build();
+		LocalServerReceiver localServerReceiver = new LocalServerReceiver
+				.Builder()
+				.setPort(GOOGLE_SECRET_PORT)
+				.build();
+		
 		credential = new AuthorizationCodeInstalledApp(flow, localServerReceiver).authorize("user");
 		if (log.isDebugEnabled()) {
 			log.debug("Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
