@@ -15,6 +15,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import javax.servlet.ServletRequest;
+
 import org.apache.commons.lang3.mutable.MutableDouble;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.slf4j.Logger;
@@ -44,33 +46,33 @@ public class JumpHeightSheetController {
 
 	@RequestMapping(value = "/tasks/{title}/{taskName}", method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
-	public List<String> addTask(@PathVariable("title") String title, @PathVariable("taskName") String taskName)
+	public List<String> addTask(ServletRequest request, @PathVariable("title") String title, @PathVariable("taskName") String taskName)
 			throws IOException, InterruptedException {
-		return SheetService.get(title).addTask(taskName);
+		return SheetService.get(request, title).addTask(taskName);
 	}
 
 	@RequestMapping(value = "/{title}", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
-	public Map<String, List<?>> createCompetitor(@PathVariable("title") String title)
+	public Map<String, List<?>> createCompetitor(ServletRequest request, @PathVariable("title") String title)
 			throws IOException, InterruptedException {
-		JumpHeightSheet sheet = SheetService.create(title);
+		JumpHeightSheet sheet = SheetService.create(request, title);
 		Map<String, List<?>> result = createTaskValues(sheet);
 		return result;
 	}
 
 	@RequestMapping(value = "/{prename}/{surname}", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
-	public Map<String, List<?>> createCompetitor(@PathVariable("prename") String prename,
+	public Map<String, List<?>> createCompetitor(ServletRequest request, @PathVariable("prename") String prename,
 			@PathVariable("surname") String surname) throws IOException, InterruptedException {
-		return createCompetitor(concatNameToTitle(prename, surname));
+		return createCompetitor(request, concatNameToTitle(prename, surname));
 	}
 
 	@RequestMapping(value = "/{prename}/{surname}/{task}", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
-	public boolean addValue(@PathVariable("prename") String prename, @PathVariable("surname") String surname,
+	public boolean addValue(ServletRequest request, @PathVariable("prename") String prename, @PathVariable("surname") String surname,
 			@PathVariable("task") String task, @RequestBody Double value) throws IOException, InterruptedException {
 		String title = concatNameToTitle(prename, surname);
-		JumpHeightSheet sheet = SheetService.get(title);
+		JumpHeightSheet sheet = SheetService.get(request, title);
 		CellValue<Double> result = sheet.add(task, getToday(), value);
 		return result.getObject().equals(value);
 	}
@@ -90,8 +92,8 @@ public class JumpHeightSheetController {
 
 	@RequestMapping(value = "/tasks/{title}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public List<JumpHightTask> getTasks(@PathVariable("title") String title) throws IOException, InterruptedException {
-		JumpHeightSheet sheet = SheetService.get(title);
+	public List<JumpHightTask> getTasks(ServletRequest request, @PathVariable("title") String title) throws IOException, InterruptedException {
+		JumpHeightSheet sheet = SheetService.get(request, title);
 		List<JumpHightTask> tasks = buildTasks(sheet);
 		return tasks;
 	}
@@ -166,34 +168,34 @@ public class JumpHeightSheetController {
 
 	@RequestMapping(value = "/{prename}/{surname}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public Map<String, List<?>> getByName(@PathVariable("prename") String prename,
+	public Map<String, List<?>> getByName(ServletRequest request, @PathVariable("prename") String prename,
 			@PathVariable("surname") String surname) throws IOException, InterruptedException {
-		return getByTitle(concatNameToTitle(prename, surname));
+		return getByTitle(request, concatNameToTitle(prename, surname));
 	}
 
 	@RequestMapping(value = "/statistics/{prename}/{surname}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public Map<String, List<?>> getStatisticsFor(@PathVariable("prename") String prename,
+	public Map<String, List<?>> getStatisticsFor(ServletRequest request, @PathVariable("prename") String prename,
 			@PathVariable("surname") String surname) throws IOException, InterruptedException {
 		String title = concatNameToTitle(prename, surname);
 
-		return getByTitle(title);
+		return getByTitle(request, title);
 	}
 
 	@RequestMapping(value = "/{title}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public Map<String, List<?>> getByTitle(@PathVariable("title") String title)
+	public Map<String, List<?>> getByTitle(ServletRequest request, @PathVariable("title") String title)
 			throws IOException, InterruptedException {
 		JumpHeightSheet sheet;
 		try {
 			if (log.isDebugEnabled()) {
 				log.debug("Fetching " + JumpHeightSheet.class.getSimpleName() + " for " + title);
 			}
-			sheet = SheetService.get(title);
+			sheet = SheetService.get(request, title);
 		} catch (IOException e) {
 			if (e.getMessage().equals("Sheet with title \"" + title + "\" not found.")) {
 				log.warn("Sheet load failed!", e);
-				sheet = SheetService.create(title);
+				sheet = SheetService.create(request, title);
 			} else {
 				throw e;
 			}
@@ -238,9 +240,9 @@ public class JumpHeightSheetController {
 
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public List<String> getTitles() throws IOException, InterruptedException {
+	public List<String> getTitles(ServletRequest request) throws IOException, InterruptedException {
 		List<String> result = new ArrayList<>();
-		List<JumpHeightSheet> sheets = SheetService.getSheets();
+		List<JumpHeightSheet> sheets = SheetService.getSheets(request);
 		sheets.sort(new Comparator<JumpHeightSheet>() {
 
 			@Override

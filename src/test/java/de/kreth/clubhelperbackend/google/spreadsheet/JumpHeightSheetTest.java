@@ -15,8 +15,10 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import de.kreth.clubhelperbackend.AbstractGoogleTests;
+
 @Ignore
-public class JumpHeightSheetTest {
+public class JumpHeightSheetTest extends AbstractGoogleTests {
 
 	static AtomicInteger testCount = new AtomicInteger(0);
 	private static final Calendar testDate = new GregorianCalendar(2017,
@@ -26,7 +28,7 @@ public class JumpHeightSheetTest {
 	@Before
 	public void createTestSheet() throws IOException {
 		String nextTitle = nextTitle();
-		test = SheetService.create(nextTitle);
+		test = SheetService.create(request, nextTitle);
 	}
 
 	private String nextTitle() {
@@ -41,7 +43,7 @@ public class JumpHeightSheetTest {
 	@Test
 	public void testGetSheetAndTitle() throws Exception {
 		String title = test.getTitle();
-		JumpHeightSheet clone = SheetService.get(title);
+		JumpHeightSheet clone = SheetService.get(request, title);
 		assertNotNull(clone);
 		assertEquals(title, clone.getTitle());
 
@@ -85,7 +87,7 @@ public class JumpHeightSheetTest {
 		test.add("10Sprünge", testDate, 13.1);
 		test.add("10Sprünge", testDate, 13.2);
 
-		test = SheetService.get(test.getTitle());
+		test = SheetService.get(request, test.getTitle());
 		CellRange values = test.getValues("10Sprünge");
 		assertNotNull(values);
 		assertEquals(2, values.getValues().size());
@@ -102,14 +104,14 @@ public class JumpHeightSheetTest {
 	@Test
 	public void renameSheet() throws Exception {
 		String name = "Renamed Sheet";
-		test.setTitle(name);
+		test.setTitle(request, name);
 		assertEquals(name, test.getTitle());
 	}
 
 	@Test
 	public void testCreateAndDeleteSheet() throws Exception {
 		String nextTi = nextTitle();
-		JumpHeightSheet test = SheetService.create(nextTi);
+		JumpHeightSheet test = SheetService.create(request, nextTi);
 		assertNotNull(test);
 		assertEquals(nextTi, test.getTitle());
 

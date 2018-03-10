@@ -8,6 +8,8 @@ import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.ServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +58,7 @@ public abstract class GoogleBaseAdapter {
 		DATA_STORE_DIR.mkdirs();
 	}
 
-	protected void checkRefreshToken() throws IOException {
+	protected void checkRefreshToken(ServletRequest request) throws IOException {
 
 		if (credential != null
 				&& (credential.getExpiresInSeconds() != null && credential.getExpiresInSeconds() < 3600)) {
@@ -68,17 +70,18 @@ public abstract class GoogleBaseAdapter {
 				log.debug("Token refresh " + (result ? "successfull." : "failed."));
 			}
 		} else {
-			authorize();
+			authorize(request);
 		}
 	}
 
 	/**
 	 * Creates an authorized Credential object.
+	 * @param request 
 	 * 
 	 * @return an authorized Credential object.
 	 * @throws IOException
 	 */
-	protected synchronized Credential authorize() throws IOException {
+	protected synchronized Credential authorize(ServletRequest request) throws IOException {
 		if (credential != null
 				&& (credential.getExpiresInSeconds() != null && credential.getExpiresInSeconds() < 3600)) {
 			credential.refreshToken();
@@ -100,9 +103,9 @@ public abstract class GoogleBaseAdapter {
 				.setAccessType("offline")
 				.setApprovalPrompt("force")
 				.build();
-
 		LocalServerReceiver localServerReceiver = new LocalServerReceiver
 				.Builder()
+				.setHost(request.getServerName())
 				.setPort(GOOGLE_SECRET_PORT)
 				.build();
 		

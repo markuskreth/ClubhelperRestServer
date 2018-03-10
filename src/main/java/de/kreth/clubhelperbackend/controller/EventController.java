@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.servlet.ServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,9 +41,9 @@ public class EventController {
 
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public List<Map<String, Object>> getEvents() throws IOException, InterruptedException {
+	public List<Map<String, Object>> getEvents(ServletRequest request) throws IOException, InterruptedException {
 		List<Map<String, Object>> result = new ArrayList<>();
-		adapter.getAllEvents().forEach(e -> {
+		adapter.getAllEvents(request).forEach(e -> {
 			Map<String, Object> properties = new HashMap<>();
 
 			adjustExcludedEndDate(e);

@@ -3,11 +3,15 @@ package de.kreth.clubhelperbackend.google.calendar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.GregorianCalendar;
 import java.util.List;
+
+import javax.servlet.ServletRequest;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -22,8 +26,10 @@ import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventAttendee;
 import com.google.api.services.calendar.model.EventDateTime;
 
+import de.kreth.clubhelperbackend.AbstractGoogleTests;
+
 @Ignore
-public class CalendarAdapterTest {
+public class CalendarAdapterTest extends AbstractGoogleTests {
 
 	private static final String summaryText = "AutomatedTestCalendar";
 
@@ -46,8 +52,14 @@ public class CalendarAdapterTest {
 	@AfterClass
 	public static void deleteAllCreatedCalendars()
 			throws IOException, GeneralSecurityException {
+
+		ServletRequest request = mock(ServletRequest.class);
+		when(request.getLocalName()).thenReturn("localhost");
+		when(request.getServerName()).thenReturn("localhost");
+		when(request.getRemoteHost()).thenReturn("localhost");
+		
 		CalendarAdapter calendarAdapter = new CalendarAdapter();
-		List<CalendarListEntry> items = calendarAdapter.getCalendarList();
+		List<CalendarListEntry> items = calendarAdapter.getCalendarList(request);
 		items.forEach(calEntr -> {
 			if (summaryText.equals(calEntr.getSummary())) {
 				System.out.println("Deleting " + calEntr.getSummary() + ": "
@@ -67,7 +79,7 @@ public class CalendarAdapterTest {
 	@Test
 	public void testInit() throws GeneralSecurityException, IOException {
 
-		List<CalendarListEntry> items = adapter.getCalendarList();
+		List<CalendarListEntry> items = adapter.getCalendarList(request);
 		assertTrue(items.size() > 0);
 		Calendar wettkampf = adapter.getCalendarBySummaryName(items,
 				"mtv_wettkampf");
@@ -77,7 +89,7 @@ public class CalendarAdapterTest {
 	@Test
 	public void getWettkampfEvents() throws IOException {
 		Calendar wettkampf = adapter.getCalendarBySummaryName(
-				adapter.getCalendarList(), "mtv_wettkampf");
+				adapter.getCalendarList(request), "mtv_wettkampf");
 		List<Event> events = adapter.service.events().list(wettkampf.getId())
 				.execute().getItems();
 		assertNotNull(events);

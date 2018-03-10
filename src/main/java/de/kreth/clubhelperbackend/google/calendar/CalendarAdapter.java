@@ -11,7 +11,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.google.api.client.auth.oauth2.Credential;
+import javax.servlet.ServletRequest;
+
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Calendar;
 import com.google.api.services.calendar.model.CalendarList;
@@ -23,44 +24,24 @@ import de.kreth.clubhelperbackend.google.GoogleBaseAdapter;
 
 public class CalendarAdapter extends GoogleBaseAdapter {
 
+	public CalendarAdapter() throws GeneralSecurityException, IOException {
+		super();
+	}
+
 	com.google.api.services.calendar.Calendar service;
 	private Lock lock = new ReentrantLock();
 
-	public CalendarAdapter() throws GeneralSecurityException, IOException {
-		super();
-		ExecutorService exec = Executors.newSingleThreadExecutor();
-		exec.execute(new Runnable() {
-			
-			@Override
-			public void run() {
-				lock.lock();
-				try {
-					service = createService();
-					if(log.isInfoEnabled()) {
-						log.info(service.getClass().getName() + " created successfully.");
-					}
-				} catch (IOException e) {
-					log.error("unable to create service for " + getClass(), e);
-				} finally {
-					lock.unlock();
-					if(log.isDebugEnabled()) {
-						log.debug("unlock " + CalendarAdapter.class.getName());
-					}
-				}
-			}
-			
-		});
-		exec.shutdown();
+	@Override
+	protected void checkRefreshToken(ServletRequest request) throws IOException {
+		super.checkRefreshToken(request);
+		if (service == null) {
+			service = new com.google.api.services.calendar.Calendar
+					.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
+					.setApplicationName(APPLICATION_NAME)
+					.build();
+		}
 	}
-
-	private com.google.api.services.calendar.Calendar createService()
-			throws IOException {
-		Credential credential = authorize();
-		return new com.google.api.services.calendar.Calendar.Builder(
-				HTTP_TRANSPORT, JSON_FACTORY, credential)
-						.setApplicationName(APPLICATION_NAME).build();
-	}
-
+	
 	Calendar getCalendarBySummaryName(List<CalendarListEntry> items,
 			String calendarSummary) throws IOException {
 
@@ -79,12 +60,12 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 		return cal;
 	}
 
-	public List<Event> getAllEvents() throws IOException, InterruptedException {
+	public List<Event> getAllEvents(ServletRequest request) throws IOException, InterruptedException {
 
 		final List<Event> events = new ArrayList<>();
 		if(lock.tryLock(10, TimeUnit.SECONDS)) {
 
-			List<CalendarListEntry> items = getCalendarList();
+			List<CalendarListEntry> items = getCalendarList(request);
 			final long oldest = getOldest();
 
 			ExecutorService exec = Executors.newFixedThreadPool(2);
@@ -115,8 +96,8 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 		return oldest;
 	}
 
-	List<CalendarListEntry> getCalendarList() throws IOException {
-		checkRefreshToken();
+	List<CalendarListEntry> getCalendarList(ServletRequest request) throws IOException {
+		checkRefreshToken(request);
 		CalendarList calendarList;
 		try {
 			calendarList = service.calendarList().list().execute();
