@@ -66,6 +66,9 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
 				log.warn("Lock interrupted", e);
 			}
 		}
+		if(service == null) {
+			throw new IllegalStateException("Spread Sheet Service not initialized!");
+		}
     }
     
 	private BatchUpdateSpreadsheetResponse sendRequest(Request request, Boolean includeSpreadsheetInResponse) throws IOException {

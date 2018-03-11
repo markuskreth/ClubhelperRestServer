@@ -52,8 +52,8 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 				log.warn("Lock interrupted", e);
 			}
 		}
-		if(service == null && log.isErrorEnabled()) {
-			log.error("Calendar Service not instanciated!");
+		if(service == null) {
+			throw new IllegalStateException("Calendar Service not instanciated!");
 		}
 	}
 	
