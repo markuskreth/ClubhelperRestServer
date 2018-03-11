@@ -9,6 +9,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.ServletRequest;
+
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -157,8 +159,8 @@ public class JumpHeightSheet {
 		dates = null;
 	}
 
-	public void setTitle(String name) throws IOException, InterruptedException {
-		JumpHeightSheet result = SheetService.changeTitle(sheet, name);
+	public void setTitle(ServletRequest request, String name) throws IOException, InterruptedException {
+		JumpHeightSheet result = SheetService.changeTitle(request, sheet, name);
 		update(result);
 	}
 

@@ -5,14 +5,13 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.google.api.client.auth.oauth2.Credential;
+import javax.servlet.ServletRequest;
+
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.Sheets.Spreadsheets;
 import com.google.api.services.sheets.v4.Sheets.Spreadsheets.BatchUpdate;
@@ -42,46 +41,28 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
 
     public GoogleSpreadsheetsAdapter() throws IOException, GeneralSecurityException {
     	super();
-    	ExecutorService exec = Executors.newSingleThreadExecutor();
-		exec.execute(new Runnable() {
-
-			@Override
-			public void run() {
-
-				lock.lock();
-				try {
-					service = getSheetsService();
-
-					if (instanceCount.incrementAndGet() > 1) {
-						log.error("Initialized " + getClass().getName() + " #" + instanceCount.get()
-								+ ", may slow down system.");
-					}
-					if (log.isDebugEnabled()) {
-						log.debug("Initialized " + getClass().getName() + " #" + instanceCount.get());
-					}
-				} catch (IOException e) {
-					log.error("Unable to init " + getClass(), e);
-				} finally {
-					lock.unlock();
-				}
-			}
-		});
-    	exec.shutdown();
+    	int number = instanceCount.incrementAndGet();
+    	if(log.isInfoEnabled()) {
+    		log.info("Instanciated " + getClass().getName() + " #" + number);
+    	}
 	}
     
-	/**
-     * Build and return an authorized Sheets API client service.
-     * @return an authorized Sheets API client service
-     * @throws IOException
-     */
-    private Sheets getSheetsService() throws IOException {
-        Credential credential = authorize();
-        return new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
-                .setApplicationName(APPLICATION_NAME)
-                .build();
+    @Override
+    protected void checkRefreshToken(ServletRequest request) throws IOException {
+    	try {
+			lock.tryLock(10, TimeUnit.MINUTES);
+	    	super.checkRefreshToken(request);
+	    	if(service == null) {
+	            service =  new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
+	                    .setApplicationName(APPLICATION_NAME)
+	                    .build();
+	    	}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
     }
-
-	BatchUpdateSpreadsheetResponse sendRequest(Request request, Boolean includeSpreadsheetInResponse) throws IOException {
+    
+	private BatchUpdateSpreadsheetResponse sendRequest(Request request, Boolean includeSpreadsheetInResponse) throws IOException {
 		BatchUpdateSpreadsheetRequest content = new BatchUpdateSpreadsheetRequest();
 		List<Request> requests = new ArrayList<>();
 		requests.add(request);
@@ -92,7 +73,7 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
 		return response;
 	}
     
-    public List<Sheet> getSheets() throws IOException, InterruptedException {
+    public List<Sheet> getSheets(ServletRequest request) throws IOException, InterruptedException {
     	if(log.isTraceEnabled()) {
     		log.trace("Loading Sheets");
     	}
@@ -100,12 +81,12 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
     		log.error("Error fetching Sheets! Using empty result.");
     		return Collections.emptyList();
     	}
-        Spreadsheet sheet = loadSheet();
+        Spreadsheet sheet = loadSheet(request);
         return sheet.getSheets();
     }
     
-	private Spreadsheet loadSheet() throws IOException {
-		checkRefreshToken();
+	private Spreadsheet loadSheet(ServletRequest request) throws IOException {
+		checkRefreshToken(request);
 		
 		Spreadsheets spreadsheets;
 		Spreadsheet sheet;
@@ -127,8 +108,8 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
 		return sheet;
 	}
     
-	public Sheet dublicateTo(String originalTitle, String title) throws IOException, InterruptedException {
-        Spreadsheet sheet = loadSheet();
+	public Sheet dublicateTo(ServletRequest request, String originalTitle, String title) throws IOException, InterruptedException {
+        Spreadsheet sheet = loadSheet(request);
         List<Sheet> sheets=sheet.getSheets();
         Integer sourceSheetId = null;
         if(log.isTraceEnabled()) {
@@ -149,10 +130,10 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
 		ds.setSourceSheetId(sourceSheetId);
 		ds.setNewSheetName(title);
 		
-		Request request = new Request();
-		request.setDuplicateSheet(ds);
-		sendRequest(request, false);
-		sheets = getSheets();
+		Request googleRequest = new Request();
+		googleRequest.setDuplicateSheet(ds);
+		sendRequest(googleRequest, false);
+		sheets = getSheets(request);
 		
         for(Sheet s : sheets) {
         	if(s.getProperties().getTitle().equals(title)) {

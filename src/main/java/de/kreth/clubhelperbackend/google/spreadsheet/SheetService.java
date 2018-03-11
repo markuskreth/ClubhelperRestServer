@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.ServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,11 +46,11 @@ public enum SheetService {
 		}
 	}
 	
-	public static JumpHeightSheet get(String title) throws IOException, InterruptedException {
+	public static JumpHeightSheet get(ServletRequest request, String title) throws IOException, InterruptedException {
 		if(INSTANCE.log.isDebugEnabled()) {
 			INSTANCE.log.debug("Getting " + Sheet.class.getName() + " for " + title);
 		}
-		Sheet result = getForName(title);
+		Sheet result = getForName(request, title);
 		try {
 			return new JumpHeightSheet(result);
 		} catch (Exception e) {
@@ -56,9 +58,9 @@ public enum SheetService {
 		}
 	}
 
-	public static List<JumpHeightSheet> getSheets() throws IOException, InterruptedException {
+	public static List<JumpHeightSheet> getSheets(ServletRequest request) throws IOException, InterruptedException {
 		List<JumpHeightSheet> result = new ArrayList<>();
-		for (Sheet s: getAllSheets()) {
+		for (Sheet s: getAllSheets(request)) {
 			try {
 				result.add(new JumpHeightSheet(s));
 			} catch (SheetDataException e) {
@@ -68,8 +70,8 @@ public enum SheetService {
 		return result;
 	}
 	
-	private static Sheet getForName(String title) throws IOException, InterruptedException {
-		List<Sheet> all = getAllSheets();
+	private static Sheet getForName(ServletRequest request, String title) throws IOException, InterruptedException {
+		List<Sheet> all = getAllSheets(request);
 
 		for (Sheet s: all) {
 			if(INSTANCE.log.isTraceEnabled()) {
@@ -85,19 +87,19 @@ public enum SheetService {
 		throw new IOException("Sheet with title \"" + title + "\" not found.");
 	}
 
-	private static List<Sheet> getAllSheets() throws IOException, InterruptedException {
+	private static List<Sheet> getAllSheets(ServletRequest request) throws IOException, InterruptedException {
 		INSTANCE.createService();
 		if(sheets != null && sheets.isEmpty() == false){
 			return sheets;
 		}
-		sheets = INSTANCE.service.getSheets();
+		sheets = INSTANCE.service.getSheets(request);
 		return sheets;
 	}
 
-	public static JumpHeightSheet create(String title) throws IOException {
+	public static JumpHeightSheet create(ServletRequest request, String title) throws IOException {
 		INSTANCE.createService();
 		try {
-			Sheet dublicateTo = INSTANCE.service.dublicateTo("Vorlage", title);
+			Sheet dublicateTo = INSTANCE.service.dublicateTo(request, "Vorlage", title);
 			sheets.add(dublicateTo);
 			return new JumpHeightSheet(dublicateTo);
 		} catch (Exception ex) {
@@ -131,11 +133,11 @@ public enum SheetService {
 		return res;
 	}
 
-	public static JumpHeightSheet changeTitle(Sheet sheet, String name) throws IOException, InterruptedException {
+	public static JumpHeightSheet changeTitle(ServletRequest request, Sheet sheet, String name) throws IOException, InterruptedException {
 		INSTANCE.createService();
 		INSTANCE.service.setSheetTitle(sheet, name);
 		sheets = null;
-		return get(name);
+		return get(request, name);
 	}
 
 	public static ValueRange getRange(String sheetTitle, String range) throws IOException {

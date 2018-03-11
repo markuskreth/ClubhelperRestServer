@@ -1,6 +1,9 @@
 package de.kreth.clubhelperbackend.aspects;
 
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.aspectj.lang.JoinPoint;
@@ -9,39 +12,67 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 
+import de.kreth.clubhelperbackend.pojo.Group;
+
 public class ControllerLoggerAspectTest {
 
-	private Logger logger;
-	private ControllerLoggerAspect aspect;
+	private ControllerLoggerAspect logger;
 	private JoinPoint joinPoint;
-	private Signature signature;
-	private Object[] args;
-	
+
 	@Before
-	public void setUp() throws Exception {
-		logger = mock(Logger.class);
-		when(logger.isDebugEnabled()).thenReturn(true);
-		when(logger.isWarnEnabled()).thenReturn(true);
-		when(logger.isInfoEnabled()).thenReturn(true);
-		aspect = new TestLoggerClass(logger);
-		signature = mock(Signature.class);
-		when(signature.getName()).thenReturn("theMethod");
+	public void initLogger() {
+		this.logger = new ControllerLoggerAspect();
+		logger.logger = mock(Logger.class);
+		configureLogger();
 		joinPoint = mock(JoinPoint.class);
+
+		Signature sig = mock(Signature.class);
+		when(sig.getName()).thenReturn("methodName");
+		
 		when(joinPoint.getTarget()).thenReturn(this);
-		when(joinPoint.getSignature()).thenReturn(signature);
-		args = new Object[]{"String", 1L};
-		when(joinPoint.getArgs()).thenReturn(args);
+		when(joinPoint.getSignature()).thenReturn(sig);
+		when(joinPoint.getArgs()).thenReturn(new Object[] {"text", 1});
+	}
+	
+	private void configureLogger() {
+		when(logger.logger.isTraceEnabled()).thenReturn(true);
+		when(logger.logger.isDebugEnabled()).thenReturn(true);
+		when(logger.logger.isInfoEnabled()).thenReturn(true);
+		when(logger.logger.isWarnEnabled()).thenReturn(true);
+		when(logger.logger.isErrorEnabled()).thenReturn(true);
 	}
 
 	@Test
-	public void test() throws Throwable {
-		aspect.logDao(joinPoint);
-		
+	public void testLogDao() throws Throwable {
+		logger.logDao(joinPoint);
+		verify(logger.logger, times(1)).info(getClass().getName() + ".methodName(text,1)");
 	}
 
-	protected class TestLoggerClass extends ControllerLoggerAspect {
-		public TestLoggerClass(Logger logger) {
-			this.logger = logger;
-		}
+	@Test
+	public void testLogCallJoinPointException() throws Throwable {
+		UnsupportedOperationException t = new UnsupportedOperationException("Exception Message");
+		logger.logCall(joinPoint, t);
+		verify(logger.logger, times(1)).error(getClass().getName() + ".methodName(text,1)", t);
 	}
+
+	@Test
+	public void testLogCallJoinPointObject() throws Throwable {
+		Group g = new Group(12L, "GroupName", null, null);
+		logger.logCall(joinPoint, g);
+		verify(logger.logger, times(1)).debug(getClass().getName() + ".methodName(text,1) ==> " + g.toString());
+	}
+
+	@Test
+	public void testLogDeleteSuccess() throws Throwable {
+		Group g = new Group(12L, "GroupName", null, null);
+		logger.logDeleteSuccess(joinPoint, g);
+		verify(logger.logger, times(1)).warn(getClass().getName() + ".methodName(text,1) ==> " + g.toString());
+	}
+
+	@Test
+	public void testLogDeleteInvocation() throws Throwable {
+		logger.logDeleteInvocation(joinPoint);
+		verify(logger.logger, times(1)).debug(anyString());
+	}
+
 }

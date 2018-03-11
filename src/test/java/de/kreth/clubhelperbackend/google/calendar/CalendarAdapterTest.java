@@ -12,6 +12,10 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import javax.servlet.ServletRequest;
+
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -26,7 +30,10 @@ import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventAttendee;
 import com.google.api.services.calendar.model.EventDateTime;
 
-public class CalendarAdapterTest {
+import de.kreth.clubhelperbackend.AbstractGoogleTests;
+
+@Ignore
+public class CalendarAdapterTest extends AbstractGoogleTests {
 
 	private static final String summaryText = "AutomatedTestCalendar";
 
@@ -38,12 +45,35 @@ public class CalendarAdapterTest {
 	public void initAdapter() throws GeneralSecurityException, IOException {
 		service= mock(com.google.api.services.calendar.Calendar.class);
 
-		assertNotNull(service);
-		final com.google.api.services.calendar.Calendar mockedService = service;
-		adapter = new CalendarAdapter(true) {
-			@Override
-			com.google.api.services.calendar.Calendar createService() throws IOException {
-				return mockedService;
+	@After
+	public void deleteCreatedCalendars() throws IOException {
+		if (current != null) {
+			adapter.service.calendars().delete(current.getId()).execute();
+		}
+	}
+
+	@AfterClass
+	public static void deleteAllCreatedCalendars()
+			throws IOException, GeneralSecurityException {
+
+		ServletRequest request = mock(ServletRequest.class);
+		when(request.getLocalName()).thenReturn("localhost");
+		when(request.getServerName()).thenReturn("localhost");
+		when(request.getRemoteHost()).thenReturn("localhost");
+		
+		CalendarAdapter calendarAdapter = new CalendarAdapter();
+		List<CalendarListEntry> items = calendarAdapter.getCalendarList(request);
+		items.forEach(calEntr -> {
+			if (summaryText.equals(calEntr.getSummary())) {
+				System.out.println("Deleting " + calEntr.getSummary() + ": "
+						+ calEntr.getId());
+				try {
+					calendarAdapter.service.calendars().delete(calEntr.getId())
+							.execute();
+				} catch (IOException e) {
+					System.err.println(e);
+					throw new RuntimeException(e);
+				}
 			}
 			@Override
 			protected void checkRefreshToken() throws IOException {
@@ -54,30 +84,29 @@ public class CalendarAdapterTest {
 	@Test
 	public void testInit() throws GeneralSecurityException, IOException {
 
-		CalendarListEntry entry = new CalendarListEntry();
-		entry.setSummary("mtv_wettkampf");
-		entry.setId("TestIdForCalendar");
-		
-		mockServiceWith(entry);
-
-		Calendar resultCalendar = mock(Calendar.class);
-		mockServiceWith(resultCalendar, entry.getId());
-		
-		List<CalendarListEntry> items = adapter.getCalendarList();
+		List<CalendarListEntry> items = adapter.getCalendarList(request);
 		assertTrue(items.size() > 0);
 		Calendar wettkampf = adapter.getCalendarBySummaryName(items,
 				"mtv_wettkampf");
 		assertNotNull(wettkampf);
 	}
 
-	private void mockServiceWith(Calendar resultCalendar, String calId) throws IOException {
-
-		Calendars value = mock(Calendars.class);
-		when(service.calendars()).thenReturn(value);
-		Get mockedGet = mock(Get.class);
-		when(value.get(calId)).thenReturn(mockedGet);
-		when(mockedGet.execute()).thenReturn(resultCalendar);
-		
+	@Test
+	public void getWettkampfEvents() throws IOException {
+		Calendar wettkampf = adapter.getCalendarBySummaryName(
+				adapter.getCalendarList(request), "mtv_wettkampf");
+		List<Event> events = adapter.service.events().list(wettkampf.getId())
+				.execute().getItems();
+		assertNotNull(events);
+		assertTrue("No events found!", events.size() > 0);
+		Event first = events.get(0);
+		System.out.println(String.join(", ",
+				first.getStart().getDateTime().toStringRfc3339(),
+				first.getEnd().getDateTime().toStringRfc3339(),
+				first.getSummary(), first.getLocation(),
+				first.getCreator().getDisplayName()));
+		System.out.println(first.toPrettyString());
+		System.out.println("found: " + events.size());
 	}
 
 	private void mockServiceWith(CalendarListEntry... entries) throws IOException {

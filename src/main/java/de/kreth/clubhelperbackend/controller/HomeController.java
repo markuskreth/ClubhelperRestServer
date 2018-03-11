@@ -143,7 +143,7 @@ public class HomeController implements ApplicationContextAware {
 		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
 		out.write("Gefundene Sheets:");
 		out.newLine();
-		for(Sheet s: adapter.getSheets()) {
+		for(Sheet s: adapter.getSheets(req)) {
 			out.write(s.getProperties().getTitle());
 			out.newLine();
 			titles.add(s.getProperties().getTitle());
