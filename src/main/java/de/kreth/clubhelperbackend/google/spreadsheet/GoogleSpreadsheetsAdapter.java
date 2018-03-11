@@ -3,7 +3,6 @@ package de.kreth.clubhelperbackend.google.spreadsheet;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -49,16 +48,23 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
     
     @Override
     protected void checkRefreshToken(ServletRequest request) throws IOException {
-    	try {
-			lock.tryLock(10, TimeUnit.MINUTES);
-	    	super.checkRefreshToken(request);
-	    	if(service == null) {
-	            service =  new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
-	                    .setApplicationName(APPLICATION_NAME)
-	                    .build();
-	    	}
+		try {
+			if(lock.tryLock(10, TimeUnit.SECONDS)) {
+				try {
+					super.checkRefreshToken(request);
+					if (service == null && credential != null) {
+			            service =  new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
+			                    .setApplicationName(APPLICATION_NAME)
+			                    .build();
+					}
+				} finally {
+					lock.unlock();
+				}
+			}
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			if (log.isWarnEnabled()) {
+				log.warn("Lock interrupted", e);
+			}
 		}
     }
     
@@ -76,10 +82,6 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
     public List<Sheet> getSheets(ServletRequest request) throws IOException, InterruptedException {
     	if(log.isTraceEnabled()) {
     		log.trace("Loading Sheets");
-    	}
-    	if(lock.tryLock(10, TimeUnit.SECONDS) == false) {
-    		log.error("Error fetching Sheets! Using empty result.");
-    		return Collections.emptyList();
     	}
         Spreadsheet sheet = loadSheet(request);
         return sheet.getSheets();
