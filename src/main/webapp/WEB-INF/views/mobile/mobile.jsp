@@ -9,6 +9,7 @@
 <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+<link rel="icon" href=<c:url value='/resources/favicon.ico' /> type="image/x-icon">
 <link rel="stylesheet" href=<c:url value='/resources/css/custom.css' /> />
 <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Inconsolata" />
 <link rel="stylesheet" href=<c:url value='/resources/css/clndr.css' /> />

@@ -8,6 +8,8 @@
 <title>Anmeldung</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="icon" href=<c:url value='/resources/favicon.ico' /> type="image/x-icon">
 <link rel="stylesheet"
 	href=<c:url value='/resources/css/jquery.mobile-1.4.5.min.css' /> />
 	
