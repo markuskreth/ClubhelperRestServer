@@ -21,8 +21,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.api.client.util.DateTime;
-import com.google.api.services.calendar.Calendar.Calendars;
-import com.google.api.services.calendar.Calendar.Calendars.Get;
 import com.google.api.services.calendar.model.Calendar;
 import com.google.api.services.calendar.model.CalendarList;
 import com.google.api.services.calendar.model.CalendarListEntry;
@@ -44,7 +42,8 @@ public class CalendarAdapterTest extends AbstractGoogleTests {
 	@Before
 	public void initAdapter() throws GeneralSecurityException, IOException {
 		service= mock(com.google.api.services.calendar.Calendar.class);
-
+	}
+	
 	@After
 	public void deleteCreatedCalendars() throws IOException {
 		if (current != null) {
@@ -75,10 +74,7 @@ public class CalendarAdapterTest extends AbstractGoogleTests {
 					throw new RuntimeException(e);
 				}
 			}
-			@Override
-			protected void checkRefreshToken() throws IOException {
-			}
-		};
+		});
 	}
 
 	@Test

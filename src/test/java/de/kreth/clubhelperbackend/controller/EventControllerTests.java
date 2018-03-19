@@ -14,9 +14,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import javax.servlet.ServletRequest;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
+import org.mockito.Matchers;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
@@ -44,9 +46,9 @@ public class EventControllerTests {
 		ev.setEnd(new EventDateTime().setDateTime(new DateTime("2018-01-03")));
 		
 		eventValues.add(ev);
-		when(adapter.getAllEvents(ArgumentMatchers.<String>isNull())).thenReturn(eventValues);
+		when(adapter.getAllEvents((ServletRequest) Matchers.isNull())).thenReturn(eventValues);
 		
-		List<Map<String, Object>> events = controller.getEvents();
+		List<Map<String, Object>> events = controller.getEvents(null);
 		assertNotNull(events);
 		assertEquals(1, events.size());
 	}

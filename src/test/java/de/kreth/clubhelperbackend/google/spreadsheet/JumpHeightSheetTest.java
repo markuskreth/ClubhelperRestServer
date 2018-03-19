@@ -2,19 +2,20 @@ package de.kreth.clubhelperbackend.google.spreadsheet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
+
+import com.google.api.services.sheets.v4.model.Sheet;
+import com.google.api.services.sheets.v4.model.SheetProperties;
 
 import de.kreth.clubhelperbackend.AbstractGoogleTests;
 
@@ -23,7 +24,10 @@ public class JumpHeightSheetTest extends AbstractGoogleTests {
 
 	private static final Calendar testDate = new GregorianCalendar(2017,
 			Calendar.OCTOBER, 30);
+	
 	private static final String SHEET_TITLE = "Testsheet Title";
+	private final AtomicInteger count = new AtomicInteger();
+	
 	private JumpHeightSheet test;
 	private Sheet mockedSheet;
 	private SheetProperties properties;
@@ -33,6 +37,10 @@ public class JumpHeightSheetTest extends AbstractGoogleTests {
 	public void createTestSheet() throws IOException {
 		String nextTitle = nextTitle();
 		test = SheetService.create(request, nextTitle);
+	}
+
+	private String nextTitle() {
+		return SHEET_TITLE + count.incrementAndGet();
 	}
 
 	@Test

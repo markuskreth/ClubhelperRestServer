@@ -2,9 +2,10 @@ package de.kreth.clubhelperbackend.dao;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.matches;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.matches;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,11 +17,9 @@ import java.util.List;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.AdditionalMatchers;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
+import org.mockito.Matchers;
 
-import de.kreth.clubhelperbackend.config.SqlForDialect;
 import de.kreth.clubhelperbackend.dao.ContactDao.ContactRowMapper;
 import de.kreth.clubhelperbackend.dao.abstr.AbstractDao;
 import de.kreth.clubhelperbackend.dao.abstr.AbstractDao.DaoConfig;
@@ -156,12 +155,12 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 		list.add(now);
 		final Object[] values = list.toArray();
 
-		when(jdbcTemplate.update(anyString(), ArgumentMatchers.<Object[]>any())).thenReturn(1);
+		when(jdbcTemplate.update(anyString(), Matchers.<Object[]>any())).thenReturn(1);
 
 		Contact insert = dao.insert(obj);
 
 		verify(jdbcTemplate).update(matches(regex),
-				ArgumentMatchers.<Object[]>any());
+				Matchers.<Object[]>any());
 		assertEquals(512L, insert.getId().longValue());
 	}
 

@@ -2,8 +2,7 @@ package de.kreth.clubhelperbackend.controller;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -13,7 +12,7 @@ import java.util.GregorianCalendar;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
+import org.mockito.Matchers;
 
 import de.kreth.clubhelperbackend.dao.AbstractDaoTest;
 import de.kreth.clubhelperbackend.dao.AttendanceDao;
@@ -33,13 +32,13 @@ public class AttendenceTests extends AbstractDaoTest<Attendance> {
 	@Test
 	public void createAttendence() {
 
-		when(jdbcTemplate.update(anyString(), ArgumentMatchers.<Object[]>any())).thenReturn(1);
+		when(jdbcTemplate.update(anyString(), Matchers.<Object[]>any())).thenReturn(1);
 		Date now = now();
 		Attendance toCreate = new Attendance(-1L, now, 1L, null, null);
 		Attendance created = controller.post(toCreate);
 		assertNotNull(created);
 		String sql = DaoPackageMemberAccessor.getSQL_INSERTWithoutId(dao);
-		verify(jdbcTemplate).update(eq(sql), ArgumentMatchers.<Object[]>any());
+		verify(jdbcTemplate).update(eq(sql), Matchers.<Object[]>any());
 		
 		assertNotNull(created.getChanged());
 		assertNotNull(created.getCreated());
