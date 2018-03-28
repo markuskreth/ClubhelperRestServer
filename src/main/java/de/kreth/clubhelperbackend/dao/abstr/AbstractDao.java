@@ -13,7 +13,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.slf4j.Logger;
@@ -218,11 +217,8 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 	}
 
 	@Autowired
-	private DataSource source;
-
-	@PostConstruct
-	private void initialize() {
-		setDataSource(source);
+	private void initDatasource(DataSource ds) {
+		super.setDataSource(ds);
 	}
 
 	public static Date normalizeDateToDay(Date date) {

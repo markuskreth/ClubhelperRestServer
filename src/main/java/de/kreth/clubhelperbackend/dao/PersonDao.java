@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -16,11 +17,11 @@ import de.kreth.clubhelperbackend.pojo.Person;
 @Repository
 public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 
-	private final static String columnNames[] = {"prename", "surname", "birth"};
+	private final static String COLUMN_NAMES[] = {"prename", "surname", "birth"};
+	private final static String ORDER_BY[] = {"surname", "prename"};
 
 	private final static DaoConfig<Person> config = new DaoConfig<Person>(
-			"person", columnNames, new PersonRowMapper(),
-			new String[]{"surname", "prename"});
+			"person", COLUMN_NAMES, new PersonRowMapper(), ORDER_BY);
 
 	public PersonDao() {
 		super(config);
@@ -71,6 +72,6 @@ public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 	 */
 	@Override
 	public List<Person> getByWhere(String where) {
-		return new ArrayList<Person>();
+		return Collections.emptyList();
 	}
 }
