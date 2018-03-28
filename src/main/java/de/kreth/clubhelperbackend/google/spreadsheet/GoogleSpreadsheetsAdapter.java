@@ -1,16 +1,5 @@
 package de.kreth.clubhelperbackend.google.spreadsheet;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import javax.servlet.ServletRequest;
-
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.Sheets.Spreadsheets;
 import com.google.api.services.sheets.v4.Sheets.Spreadsheets.BatchUpdate;
@@ -29,10 +18,24 @@ import com.google.api.services.sheets.v4.model.ValueRange;
 
 import de.kreth.clubhelperbackend.google.GoogleBaseAdapter;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import javax.servlet.ServletRequest;
+
 class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
 
-    static final String SPREADSHEET_ID = "1clDEc9NakRJTM-onxrjsuyB2Vby8P1j6NINdWelOrwg";
+	static final String SPREADSHEET_ID = "1clDEc9NakRJTM-onxrjsuyB2Vby8P1j6NINdWelOrwg";
     
+    private static final int LOCK_TIMEOUT_SECONDS = 10;
+	private static final int ALPHABET_LETTER_COUNT = 26;
+
     private static final AtomicInteger instanceCount = new AtomicInteger(0);
     private static final Lock lock = new ReentrantLock();
     
@@ -41,7 +44,7 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
     public GoogleSpreadsheetsAdapter() throws IOException, GeneralSecurityException {
     	super();
     	int number = instanceCount.incrementAndGet();
-    	if(log.isInfoEnabled()) {
+    	if (log.isInfoEnabled()) {
     		log.info("Instanciated " + getClass().getName() + " #" + number);
     	}
 	}
@@ -49,11 +52,12 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
     @Override
     protected void checkRefreshToken(ServletRequest request) throws IOException {
 		try {
-			if(lock.tryLock(10, TimeUnit.SECONDS)) {
+			if (lock.tryLock(LOCK_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
 				try {
 					super.checkRefreshToken(request);
 					if (service == null && credential != null) {
-			            service =  new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
+			            service =  new Sheets
+			            		.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
 			                    .setApplicationName(APPLICATION_NAME)
 			                    .build();
 					}
@@ -66,24 +70,27 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
 				log.warn("Lock interrupted", e);
 			}
 		}
-		if(service == null) {
+		if (service == null) {
 			throw new IllegalStateException("Spread Sheet Service not initialized!");
 		}
     }
     
-	private BatchUpdateSpreadsheetResponse sendRequest(Request request, Boolean includeSpreadsheetInResponse) throws IOException {
+	private BatchUpdateSpreadsheetResponse 
+			sendRequest(Request request, Boolean includeSpreadsheetInResponse) 
+			throws IOException {
+		
 		BatchUpdateSpreadsheetRequest content = new BatchUpdateSpreadsheetRequest();
 		List<Request> requests = new ArrayList<>();
 		requests.add(request);
-		content.setRequests(requests );
+		content.setRequests(requests);
 		content.setIncludeSpreadsheetInResponse(includeSpreadsheetInResponse);
-		BatchUpdate batch = service.spreadsheets().batchUpdate(SPREADSHEET_ID, content );
+		BatchUpdate batch = service.spreadsheets().batchUpdate(SPREADSHEET_ID, content);
 		BatchUpdateSpreadsheetResponse response = batch.execute();
 		return response;
 	}
     
     public List<Sheet> getSheets(ServletRequest request) throws IOException, InterruptedException {
-    	if(log.isTraceEnabled()) {
+    	if (log.isTraceEnabled()) {
     		log.trace("Loading Sheets");
     	}
         Spreadsheet sheet = loadSheet(request);
@@ -97,38 +104,43 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
 		Spreadsheet sheet;
 		try {
 			spreadsheets = service.spreadsheets();
-			sheet = spreadsheets.get(SPREADSHEET_ID).setIncludeGridData(false).execute();
+			sheet = spreadsheets.get(SPREADSHEET_ID)
+					.setIncludeGridData(false)
+					.execute();
 			
 		} catch (IOException e) {
-			if(log.isDebugEnabled()) {
+			if (log.isDebugEnabled()) {
 				log.debug("Error fetching SpreadSheed, trying token refresh", e);
 			}
 			credential.refreshToken();
-			if(log.isInfoEnabled()) {
+			if (log.isInfoEnabled()) {
 				log.info("Successfully refreshed Google Security Token.");
 			}
 			spreadsheets = service.spreadsheets();
-			sheet = spreadsheets.get(SPREADSHEET_ID).setIncludeGridData(false).execute();
+			sheet = spreadsheets.get(SPREADSHEET_ID)
+					.setIncludeGridData(false).execute();
 		}
 		return sheet;
 	}
     
-	public Sheet dublicateTo(ServletRequest request, String originalTitle, String title) throws IOException, InterruptedException {
+	public Sheet dublicateTo(ServletRequest request, String originalTitle, String title) 
+			throws IOException, InterruptedException {
         Spreadsheet sheet = loadSheet(request);
-        List<Sheet> sheets=sheet.getSheets();
+        List<Sheet> sheets = sheet.getSheets();
         Integer sourceSheetId = null;
-        if(log.isTraceEnabled()) {
+        if (log.isTraceEnabled()) {
         	log.trace("Changing Title from " + originalTitle + " to " + title);
         }
-        for(Sheet s : sheets) {
-        	if(s.getProperties().getTitle().equals(originalTitle)) {
+        for (Sheet s : sheets) {
+        	if (s.getProperties().getTitle().equals(originalTitle)) {
         		sourceSheetId = s.getProperties().getSheetId();
         		break;
         	}
         }
 
-        if(sourceSheetId == null) {
-        	throw new IllegalStateException("Source Sheet with name \"" + originalTitle + "\" not found!");
+        if (sourceSheetId == null) {
+        	throw new IllegalStateException("Source Sheet with name \"" 
+        			+ originalTitle + "\" not found!");
         }
         
 		DuplicateSheetRequest ds = new DuplicateSheetRequest();
@@ -140,8 +152,8 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
 		sendRequest(googleRequest, false);
 		sheets = getSheets(request);
 		
-        for(Sheet s : sheets) {
-        	if(s.getProperties().getTitle().equals(title)) {
+        for (Sheet s : sheets) {
+        	if (s.getProperties().getTitle().equals(title)) {
         		return s;
         	}
         }
@@ -151,7 +163,7 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
 
 	public void delete(Sheet sheet) throws IOException {
 
-		if(sheet == null || sheet.getProperties() == null) {
+		if (sheet == null || sheet.getProperties() == null) {
 			return;
 		}
 		DeleteSheetRequest ds = new DeleteSheetRequest();
@@ -162,28 +174,20 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
 		sendRequest(request, false);
 	}
 
-	public ValueRange setValue(String sheetTitle, int column, int row, ValueRange content) throws IOException {
+	public ValueRange setValue(String sheetTitle, int column, int row, ValueRange content) 
+			throws IOException {
 		StringBuilder range = new StringBuilder();
 		range.append(sheetTitle).append("!");
 		range.append(intToColumn(column)).append(row);
 		return setValue(range.toString(), content);
 	}
 	
-	static String intToColumn(int column) {
-	    StringBuilder name = new StringBuilder();
-	    while (column > 0) {
-	    	column--;
-	        name.insert(0, (char)('A' + column%26));
-	        column /= 26;
-	    }
-	    return name.toString();
-	}
-	
 	public ValueRange setValue(String range, ValueRange content) throws IOException {
-		if(log.isDebugEnabled()) {
+		if (log.isDebugEnabled()) {
 			log.debug("Setting value of " + range + " to " + content);
 		}
-		Update updateExecutor = service.spreadsheets().values().update(SPREADSHEET_ID, range, content);
+		Update updateExecutor = service.spreadsheets()
+				.values().update(SPREADSHEET_ID, range, content);
 		UpdateValuesResponse response = updateExecutor.setValueInputOption("RAW").execute();
 		return response.getUpdatedData();
 	}
@@ -193,7 +197,8 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
 		stringBuilder.append(sheetTitle);
 		stringBuilder.append("!");
 		stringBuilder.append(range);
-		ValueRange result = service.spreadsheets().values().get(SPREADSHEET_ID, stringBuilder.toString()).execute();
+		ValueRange result = service.spreadsheets().values()
+				.get(SPREADSHEET_ID, stringBuilder.toString()).execute();
 		return result;
 	}
 	
@@ -210,4 +215,16 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
 		sendRequest(request, false);
 		
 	}
+
+	static String intToColumn(final int column) {
+	    StringBuilder name = new StringBuilder();
+	    int tmp = column;
+	    while (tmp > 0) {
+	    	tmp--;
+	        name.insert(0, (char)('A' + tmp % ALPHABET_LETTER_COUNT));
+	        tmp /= ALPHABET_LETTER_COUNT;
+	    }
+	    return name.toString();
+	}
+
 }

@@ -5,71 +5,83 @@ import java.util.Date;
 
 public class CellValue<T> {
 	
-	private T object;
+	private T innerObject;
 	private int column;
 	private int row;
 	
-	public CellValue(T object, int column, int row) {
+	public CellValue(T object, int columnIndex, int rowIndex) {
 		super();
 		assert (object != null);
-		this.object = object;
-		this.column = column;
-		this.row = row;
+		this.innerObject = object;
+		this.column = columnIndex;
+		this.row = rowIndex;
 	}
 
-	public T getObject() {
-		return object;
+	public final T getObject() {
+		return innerObject;
 	}
 
-	public int getColumn() {
+	public final int getColumn() {
 		return column;
 	}
 
-	public int getRow() {
+	public final int getRow() {
 		return row;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("CellValue ");
 		stringBuilder.append(GoogleSpreadsheetsAdapter.intToColumn(column));
 		stringBuilder.append(row);
 		stringBuilder.append("=");
-		stringBuilder.append((object instanceof Date?DateFormat.getDateTimeInstance().format(object):object));
+		if (innerObject instanceof Date) {
+			stringBuilder.append(DateFormat.getDateTimeInstance().format(innerObject));
+		} else {
+			stringBuilder.append(innerObject);
+		}
+		
 		stringBuilder.append("]");
 		return stringBuilder.toString();
 	}
 
 	@Override
-	public int hashCode() {
+	public final int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + column;
-		result = prime * result + ((object == null) ? 0 : object.hashCode());
+		result = prime * result + ((innerObject == null) ? 0 : innerObject.hashCode());
 		result = prime * result + row;
 		return result;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public final boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		@SuppressWarnings("unchecked")
 		CellValue<T> other = (CellValue<T>) obj;
-		if (column != other.column)
+		if (column != other.column) {
 			return false;
-		if (object == null) {
-			if (other.object != null)
+		}
+		if (innerObject == null) {
+			if (other.innerObject != null) {
 				return false;
-		} else if (!object.equals(other.object))
+			}
+		} else if (!innerObject.equals(other.innerObject)) {
 			return false;
-		if (row != other.row)
+		}
+		if (row != other.row) {
 			return false;
+		}
 		return true;
 	}
 	
