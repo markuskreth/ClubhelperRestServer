@@ -183,15 +183,24 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 			implements
 				org.springframework.jdbc.core.RowMapper<X> {
 
-		static String DELETE_COLUMN = "deleted";
+		public static String ID_COLUMN = "id";
+		public static String DELETE_COLUMN = "deleted";
+		public static String CREATED_COLUMN = "created";
+		public static String CHANGED_COLUMN = "changed";
 
 		protected X appendDefault(X obj, ResultSet rs) throws SQLException {
 			ResultSetMetaData meta = rs.getMetaData();
 
 			for (int i = 0; i < meta.getColumnCount(); i++) {
-				if (DELETE_COLUMN.equalsIgnoreCase(meta.getColumnName(i + 1))) {
-					obj.setDeleted(true);
-					break;
+				String columnName = meta.getColumnName(i + 1);
+				if (DELETE_COLUMN.equalsIgnoreCase(columnName)) {
+					obj.setDeleted(rs.getBoolean(DELETE_COLUMN));
+				} else if (CREATED_COLUMN.equalsIgnoreCase(columnName)) {
+					obj.setCreated(rs.getTimestamp(CREATED_COLUMN));
+				} else if (CHANGED_COLUMN.equalsIgnoreCase(columnName)) {
+					obj.setChanged(rs.getTimestamp(CHANGED_COLUMN));
+				} else if (ID_COLUMN.equalsIgnoreCase(columnName)) {
+					obj.setId(rs.getLong(ID_COLUMN));
 				}
 			}
 
@@ -343,8 +352,10 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 		Date date = new Date();
 		int inserted = getJdbcTemplate().update(SQL_DELETE, date, id);
 		if (inserted == 1) {
-			DeletedEntries deleted = deletedEntriesDao
-					.insert(new DeletedEntries(-1L, tableName, id, date, date));
+			DeletedEntries deleted = new DeletedEntries(-1L, tableName, id);
+			deleted.setChanged(date);
+			deleted.setCreated(date);
+			deleted = deletedEntriesDao.insert(deleted);
 			return deleted.getId() >= 0;
 		} else {
 			return false;
