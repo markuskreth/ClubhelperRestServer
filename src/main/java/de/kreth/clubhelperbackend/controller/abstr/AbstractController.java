@@ -94,17 +94,19 @@ public abstract class AbstractController<T extends Data>
 	@ResponseBody
 	public T put(@PathVariable("id") long id, @RequestBody T toUpdate) {
 
+		Date now = new Date();
 		Date created = toUpdate.getCreated();
 		Date changed = null;
 
 		if (toUpdate.getChanged() != null) {
 			changed = toUpdate.getChanged();
+			long minutes = MINUTES.between(created.toInstant(), changed.toInstant());
+			if (minutes < 1) {
+				toUpdate.setChanged(now);
+			}
+		} else {
+			toUpdate.setChanged(now);
 		}
-
-		long minutes = MINUTES.between(created.toInstant(), changed.toInstant());
-		if (changed == null
-				|| minutes < 1)
-			toUpdate.setChanged(new Date());
 
 		dao.update(id, toUpdate);
 		return toUpdate;

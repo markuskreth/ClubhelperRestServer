@@ -27,7 +27,7 @@ public abstract class AbstractDatabaseTests<T extends Data> {
 	static final String db_file_name_prefix = "TestDatabase";
 
 	protected DbCheckAspect dbCheck;
-	protected static DataSource dataSource;
+	protected DataSource dataSource;
 	protected AbstractDao<T> dao;
 
 	@Before
@@ -65,10 +65,8 @@ public abstract class AbstractDatabaseTests<T extends Data> {
 
 		Connection conn = dataSource.getConnection();
 		deleteTables(conn);
-
-		if (conn != null) {
-			conn.close();
-		}
+		conn.close();
+		
 		File dbFile = new File(db_file_name_prefix);
 		if (dbFile.exists()) {
 			dbFile.delete();

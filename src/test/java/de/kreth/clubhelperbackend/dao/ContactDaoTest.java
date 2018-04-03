@@ -146,7 +146,9 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 		String type = "contactType";
 		String value = "contactValue";
 		long personId = 1L;
-		Contact obj = new Contact(512L, type, value, personId, now, now);
+		Contact obj = new Contact(512L, type, value, personId);
+		obj.setChanged(now);
+		obj.setCreated(now);
 
 		String regex = "(?iu)insert\\s+into\\s+tablename\\s*\\(\\s*id\\s*,\\s*"
 				+ join(columnNames, "\\s*,\\s*")
@@ -189,7 +191,9 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 		String type = "contactType";
 		String value = "contactValue";
 		long personId = 1L;
-		Contact obj = new Contact(null, type, value, personId, now, now);
+		Contact obj = new Contact(null, type, value, personId);
+		obj.setChanged(now);
+		obj.setCreated(now);
 
 		String regex = "(?iu)insert\\s+into\\s+tablename\\s*\\(\\s*"
 				+ join(columnNames, "\\s*,\\s*")
@@ -232,8 +236,9 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 		String type = "contactType";
 		String value = "contactValue";
 		long personId = 1L;
-		Contact obj = new Contact(personId, type, value, personId, now,
-				calendar.getTime());
+		Contact obj = new Contact(personId, type, value, personId);
+		obj.setChanged(now);
+		obj.setCreated(calendar.getTime());
 
 		String regex = "(?iu)update\\s+tablename\\s+set\\s+"
 				+ join(columnNames, "\\s*=\\s*\\?\\s*,\\s*")

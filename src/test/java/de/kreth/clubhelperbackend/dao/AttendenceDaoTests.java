@@ -19,7 +19,10 @@ public class AttendenceDaoTests extends AbstractDatabaseTests<Attendance> {
 	public void testInsertAttendence() {
 		Date withTime = getNow().getTime();
 		Date withoutTime = getNowWithoutTime().getTime();
-		Attendance toInsert = new Attendance(-1L, withTime, 1L, withTime, withTime);
+		Attendance toInsert = new Attendance(-1L, withTime, 1L);
+		toInsert.setChanged(withTime);
+		toInsert.setCreated(withTime);
+		
 		Attendance inserted = dao.insert(toInsert);
 		assertNotNull(inserted);
 		assertEquals(1L, inserted.getPersonId());
@@ -30,7 +33,9 @@ public class AttendenceDaoTests extends AbstractDatabaseTests<Attendance> {
 	@Test
 	public void testListForADay() throws SQLException {
 		Calendar now = getNow();
-		Attendance toInsert = new Attendance(-1L, now.getTime(), 1L, now.getTime(), now.getTime());
+		Attendance toInsert = new Attendance(-1L, now.getTime(), 1L);
+		toInsert.setChanged(now.getTime());
+		toInsert.setCreated(now.getTime());
 		dao.insert(toInsert);
 		now.add(Calendar.SECOND, 100);
 		toInsert.setPersonId(2L);

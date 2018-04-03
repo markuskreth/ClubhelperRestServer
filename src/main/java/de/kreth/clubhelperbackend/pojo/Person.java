@@ -14,6 +14,13 @@ public class Person extends AbstractData {
 	public Person() {
 	}
 
+	public Person(Long id, String prename, String surname, java.util.Date birth) {
+		super(id);
+		this.prename = prename;
+		this.surname = surname;
+		this.birth = birth;
+	}
+
 	public Person(Long id, String prename, String surname, java.util.Date birth,
 			java.util.Date changed, java.util.Date created) {
 		super(id, changed, created);

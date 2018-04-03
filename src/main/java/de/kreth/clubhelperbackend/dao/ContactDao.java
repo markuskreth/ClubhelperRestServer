@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
@@ -31,10 +30,9 @@ public class ContactDao extends AbstractDao<Contact> implements Dao<Contact> {
 
 		@Override
 		public Contact mapRow(ResultSet rs, int rowNo) throws SQLException {
-			Contact c = new ContactWrapper(rs.getLong("id"),
+			Contact c = new ContactWrapper(
 					rs.getString("type"), rs.getString("value"),
-					rs.getLong("person_id"), rs.getTimestamp("changed"),
-					rs.getTimestamp("created"));
+					rs.getLong("person_id"));
 			return appendDefault(c, rs);
 		}
 
@@ -59,9 +57,8 @@ public class ContactDao extends AbstractDao<Contact> implements Dao<Contact> {
 			return bld.toString();
 		}
 
-		public ContactWrapper(Long id, String type, String value, long personId,
-				Date changed, Date created) {
-			super(id, type, value, personId, changed, created);
+		public ContactWrapper(String type, String value, long personId) {
+			super(-1L, type, value, personId);
 		}
 	}
 }

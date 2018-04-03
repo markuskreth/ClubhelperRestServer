@@ -15,6 +15,11 @@ public abstract class AbstractData implements Data {
 		deleted = false;
 	}
 
+	public AbstractData(Long id) {
+		super();
+		this.id = id;
+	}
+
 	public AbstractData(Long id, Date changed, Date created) {
 		super();
 		this.id = id;

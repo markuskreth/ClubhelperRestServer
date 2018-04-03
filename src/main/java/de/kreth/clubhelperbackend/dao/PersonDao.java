@@ -27,14 +27,13 @@ public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 		super(config);
 	}
 
-	private static class PersonRowMapper extends RowMapper<Person> {
+	static class PersonRowMapper extends RowMapper<Person> {
 
 		@Override
 		public Person mapRow(ResultSet rs, int rowNum) throws SQLException {
-			Person p = new PersonToString(rs.getLong("id"),
+			Person p = new PersonToString(-1L,
 					rs.getString("prename"), rs.getString("surname"),
-					rs.getTimestamp("birth"), rs.getTimestamp("changed"),
-					rs.getTimestamp("created"));
+					rs.getTimestamp("birth"));
 			return appendDefault(p, rs);
 		}
 
@@ -61,8 +60,8 @@ public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 		}
 
 		public PersonToString(Long id, String prename, String surname,
-				Date birth, Date changed, Date created) {
-			super(id, prename, surname, birth, changed, created);
+				Date birth) {
+			super(id, prename, surname, birth);
 		}
 
 	}

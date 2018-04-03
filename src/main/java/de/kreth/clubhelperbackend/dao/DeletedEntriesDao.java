@@ -32,9 +32,8 @@ public class DeletedEntriesDao extends AbstractDao<DeletedEntries> {
 		@Override
 		public DeletedEntries mapRow(ResultSet rs, int rowNum)
 				throws SQLException {
-			return appendDefault(new DeletedEntries(rs.getLong("id"),
-					rs.getString("tablename"), rs.getLong("entryId"),
-					rs.getTimestamp("changed"), rs.getTimestamp("created")),
+			return appendDefault(new DeletedEntries(-1L,
+					rs.getString("tablename"), rs.getLong("entryId")),
 					rs);
 		}
 

@@ -28,8 +28,7 @@ public class GroupDao extends AbstractDao<Group> implements Dao<Group> {
 
 		@Override
 		public Group mapRow(ResultSet rs, int rowNum) throws SQLException {
-			Group g = new Group(rs.getLong("id"), rs.getString("name"),
-					rs.getTimestamp("changed"), rs.getTimestamp("created"));
+			Group g = new Group(-1L, rs.getString("name"));
 			return appendDefault(g, rs);
 		}
 

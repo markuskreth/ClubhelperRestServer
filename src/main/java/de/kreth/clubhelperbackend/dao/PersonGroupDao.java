@@ -28,9 +28,8 @@ public class PersonGroupDao extends AbstractDao<PersonGroup> {
 		@Override
 		public PersonGroup mapRow(ResultSet rs, int rowNum)
 				throws SQLException {
-			PersonGroup p = new PersonGroup(rs.getLong("id"),
-					rs.getLong("person_id"), rs.getLong("group_id"),
-					rs.getTimestamp("changed"), rs.getTimestamp("created"));
+			PersonGroup p = new PersonGroup(-1L,
+					rs.getLong("person_id"), rs.getLong("group_id"));
 			return appendDefault(p, rs);
 		}
 

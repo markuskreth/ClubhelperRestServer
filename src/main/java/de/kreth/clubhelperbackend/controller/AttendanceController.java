@@ -42,7 +42,7 @@ public class AttendanceController extends AbstractController<Attendance> {
 	@RequestMapping(value = "/for/{id}", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
 	public Attendance post(@PathVariable("id") Long id) {
-		Attendance att = new Attendance(-1L, new Date(), id, null, null);
+		Attendance att = new Attendance(-1L, new Date(), id);
 		return post(att);
 	}
 }

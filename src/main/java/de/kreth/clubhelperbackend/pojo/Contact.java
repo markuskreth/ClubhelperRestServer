@@ -18,9 +18,8 @@ public class Contact extends AbstractData {
 	public Contact() {
 	}
 
-	public Contact(Long id, String type, String value, long personId,
-			java.util.Date changed, java.util.Date created) {
-		super(id, changed, created);
+	public Contact(Long id, String type, String value, long personId) {
+		super(id);
 		this.type = type;
 		this.value = value;
 		this.personId = personId;
@@ -48,11 +47,6 @@ public class Contact extends AbstractData {
 
 	public void setPersonId(long personId) {
 		this.personId = personId;
-	}
-
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
 	}
 
 	@Override

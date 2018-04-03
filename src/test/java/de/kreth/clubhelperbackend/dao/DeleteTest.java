@@ -83,12 +83,16 @@ public class DeleteTest {
 	@Test
 	public void testDelete() throws SQLException {
 		Date created = new Date();
-		Contact c = new Contact(-1L, "MOBILE", "555123456", 1L, created,
-				created);
+		Contact c = new Contact(-1L, "MOBILE", "555123456", 1L);
+		c.setCreated(created);
+		c.setChanged(created);
+		
 		c = contactDao.insert(c);
 		long longValue = c.getId().longValue();
 		assertTrue(longValue >= 0);
-		c = new Contact(-1L, "MOBILE", "12345678", 1L, created, created);
+		c = new Contact(-1L, "MOBILE", "12345678", 1L);
+		c.setCreated(created);
+		c.setChanged(created);
 		c = contactDao.insert(c);
 		assertEquals(longValue + 1, c.getId().longValue());
 
@@ -116,9 +120,13 @@ public class DeleteTest {
 		assertEquals(0, contactDao.getAll().size());
 		Date created = new Date();
 		Contact c1 = contactDao
-				.insert(new Contact(-1L, "Test", "5555", 1, created, created));
+				.insert(new Contact(-1L, "Test", "5555", 1));
+		c1.setCreated(created);
+		c1.setChanged(created);
 		Contact c2 = contactDao
-				.insert(new Contact(-1L, "Test2", "6666", 1, created, created));
+				.insert(new Contact(-1L, "Test2", "6666", 1));
+		c2.setCreated(created);
+		c2.setChanged(created);
 
 		assertEquals(2, contactDao.getAll().size());
 		contactDao.delete(c1);

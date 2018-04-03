@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
@@ -29,11 +28,10 @@ public class AdressDao extends AbstractDao<Adress> {
 
 		@Override
 		public Adress mapRow(ResultSet rs, int rowNr) throws SQLException {
-			Adress a = new AdressWrapper(rs.getLong("id"),
+			Adress a = new AdressWrapper(-1L,
 					rs.getString("adress1"), rs.getString("adress2"),
 					rs.getString("plz"), rs.getString("city"),
-					rs.getLong("person_id"), rs.getTimestamp("changed"),
-					rs.getTimestamp("created"));
+					rs.getLong("person_id"));
 			return appendDefault(a, rs);
 		}
 
@@ -55,9 +53,8 @@ public class AdressDao extends AbstractDao<Adress> {
 		private static final long serialVersionUID = -1443368978470854581L;
 
 		public AdressWrapper(Long id, String adress1, String adress2,
-				String plz, String city, long personId, Date changed,
-				Date created) {
-			super(id, adress1, adress2, plz, city, personId, changed, created);
+				String plz, String city, long personId) {
+			super(id, adress1, adress2, plz, city, personId);
 		}
 
 		@Override
