@@ -88,17 +88,20 @@ public class HomeController implements ApplicationContextAware {
 		return "home";
 	}
 
+	/**
+	 * @return
+	 */
 	@RequestMapping(value = "/allAtt", method = RequestMethod.GET, produces = "text/comma-separated-values")
 	@ResponseBody
-	public String getAttendenceGeneral() {
+	public final String getAttendenceGeneral() {
 		DataSource datasource = context.getBean(DataSource.class);
 		StringBuilder txt = new StringBuilder();
 		try {
 			Statement stm = datasource.getConnection().createStatement();
-			ResultSet rs = stm.executeQuery("SELECT attendance.on_date, prename, surname\n" + 
-					"FROM markuskreth.attendance\n" + 
-					"	left join markuskreth.person on person.id = person_id\n" + 
-					"order by surname, prename, on_date");
+			ResultSet rs = stm.executeQuery("SELECT attendance.on_date, prename, surname\n" 
+					+ "FROM markuskreth.attendance\n" 
+					+ "	left join markuskreth.person on person.id = person_id\n" 
+					+ "order by surname, prename, on_date");
 			AttendenceBeanCollector coll = new AttendenceBeanCollector();
 			List<AttendenceBean> list = coll.getList(rs);
 			String text = coll.format(list);
@@ -116,12 +119,12 @@ public class HomeController implements ApplicationContextAware {
 	}
 	
 	@RequestMapping(value = {"/test", "/tests"}, method = RequestMethod.GET)
-	public String runTests() {
+	public final String runTests() {
 		return "test";
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public String showLogin(HttpServletResponse response, Authentication auth) throws IOException {
+	public final String showLogin(HttpServletResponse response, Authentication auth) throws IOException {
 
 		if (auth == null) {
 			logger.debug("showing login view");
@@ -134,7 +137,7 @@ public class HomeController implements ApplicationContextAware {
 	}
 
 	@RequestMapping(value="/googleauth", method=RequestMethod.GET)
-	public void getHtmlUri(HttpServletRequest req, HttpServletResponse response) throws IOException, GeneralSecurityException, URISyntaxException, InterruptedException {
+	public final void getHtmlUri(HttpServletRequest req, HttpServletResponse response) throws IOException, GeneralSecurityException, URISyntaxException, InterruptedException {
 
 		URI uri = new URI(req.getRequestURL().toString());
 		GoogleInitAdapter adapter = new GoogleInitAdapter(uri);
@@ -154,7 +157,7 @@ public class HomeController implements ApplicationContextAware {
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext context) throws BeansException {
+	public final void setApplicationContext(ApplicationContext context) throws BeansException {
 		this.context = context;
 	}
 	
