@@ -1,7 +1,5 @@
 package de.kreth.clubhelperbackend.dao;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -14,7 +12,10 @@ import de.kreth.clubhelperbackend.pojo.PersonGroup;
 @Repository
 public class PersonGroupDao extends AbstractDao<PersonGroup> {
 
-	private final static String columnNames[] = {"person_id", "group_id"};
+	public static final String COLUMN_GROUP_ID = "group_id";
+	public static final String COLUMN_PERSON_ID = "person_id";
+
+	private final static String columnNames[] = {COLUMN_PERSON_ID, COLUMN_GROUP_ID};
 
 	private final static DaoConfig<PersonGroup> config = new DaoConfig<PersonGroup>(
 			"persongroup", columnNames, new PersonGroupRowMapper(), null);
@@ -23,15 +24,7 @@ public class PersonGroupDao extends AbstractDao<PersonGroup> {
 		super(config);
 	}
 
-	private static class PersonGroupRowMapper extends RowMapper<PersonGroup> {
-
-		@Override
-		public PersonGroup mapRow(ResultSet rs, int rowNum)
-				throws SQLException {
-			PersonGroup p = new PersonGroup(-1L,
-					rs.getLong("person_id"), rs.getLong("group_id"));
-			return appendDefault(p, rs);
-		}
+	public static class PersonGroupRowMapper extends RowMapper<PersonGroup> {
 
 		@Override
 		public Collection<Object> mapObject(PersonGroup obj) {
@@ -39,6 +32,11 @@ public class PersonGroupDao extends AbstractDao<PersonGroup> {
 			values.add(obj.getPersonId());
 			values.add(obj.getGroupId());
 			return values;
+		}
+
+		@Override
+		public Class<? extends PersonGroup> getItemClass() {
+			return PersonGroup.class;
 		}
 
 	}

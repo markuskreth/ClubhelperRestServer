@@ -1,7 +1,5 @@
 package de.kreth.clubhelperbackend.dao;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,8 +15,13 @@ public class RelativeDao extends AbstractDao<Relative>
 		implements
 			Dao<Relative> {
 
-	private static final String columnNames[] = {"person1", "person2",
-			"TO_PERSON1_RELATION", "TO_PERSON2_RELATION"};
+	public static final String COLUMN_PERSON1 = "person1";
+	public static final String COLUMN_PERSON2 = "person2";
+	public static final String COLUMN_PERSON1_RELATION = "TO_PERSON1_RELATION";
+	public static final String COLUMN_PERSON2_RELATION = "TO_PERSON2_RELATION";
+	
+	private static final String columnNames[] = {COLUMN_PERSON1, COLUMN_PERSON2,
+			COLUMN_PERSON1_RELATION, COLUMN_PERSON2_RELATION};
 
 	private static final DaoConfig<Relative> daoConfig = new DaoConfig<Relative>(
 			"relative", columnNames, new RelativeRowMapper(), null);
@@ -27,16 +30,7 @@ public class RelativeDao extends AbstractDao<Relative>
 		super(daoConfig);
 	}
 
-	private static class RelativeRowMapper extends RowMapper<Relative> {
-
-		@Override
-		public Relative mapRow(ResultSet rs, int rowNo) throws SQLException {
-			Relative r = new ToStringRelative(
-					rs.getLong("person1"), rs.getLong("person2"),
-					rs.getString("TO_PERSON1_RELATION"),
-					rs.getString("TO_PERSON2_RELATION"));
-			return appendDefault(r, rs);
-		}
+	public static class RelativeRowMapper extends RowMapper<Relative> {
 
 		@Override
 		public Collection<Object> mapObject(Relative obj) {
@@ -48,15 +42,9 @@ public class RelativeDao extends AbstractDao<Relative>
 			return values;
 		}
 
-		private class ToStringRelative extends Relative {
+		public static class ToStringRelative extends Relative {
 
 			private static final long serialVersionUID = 4772529931953029461L;
-
-			public ToStringRelative(long person1Id, long person2Id,
-					String toPerson1Relation, String toPerson2Relation) {
-				super(-1L, person1Id, person2Id, toPerson1Relation,
-						toPerson2Relation);
-			}
 
 			@Override
 			public String toString() {
@@ -64,6 +52,12 @@ public class RelativeDao extends AbstractDao<Relative>
 						+ getToPerson1Relation() + " --> " + getPerson1();
 			}
 		}
+
+		@Override
+		public Class<ToStringRelative> getItemClass() {
+			return ToStringRelative.class;
+		}
+
 	};
 
 }

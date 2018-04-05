@@ -1,7 +1,5 @@
 package de.kreth.clubhelperbackend.dao;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -29,20 +27,17 @@ public class ContactDao extends AbstractDao<Contact> implements Dao<Contact> {
 	public static class ContactRowMapper extends RowMapper<Contact> {
 
 		@Override
-		public Contact mapRow(ResultSet rs, int rowNo) throws SQLException {
-			Contact c = new ContactWrapper(
-					rs.getString("type"), rs.getString("value"),
-					rs.getLong("person_id"));
-			return appendDefault(c, rs);
-		}
-
-		@Override
 		public Collection<Object> mapObject(Contact obj) {
 			List<Object> values = new ArrayList<Object>();
 			values.add(obj.getType());
 			values.add(obj.getValue());
 			values.add(obj.getPersonId());
 			return values;
+		}
+
+		@Override
+		public Class<? extends Contact> getItemClass() {
+			return ContactWrapper.class;
 		}
 	};
 
@@ -57,8 +52,5 @@ public class ContactDao extends AbstractDao<Contact> implements Dao<Contact> {
 			return bld.toString();
 		}
 
-		public ContactWrapper(String type, String value, long personId) {
-			super(-1L, type, value, personId);
-		}
 	}
 }

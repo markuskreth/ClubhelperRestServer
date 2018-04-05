@@ -2,7 +2,6 @@ package de.kreth.clubhelperbackend.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,13 +33,6 @@ public class AttendanceDao extends AbstractDao<Attendance>
 	private static class RowMapper extends AbstractDao.RowMapper<Attendance> {
 
 		@Override
-		public Attendance mapRow(ResultSet rs, int rowNr) throws SQLException {
-			Attendance a = new Attendance(-1L,
-					rs.getTimestamp("on_date"), rs.getLong("person_id"));
-			return appendDefault(a, rs);
-		}
-
-		@Override
 		public Collection<Object> mapObject(Attendance obj) {
 			List<Object> values = new ArrayList<Object>();
 
@@ -49,6 +41,11 @@ public class AttendanceDao extends AbstractDao<Attendance>
 			values.add(time);
 			values.add(obj.getPersonId());
 			return values;
+		}
+
+		@Override
+		public Class<? extends Attendance> getItemClass() {
+			return Attendance.class;
 		}
 
 	};

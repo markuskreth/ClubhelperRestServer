@@ -1,7 +1,5 @@
 package de.kreth.clubhelperbackend.dao;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -14,8 +12,14 @@ import de.kreth.clubhelperbackend.pojo.Adress;
 @Repository
 public class AdressDao extends AbstractDao<Adress> {
 
-	private static final String columnNames[] = {"adress1", "adress2", "plz",
-			"city", "person_id"};
+	public static final String ADRESS1 = "adress1";
+	public static final String ADRESS2 = "adress2";
+	public static final String PLZ = "plz";
+	public static final String CITY = "city";
+	public static final String PERSON_ID = "person_id";
+
+	private static final String columnNames[] = {ADRESS1, ADRESS2, PLZ,
+			CITY, PERSON_ID};
 
 	private static DaoConfig<Adress> daoConfig = new DaoConfig<Adress>("adress",
 			columnNames, new AdressRowMapper(), null);
@@ -24,16 +28,7 @@ public class AdressDao extends AbstractDao<Adress> {
 		super(daoConfig);
 	}
 
-	private static class AdressRowMapper extends RowMapper<Adress> {
-
-		@Override
-		public Adress mapRow(ResultSet rs, int rowNr) throws SQLException {
-			Adress a = new AdressWrapper(-1L,
-					rs.getString("adress1"), rs.getString("adress2"),
-					rs.getString("plz"), rs.getString("city"),
-					rs.getLong("person_id"));
-			return appendDefault(a, rs);
-		}
+	public static class AdressRowMapper extends RowMapper<Adress> {
 
 		@Override
 		public Collection<Object> mapObject(Adress obj) {
@@ -46,16 +41,16 @@ public class AdressDao extends AbstractDao<Adress> {
 			return values;
 		}
 
+		@Override
+		public Class<? extends Adress> getItemClass() {
+			return AdressWrapper.class;
+		}
+
 	};
 
 	public static class AdressWrapper extends Adress {
 
 		private static final long serialVersionUID = -1443368978470854581L;
-
-		public AdressWrapper(Long id, String adress1, String adress2,
-				String plz, String city, long personId) {
-			super(id, adress1, adress2, plz, city, personId);
-		}
 
 		@Override
 		public String toString() {

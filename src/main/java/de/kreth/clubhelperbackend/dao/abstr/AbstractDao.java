@@ -2,6 +2,9 @@ package de.kreth.clubhelperbackend.dao.abstr;
 
 import static org.apache.commons.lang3.StringUtils.join;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.JDBCType;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -12,6 +15,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Optional;
 
 import javax.sql.DataSource;
 
@@ -73,6 +77,11 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 		super();
 		log = LoggerFactory.getLogger(getClass());
 
+		this.mapper = config.mapper;
+		this.mapper.setLog(log);
+		
+		this.tableName = config.tableName;
+		
 		List<String> columnNames = new ArrayList<String>(
 				Arrays.asList(config.columnNames));
 		columnNames.add("changed");
@@ -102,8 +111,6 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 		this.SQL_QUERY_BY_ID = SQL_QUERY_ALL_WITHDELETED + " WHERE id=?";
 		this.SQL_QUERY_CHANGED = SQL_QUERY_ALL_WITHDELETED + " WHERE changed>?";
 
-		this.mapper = config.mapper;
-		this.tableName = config.tableName;
 		if (config.orderBy != null) {
 			this.SQL_QUERY_ALL += " ORDER BY " + join(config.orderBy, ", ");
 			this.SQL_QUERY_ALL_WITHDELETED += " ORDER BY "
@@ -183,28 +190,94 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 			implements
 				org.springframework.jdbc.core.RowMapper<X> {
 
+		private Logger log;
+		
 		public static String ID_COLUMN = "id";
 		public static String DELETE_COLUMN = "deleted";
 		public static String CREATED_COLUMN = "created";
 		public static String CHANGED_COLUMN = "changed";
 
-		protected X appendDefault(X obj, ResultSet rs) throws SQLException {
+		public void setLog(Logger log) {
+			this.log = log;
+		}
+
+		@Override
+		public final X mapRow(ResultSet rs, int rowNo) throws SQLException {
+			X newInstance;
+			
+			Class<? extends X> itemClass = getItemClass();
+			try {
+				newInstance = itemClass.newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				throw new SQLException("Unable to instanciate " + itemClass.getName(), e);
+			}
+
+			return appendDefault(newInstance, rs);
+		}
+
+		public abstract Class<? extends X> getItemClass();
+		
+ 		protected X appendDefault(X obj, ResultSet rs) throws SQLException {
 			ResultSetMetaData meta = rs.getMetaData();
 
 			for (int i = 0; i < meta.getColumnCount(); i++) {
 				String columnName = meta.getColumnName(i + 1);
 				if (DELETE_COLUMN.equalsIgnoreCase(columnName)) {
-					obj.setDeleted(rs.getBoolean(DELETE_COLUMN));
+					rs.getTimestamp(DELETE_COLUMN);
+					obj.setDeleted(!rs.wasNull());
 				} else if (CREATED_COLUMN.equalsIgnoreCase(columnName)) {
 					obj.setCreated(rs.getTimestamp(CREATED_COLUMN));
 				} else if (CHANGED_COLUMN.equalsIgnoreCase(columnName)) {
 					obj.setChanged(rs.getTimestamp(CHANGED_COLUMN));
 				} else if (ID_COLUMN.equalsIgnoreCase(columnName)) {
 					obj.setId(rs.getLong(ID_COLUMN));
+				} else {
+					String typeName = meta.getColumnTypeName(i+1);
+					try {
+						JDBCType type = JDBCType.valueOf(meta.getColumnType(i + 1));
+						
+						switch (type) {
+						case INTEGER:
+							executeSetter(obj, columnName, Arrays.asList(Long.class, Integer.class, long.class, int.class), rs.getLong(columnName));
+							break;
+
+						case VARCHAR:
+							executeSetter(obj, columnName, Arrays.asList(String.class), rs.getString(columnName));
+							break;
+
+						case DATE:
+							executeSetter(obj, columnName, Arrays.asList(Date.class, java.sql.Date.class), rs.getTimestamp(columnName));
+							break;
+	
+						default:
+							break;
+						}						
+					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+						log.error("Unable to set " + columnName + " with type " + typeName + " on " + obj, e);
+					}
+
 				}
 			}
 
 			return obj;
+		}
+		
+		private void executeSetter(final X obj, final String columnName, final List<Class<?>> typeClasses, Object value) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+			final String strippedName = columnName.replace("_", "");
+			Optional<Method> methods = Arrays.asList(obj.getClass().getMethods()).stream()
+					.filter(m -> { 
+						return m.getName().startsWith("set") 
+								&& m.getParameterCount() == 1 
+								&& typeClasses.contains(m.getParameterTypes()[0])
+								&& m.getName().substring(3).equalsIgnoreCase(strippedName);
+					}).findFirst();
+			if(methods.isPresent()) {
+				methods.get().invoke(obj, value);
+			} else {
+				if (log.isWarnEnabled()) {
+					log.warn("Unable to find setter for " + columnName + " of type "+ typeClasses + " for " + obj);
+				}
+			}
 		}
 		/**
 		 * Maps the given object to a value array.

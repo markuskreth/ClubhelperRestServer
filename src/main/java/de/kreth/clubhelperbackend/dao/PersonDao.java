@@ -1,11 +1,8 @@
 package de.kreth.clubhelperbackend.dao;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
@@ -30,14 +27,6 @@ public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 	static class PersonRowMapper extends RowMapper<Person> {
 
 		@Override
-		public Person mapRow(ResultSet rs, int rowNum) throws SQLException {
-			Person p = new PersonToString(-1L,
-					rs.getString("prename"), rs.getString("surname"),
-					rs.getTimestamp("birth"));
-			return appendDefault(p, rs);
-		}
-
-		@Override
 		public Collection<Object> mapObject(Person p) {
 			List<Object> values = new ArrayList<Object>();
 			values.add(p.getPrename());
@@ -45,9 +34,14 @@ public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 			values.add(p.getBirth());
 			return values;
 		}
+
+		@Override
+		public Class<? extends Person> getItemClass() {
+			return PersonToString.class;
+		}
 	}
 
-	private static class PersonToString extends Person {
+	public static class PersonToString extends Person {
 
 		private static final long serialVersionUID = -2909522514132832331L;
 
@@ -57,11 +51,6 @@ public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 			bld.append(getId()).append(": ").append(getPrename()).append(" ")
 					.append(getSurname());
 			return bld.toString();
-		}
-
-		public PersonToString(Long id, String prename, String surname,
-				Date birth) {
-			super(id, prename, surname, birth);
 		}
 
 	}
