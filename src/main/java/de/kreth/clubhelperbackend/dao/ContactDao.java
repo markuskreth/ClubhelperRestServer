@@ -1,9 +1,5 @@
 package de.kreth.clubhelperbackend.dao;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.springframework.stereotype.Repository;
 
 import de.kreth.clubhelperbackend.dao.abstr.AbstractDao;
@@ -15,31 +11,14 @@ public class ContactDao extends AbstractDao<Contact> implements Dao<Contact> {
 
 	public static final String tableName = "contact";
 
-	private static final String columnNames[] = {"type", "value", "person_id"};
+	static final String[] columnNames = {"type", "value", "person_id"};
 
 	private static AbstractDao.DaoConfig<Contact> daoConfig = new DaoConfig<Contact>(
-			tableName, columnNames, new ContactRowMapper(), null);
+			tableName, columnNames, new RowMapper<Contact>(ContactWrapper.class), null);
 
 	public ContactDao() {
 		super(daoConfig);
 	}
-
-	public static class ContactRowMapper extends RowMapper<Contact> {
-
-		@Override
-		public Collection<Object> mapObject(Contact obj) {
-			List<Object> values = new ArrayList<Object>();
-			values.add(obj.getType());
-			values.add(obj.getValue());
-			values.add(obj.getPersonId());
-			return values;
-		}
-
-		@Override
-		public Class<? extends Contact> getItemClass() {
-			return ContactWrapper.class;
-		}
-	};
 
 	public static class ContactWrapper extends Contact {
 

@@ -154,6 +154,7 @@ public class HomeController implements ApplicationContextAware {
 		if(logger.isDebugEnabled()) {
 			logger.debug("Gefundene Sheets: " + titles);
 		}
+		out.flush();
 	}
 
 	@Override

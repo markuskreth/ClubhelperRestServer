@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import javax.sql.DataSource;
 
@@ -66,6 +67,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 	private TransactionTemplate transactionTemplate;
 
 	final String SQL_INSERTWithoutId;
+	private final String[] columnNames;
 
 	/**
 	 * Constructs this {@link Dao} implemetation.
@@ -79,11 +81,12 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 
 		this.mapper = config.mapper;
 		this.mapper.setLog(log);
-		
+
 		this.tableName = config.tableName;
+		this.columnNames = config.columnNames;
 		
-		List<String> columnNames = new ArrayList<String>(
-				Arrays.asList(config.columnNames));
+		List<String> columnNames = new ArrayList<>(Arrays.asList(config.columnNames));
+		
 		columnNames.add("changed");
 		StringBuilder stringBuilder = new StringBuilder().append("update ")
 				.append(config.tableName).append(" set ")
@@ -186,17 +189,23 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 	 * @param <X>
 	 *            Obect type to be mapped
 	 */
-	public static abstract class RowMapper<X extends Data>
+	public static class RowMapper<X extends Data>
 			implements
 				org.springframework.jdbc.core.RowMapper<X> {
 
 		private Logger log;
+
+		private Class<? extends X> itemClass;
 		
 		public static String ID_COLUMN = "id";
 		public static String DELETE_COLUMN = "deleted";
 		public static String CREATED_COLUMN = "created";
 		public static String CHANGED_COLUMN = "changed";
 
+		public RowMapper(Class<? extends X> itemClass) {
+			this.itemClass = itemClass;
+		}
+		
 		public void setLog(Logger log) {
 			this.log = log;
 		}
@@ -205,7 +214,6 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 		public final X mapRow(ResultSet rs, int rowNo) throws SQLException {
 			X newInstance;
 			
-			Class<? extends X> itemClass = getItemClass();
 			try {
 				newInstance = itemClass.newInstance();
 			} catch (InstantiationException | IllegalAccessException e) {
@@ -214,8 +222,6 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 
 			return appendDefault(newInstance, rs);
 		}
-
-		public abstract Class<? extends X> getItemClass();
 		
  		protected X appendDefault(X obj, ResultSet rs) throws SQLException {
 			ResultSetMetaData meta = rs.getMetaData();
@@ -263,14 +269,12 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 		}
 		
 		private void executeSetter(final X obj, final String columnName, final List<Class<?>> typeClasses, Object value) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-			final String strippedName = columnName.replace("_", "");
-			Optional<Method> methods = Arrays.asList(obj.getClass().getMethods()).stream()
-					.filter(m -> { 
-						return m.getName().startsWith("set") 
-								&& m.getParameterCount() == 1 
-								&& typeClasses.contains(m.getParameterTypes()[0])
-								&& m.getName().substring(3).equalsIgnoreCase(strippedName);
-					}).findFirst();
+			
+			Predicate<Method> parameterTest = (Method m) -> 
+					m.getParameterCount() == 1 
+					&& typeClasses.contains(m.getParameterTypes()[0]);
+			
+			Optional<Method> methods = findMethod(obj, columnName, "set", parameterTest);
 			if(methods.isPresent()) {
 				methods.get().invoke(obj, value);
 			} else {
@@ -279,6 +283,18 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 				}
 			}
 		}
+
+		private Optional<Method> findMethod(final X obj, final String columnName, final String prefix,
+				Predicate<Method> parameterTest) {
+			final String strippedName = columnName.replace("_", "");
+			Optional<Method> methods = Arrays.asList(obj.getClass().getMethods()).stream()
+					.filter(m -> { 
+						return m.getName().startsWith(prefix) 
+								&& parameterTest.test(m)
+								&& m.getName().substring(3).equalsIgnoreCase(strippedName);
+					}).findFirst();
+			return methods;
+		}
 		/**
 		 * Maps the given object to a value array.
 		 * 
@@ -286,7 +302,28 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 		 *            Object to map Values from
 		 * @return values of the object in correct order of the table columns.
 		 */
-		public abstract Collection<Object> mapObject(X obj);
+		public Collection<Object> mapObject(X obj, String[] columnNames) {
+			List<Object> result = new ArrayList<>();
+			for (String columnName: columnNames) {
+				Predicate<Method> parameterTest = (Method m) -> 
+				m.getParameterCount() == 0;
+				Optional<Method> method = findMethod(obj, columnName, "get", parameterTest);
+				if(method.isPresent()) {
+					Method m = method.get();
+					try {
+						result.add(m.invoke(obj));
+					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+						throw new RuntimeException("Unable to execute getter " + m.getName() + " on " + obj, e);
+					}
+				} else {
+					if (log.isWarnEnabled()) {
+						log.warn("Unable to find getter for " + columnName + " for " + obj);
+					}
+				}
+			}
+			return result;
+		}
+
 	}
 
 	public SqlForDialect getSqlDialect() {
@@ -345,7 +382,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 
 		boolean withId = obj.getId() != null && obj.getId() >= 0;
 
-		ArrayList<Object> values = new ArrayList<Object>(mapper.mapObject(obj));
+		ArrayList<Object> values = new ArrayList<Object>(mapper.mapObject(obj, columnNames));
 
 		values.add(obj.getChanged());
 		values.add(obj.getCreated());
@@ -387,7 +424,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 	@Override
 	public boolean update(T obj) {
 
-		Collection<Object> values = mapper.mapObject(obj);
+		Collection<Object> values = mapper.mapObject(obj, columnNames);
 
 		values.add(obj.getChanged());
 		values.add(obj.getId());

@@ -25,7 +25,8 @@ public class ObjectArrayMatcher extends ArgumentMatcher<Object[]> implements Var
 			} else {
 				return false;
 			}
-		} else if (argument == null) {
+		} 
+		if (argument == null) {
 			return false;
 		}
 

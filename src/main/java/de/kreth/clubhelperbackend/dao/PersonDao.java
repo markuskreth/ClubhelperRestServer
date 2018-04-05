@@ -1,7 +1,5 @@
 package de.kreth.clubhelperbackend.dao;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,31 +12,14 @@ import de.kreth.clubhelperbackend.pojo.Person;
 @Repository
 public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 
-	private final static String COLUMN_NAMES[] = {"prename", "surname", "birth"};
+	final static String COLUMN_NAMES[] = {"prename", "surname", "birth"};
 	private final static String ORDER_BY[] = {"surname", "prename"};
 
 	private final static DaoConfig<Person> config = new DaoConfig<Person>(
-			"person", COLUMN_NAMES, new PersonRowMapper(), ORDER_BY);
+			"person", COLUMN_NAMES, new RowMapper<Person>(PersonToString.class), ORDER_BY);
 
 	public PersonDao() {
 		super(config);
-	}
-
-	static class PersonRowMapper extends RowMapper<Person> {
-
-		@Override
-		public Collection<Object> mapObject(Person p) {
-			List<Object> values = new ArrayList<Object>();
-			values.add(p.getPrename());
-			values.add(p.getSurname());
-			values.add(p.getBirth());
-			return values;
-		}
-
-		@Override
-		public Class<? extends Person> getItemClass() {
-			return PersonToString.class;
-		}
 	}
 
 	public static class PersonToString extends Person {

@@ -60,9 +60,13 @@ public abstract class GoogleBaseAdapter {
 
 	protected void checkRefreshToken(ServletRequest request) throws IOException {
 
-		if (credential != null
-				&& (credential.getExpiresInSeconds() != null 
-				&& credential.getExpiresInSeconds() < 3600)) {
+		if (credential == null) {
+			credential = authorize(request);
+		}
+
+		if((credential.getExpiresInSeconds() != null 
+			&& credential.getExpiresInSeconds() < 3600)) {
+
 			if (log.isDebugEnabled()) {
 				log.debug("Security needs refresh, trying.");
 			}
@@ -70,8 +74,6 @@ public abstract class GoogleBaseAdapter {
 			if (log.isDebugEnabled()) {
 				log.debug("Token refresh " + (result ? "successfull." : "failed."));
 			}
-		} else {
-			credential = authorize(request);
 		}
 	}
 
