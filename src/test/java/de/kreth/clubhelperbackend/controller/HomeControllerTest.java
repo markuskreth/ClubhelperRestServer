@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.springframework.context.ApplicationContext;
@@ -69,6 +70,7 @@ public class HomeControllerTest {
 	}
 
 	@Test
+	@Ignore
 	public void testRequestUri() throws Exception {
 		HttpServletRequest req = mock(HttpServletRequest.class);
 		when(req.getRequestURL()).thenReturn(new StringBuffer("testhost.de"));
