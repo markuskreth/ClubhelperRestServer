@@ -4,12 +4,12 @@
 	<artifactId>clubhelperbackend</artifactId>
 	<name>ClubHelperBackend</name>
 	<packaging>war</packaging>
-	<version>1.0.7.12-SNAPSHOT</version>
+	<version>1.0.7.13-SNAPSHOT</version>
 	<description>Clubhelper Rest Service with jquery mobile ui</description>
 
 	<parent>
 		<groupId>de.kreth</groupId>
-		<version>1.0.10</version>
+		<version>1.0.10-SNAPSHOT</version>
 		<artifactId>clubhelper-parent</artifactId>
 	</parent>
 

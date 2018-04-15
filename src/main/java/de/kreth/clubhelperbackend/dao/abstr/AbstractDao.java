@@ -84,9 +84,10 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 
 		this.tableName = config.tableName;
 		this.columnNames = config.columnNames;
-		
-		List<String> columnNames = new ArrayList<>(Arrays.asList(config.columnNames));
-		
+
+		List<String> columnNames = new ArrayList<>(
+				Arrays.asList(config.columnNames));
+
 		columnNames.add("changed");
 		StringBuilder stringBuilder = new StringBuilder().append("update ")
 				.append(config.tableName).append(" set ")
@@ -196,7 +197,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 		private Logger log;
 
 		private Class<? extends X> itemClass;
-		
+
 		public static String ID_COLUMN = "id";
 		public static String DELETE_COLUMN = "deleted";
 		public static String CREATED_COLUMN = "created";
@@ -205,7 +206,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 		public RowMapper(Class<? extends X> itemClass) {
 			this.itemClass = itemClass;
 		}
-		
+
 		public void setLog(Logger log) {
 			this.log = log;
 		}
@@ -213,17 +214,18 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 		@Override
 		public final X mapRow(ResultSet rs, int rowNo) throws SQLException {
 			X newInstance;
-			
+
 			try {
 				newInstance = itemClass.newInstance();
 			} catch (InstantiationException | IllegalAccessException e) {
-				throw new SQLException("Unable to instanciate " + itemClass.getName(), e);
+				throw new SQLException(
+						"Unable to instanciate " + itemClass.getName(), e);
 			}
 
 			return appendDefault(newInstance, rs);
 		}
-		
- 		protected X appendDefault(X obj, ResultSet rs) throws SQLException {
+
+		protected X appendDefault(X obj, ResultSet rs) throws SQLException {
 			ResultSetMetaData meta = rs.getMetaData();
 
 			for (int i = 0; i < meta.getColumnCount(); i++) {
@@ -238,28 +240,40 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 				} else if (ID_COLUMN.equalsIgnoreCase(columnName)) {
 					obj.setId(rs.getLong(ID_COLUMN));
 				} else {
-					String typeName = meta.getColumnTypeName(i+1);
+					String typeName = meta.getColumnTypeName(i + 1);
 					try {
-						JDBCType type = JDBCType.valueOf(meta.getColumnType(i + 1));
-						
+						JDBCType type = JDBCType
+								.valueOf(meta.getColumnType(i + 1));
+
 						switch (type) {
-						case INTEGER:
-							executeSetter(obj, columnName, Arrays.asList(Long.class, Integer.class, long.class, int.class), rs.getLong(columnName));
-							break;
+							case INTEGER :
+								executeSetter(obj, columnName,
+										Arrays.asList(Long.class, Integer.class,
+												long.class, int.class),
+										rs.getLong(columnName));
+								break;
 
-						case VARCHAR:
-							executeSetter(obj, columnName, Arrays.asList(String.class), rs.getString(columnName));
-							break;
+							case VARCHAR :
+								executeSetter(obj, columnName,
+										Arrays.asList(String.class),
+										rs.getString(columnName));
+								break;
 
-						case DATE:
-							executeSetter(obj, columnName, Arrays.asList(Date.class, java.sql.Date.class), rs.getTimestamp(columnName));
-							break;
-	
-						default:
-							break;
-						}						
-					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-						log.error("Unable to set " + columnName + " with type " + typeName + " on " + obj, e);
+							case DATE :
+							case TIMESTAMP :
+								executeSetter(obj, columnName,
+										Arrays.asList(Date.class,
+												java.sql.Date.class),
+										rs.getTimestamp(columnName));
+								break;
+
+							default :
+								break;
+						}
+					} catch (IllegalAccessException | IllegalArgumentException
+							| InvocationTargetException e) {
+						log.error("Unable to set " + columnName + " with type "
+								+ typeName + " on " + obj, e);
 					}
 
 				}
@@ -267,31 +281,38 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 
 			return obj;
 		}
-		
-		private void executeSetter(final X obj, final String columnName, final List<Class<?>> typeClasses, Object value) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-			
-			Predicate<Method> parameterTest = (Method m) -> 
-					m.getParameterCount() == 1 
-					&& typeClasses.contains(m.getParameterTypes()[0]);
-			
-			Optional<Method> methods = findMethod(obj, columnName, "set", parameterTest);
-			if(methods.isPresent()) {
+
+		private void executeSetter(final X obj, final String columnName,
+				final List<Class<?>> typeClasses, Object value)
+				throws IllegalAccessException, IllegalArgumentException,
+				InvocationTargetException {
+
+			Predicate<Method> parameterTest = (
+					Method m) -> m.getParameterCount() == 1
+							&& typeClasses.contains(m.getParameterTypes()[0]);
+
+			Optional<Method> methods = findMethod(obj, columnName, "set",
+					parameterTest);
+			if (methods.isPresent()) {
 				methods.get().invoke(obj, value);
 			} else {
 				if (log.isWarnEnabled()) {
-					log.warn("Unable to find setter for " + columnName + " of type "+ typeClasses + " for " + obj);
+					log.warn("Unable to find setter for " + columnName
+							+ " of type " + typeClasses + " for " + obj);
 				}
 			}
 		}
 
-		private Optional<Method> findMethod(final X obj, final String columnName, final String prefix,
+		private Optional<Method> findMethod(final X obj,
+				final String columnName, final String prefix,
 				Predicate<Method> parameterTest) {
 			final String strippedName = columnName.replace("_", "");
-			Optional<Method> methods = Arrays.asList(obj.getClass().getMethods()).stream()
-					.filter(m -> { 
-						return m.getName().startsWith(prefix) 
+			Optional<Method> methods = Arrays
+					.asList(obj.getClass().getMethods()).stream().filter(m -> {
+						return m.getName().startsWith(prefix)
 								&& parameterTest.test(m)
-								&& m.getName().substring(3).equalsIgnoreCase(strippedName);
+								&& m.getName().substring(3)
+										.equalsIgnoreCase(strippedName);
 					}).findFirst();
 			return methods;
 		}
@@ -304,20 +325,24 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 		 */
 		public Collection<Object> mapObject(X obj, String[] columnNames) {
 			List<Object> result = new ArrayList<>();
-			for (String columnName: columnNames) {
-				Predicate<Method> parameterTest = (Method m) -> 
-				m.getParameterCount() == 0;
-				Optional<Method> method = findMethod(obj, columnName, "get", parameterTest);
-				if(method.isPresent()) {
+			for (String columnName : columnNames) {
+				Predicate<Method> parameterTest = (
+						Method m) -> m.getParameterCount() == 0;
+				Optional<Method> method = findMethod(obj, columnName, "get",
+						parameterTest);
+				if (method.isPresent()) {
 					Method m = method.get();
 					try {
 						result.add(m.invoke(obj));
-					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-						throw new RuntimeException("Unable to execute getter " + m.getName() + " on " + obj, e);
+					} catch (IllegalAccessException | IllegalArgumentException
+							| InvocationTargetException e) {
+						throw new RuntimeException("Unable to execute getter "
+								+ m.getName() + " on " + obj, e);
 					}
 				} else {
 					if (log.isWarnEnabled()) {
-						log.warn("Unable to find getter for " + columnName + " for " + obj);
+						log.warn("Unable to find getter for " + columnName
+								+ " for " + obj);
 					}
 				}
 			}
@@ -382,7 +407,8 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 
 		boolean withId = obj.getId() != null && obj.getId() >= 0;
 
-		ArrayList<Object> values = new ArrayList<Object>(mapper.mapObject(obj, columnNames));
+		ArrayList<Object> values = new ArrayList<Object>(
+				mapper.mapObject(obj, columnNames));
 
 		values.add(obj.getChanged());
 		values.add(obj.getCreated());
