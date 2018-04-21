@@ -32,6 +32,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
+import de.kreth.clubhelperbackend.config.DatabaseConfiguration;
 import de.kreth.clubhelperbackend.config.SqlForDialect;
 import de.kreth.clubhelperbackend.dao.DeletedEntriesDao;
 import de.kreth.clubhelperbackend.pojo.Data;
@@ -49,6 +50,8 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 		implements
 			Dao<T> {
 
+	protected static final DatabaseConfiguration dbConfig = new DatabaseConfiguration(0);
+	
 	final String tableName;
 	private SqlForDialect sqlDialect;
 
@@ -61,7 +64,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 	private final String SQL_DELETE;
 	private final String SQL_INSERTWithId;
 	private final RowMapper<T> mapper;
-	private final Logger log;
+	protected final Logger log;
 
 	private DeletedEntriesDao deletedEntriesDao;
 	private TransactionTemplate transactionTemplate;
@@ -212,15 +215,13 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 
 		@Override
 		public final X mapRow(ResultSet rs, int rowNo) throws SQLException {
-			X newInstance;
 			
 			try {
-				newInstance = itemClass.newInstance();
+				return appendDefault(itemClass.newInstance(), rs);
 			} catch (InstantiationException | IllegalAccessException e) {
 				throw new SQLException("Unable to instanciate " + itemClass.getName(), e);
 			}
 
-			return appendDefault(newInstance, rs);
 		}
 		
  		protected X appendDefault(X obj, ResultSet rs) throws SQLException {
@@ -252,6 +253,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport
 							break;
 
 						case DATE:
+						case TIMESTAMP:
 							executeSetter(obj, columnName, Arrays.asList(Date.class, java.sql.Date.class), rs.getTimestamp(columnName));
 							break;
 	
