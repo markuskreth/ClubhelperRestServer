@@ -484,6 +484,7 @@ function showDialog(dialogId, headText, contentText, action) {
 			.attr("data-icon", "cancel")
 			.text("Abbrechen"));
 
+	editDialog.enhanceWithin();
 	$.mobile.changePage(dialogId, {
         transition: "pop",
         role: "dialog",
