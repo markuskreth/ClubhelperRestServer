@@ -1,5 +1,6 @@
 package de.kreth.clubhelperbackend.config;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,26 +31,10 @@ public class ClubhelperAuthenticationProvider
 	private final Logger log = LoggerFactory
 			.getLogger(ClubhelperAuthenticationProvider.class);
 	private final DataSource dataSource;
-	private PreparedStatement stmGroups;
-	private PreparedStatement stmUser;
 
 	public ClubhelperAuthenticationProvider(DataSource dataSource)
 			throws SQLException {
 		this.dataSource = dataSource;
-		reinitStm();
-	}
-
-	private void reinitStm() throws SQLException {
-		stmGroups = dataSource.getConnection().prepareStatement(
-				"select groupDef.name groupname from person \n"
-						+ "	left join persongroup on persongroup.person_id = person.id\n"
-						+ " left join groupDef on persongroup.group_id = groupDef.id\n"
-						+ " where person.username = ? and person.password = ?");
-		stmUser = dataSource.getConnection().prepareStatement(
-				"select person.password password, groupDef.name groupname from person \n"
-						+ "	left join persongroup on persongroup.person_id = person.id\n"
-						+ " left join groupDef on persongroup.group_id = groupDef.id\n"
-						+ " where person.username = ?");
 	}
 
 	@Override
@@ -75,14 +60,6 @@ public class ClubhelperAuthenticationProvider
 			}
 
 		} catch (SQLException e) {
-			try {
-				reinitStm();
-			} catch (SQLException e2) {
-
-				log.error("Sql error on reinitialization of statements", e2);
-				throw new AuthenticationCredentialsNotFoundException(
-						"Sql error on reinitialization of statements", e2);
-			}
 			log.error("Sql error on authentication", e);
 			throw new AuthenticationCredentialsNotFoundException(
 					"Sql error on authentication", e);
@@ -92,15 +69,24 @@ public class ClubhelperAuthenticationProvider
 	private List<GrantedAuthority> getRoles(String name, String password)
 			throws SQLException {
 
-		stmGroups.setString(1, name);
-		stmGroups.setString(2, password);
-		ResultSet rs = stmGroups.executeQuery();
-
 		List<GrantedAuthority> grantedAuths = new ArrayList<>();
-		while (rs.next()) {
-			grantedAuths.add(createAuthority(rs.getString("groupname")));
-		}
 
+		try (Connection connection = dataSource.getConnection()) {
+
+			PreparedStatement stmGroups = connection.prepareStatement(
+					"select groupDef.name groupname from person \n"
+							+ "	left join persongroup on persongroup.person_id = person.id\n"
+							+ " left join groupDef on persongroup.group_id = groupDef.id\n"
+							+ " where person.username = ? and person.password = ?");
+			stmGroups.setString(1, name);
+			stmGroups.setString(2, password);
+			ResultSet rs = stmGroups.executeQuery();
+
+			while (rs.next()) {
+				grantedAuths.add(createAuthority(rs.getString("groupname")));
+			}
+
+		}
 		return grantedAuths;
 	}
 
@@ -118,7 +104,15 @@ public class ClubhelperAuthenticationProvider
 			throws UsernameNotFoundException {
 		log.debug("getting Userdetails for username " + username);
 
-		try {
+		PreparedStatement stmUser = null;
+
+		try (Connection connection = dataSource.getConnection()) {
+
+			stmUser = connection.prepareStatement(
+					"select person.password password, groupDef.name groupname from person \n"
+							+ "	left join persongroup on persongroup.person_id = person.id\n"
+							+ " left join groupDef on persongroup.group_id = groupDef.id\n"
+							+ " where person.username = ?");
 			stmUser.setString(1, username);
 			ResultSet rs = stmUser.executeQuery();
 
