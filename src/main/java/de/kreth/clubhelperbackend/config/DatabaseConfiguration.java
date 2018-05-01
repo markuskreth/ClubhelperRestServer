@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -20,7 +21,7 @@ public class DatabaseConfiguration {
 
 	private static final String PERSON_ID_FK_NAME = "person_id";
 
-	private static final int LATEST_VERSION = 9;
+	private static final int LATEST_VERSION = 10;
 
 	private final Logger logger;
 	private final DatabaseType dbType;
@@ -38,7 +39,7 @@ public class DatabaseConfiguration {
 	private TableDefinition persongroup;
 	private TableDefinition startpass;
 	private TableDefinition startrecht;
-	
+
 	private final List<MyStatement> statements;
 
 	private int fromVersion;
@@ -58,8 +59,12 @@ public class DatabaseConfiguration {
 			case 0 :
 				createAll();
 				createWith(person, contact, relative, adress, attendance,
-						version, deletedEntries, group, persongroup, startpass, startrecht);
+						version, deletedEntries, group, persongroup, startpass,
+						startrecht);
 				createAttendenceUniqueConstraint();
+				createForeignkeysForMainTables();
+				addForeignKey(startrecht, "startpass_id", startpass, "id");
+				addForeignKey(startpass, "person_id", person, "id");
 				break;
 			case 1 :
 				createAll();
@@ -129,14 +134,12 @@ public class DatabaseConfiguration {
 			case 8 :
 				createAll();
 				createWith(startpass, startrecht);
-				add("ALTER TABLE " + startrecht.getTableName()
-				+ " ADD FOREIGN KEY (startpass_id) REFERENCES " + startpass.getTableName()
-				+ "(id);");
+				addForeignKey(startrecht, "startpass_id", startpass, "id");
+				addForeignKey(startpass, "person_id", person, "id");
 
-				add("ALTER TABLE " + startpass.getTableName()
-						+ " ADD FOREIGN KEY (person_id) REFERENCES " + person.getTableName()
-						+ "(id);");
-				
+				break;
+			case 9 :
+				createForeignkeysForMainTables();
 				break;
 
 		}
@@ -147,10 +150,56 @@ public class DatabaseConfiguration {
 		}
 	}
 
+	private void createForeignkeysForMainTables() {
+		addForeignKey(contact, "person_id", person, "id");
+
+		addForeignKey(relative, "person1", person, "id");
+		addForeignKey(relative, "person2", person, "id");
+
+		addForeignKey(persongroup, "person_id", person, "id");
+		addForeignKey(persongroup, "group_id", group, "id");
+
+		addForeignKey(attendance, "person_id", person, "id");
+
+		addForeignKey(adress, "person_id", person, "id");
+	}
+
+	private void addForeignKey(TableDefinition foreignTable,
+			String foreignColumn, TableDefinition targetTable,
+			String targetColumn) {
+
+		throwExecptionIfColumnNotContained(foreignTable, foreignColumn);
+		throwExecptionIfColumnNotContained(targetTable, targetColumn);
+
+		StringBuilder sql = new StringBuilder("ALTER TABLE ")
+				.append(foreignTable.getTableName())
+				.append(" ADD FOREIGN KEY (").append(foreignColumn)
+				.append(") REFERENCES ").append(targetTable.getTableName())
+				.append("(").append(targetColumn).append(")");
+		add(sql.toString());
+
+	}
+
+	private void throwExecptionIfColumnNotContained(
+			TableDefinition foreignTable, String foreignColumn) {
+
+		for (Iterator<ColumnDefinition> iterator = foreignTable.getColumns()
+				.iterator(); iterator.hasNext();) {
+			ColumnDefinition def = iterator.next();
+			if (def.getColumnName().equals(foreignColumn)) {
+				return;
+			}
+		}
+
+		throw new IllegalArgumentException(foreignTable
+				+ " does not contain column with name " + foreignColumn);
+
+	}
+
 	public List<TableDefinition> getAllTables() {
 		return Collections.unmodifiableList(allTables);
 	}
-	
+
 	public TableDefinition getPerson() {
 		return person;
 	}
@@ -327,15 +376,17 @@ public class DatabaseConfiguration {
 		columns = createStartrechtColumns();
 		addCreateChangeColumn(columns);
 		addDeleteColumn(columns);
-		startrecht = new TableDefinition("startpass_startrechte", dbType, columns);
-		
+		startrecht = new TableDefinition("startpass_startrechte", dbType,
+				columns);
+
 		allTables = Arrays.asList(person, contact, relative, adress, attendance,
-				version, deletedEntries, group, persongroup, startpass, startrecht);
+				version, deletedEntries, group, persongroup, startpass,
+				startrecht);
 	}
 
 	private List<ColumnDefinition> createStartrechtColumns() {
-		ColumnDefinition colStartpassId = new ColumnDefinition(
-				DataType.INTEGER, "startpass_id", "NOT NULL");
+		ColumnDefinition colStartpassId = new ColumnDefinition(DataType.INTEGER,
+				"startpass_id", "NOT NULL");
 
 		ColumnDefinition colStartRechtVerein = new ColumnDefinition(
 				DataType.VARCHAR100, "verein_name", "NOT NULL");
@@ -343,19 +394,19 @@ public class DatabaseConfiguration {
 		ColumnDefinition colStartRechtFachgebiet = new ColumnDefinition(
 				DataType.VARCHAR25, "fachgebiet", "NOT NULL");
 
-		ColumnDefinition colGueltigVon = new ColumnDefinition(
-				DataType.DATETIME, "startrecht_beginn", "NOT NULL");
+		ColumnDefinition colGueltigVon = new ColumnDefinition(DataType.DATETIME,
+				"startrecht_beginn", "NOT NULL");
 
-		ColumnDefinition colGueltigBis = new ColumnDefinition(
-				DataType.DATETIME, "startrecht_ende", "NOT NULL");
-		
+		ColumnDefinition colGueltigBis = new ColumnDefinition(DataType.DATETIME,
+				"startrecht_ende", "NOT NULL");
+
 		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
 		columns.add(colStartpassId);
 		columns.add(colStartRechtVerein);
 		columns.add(colStartRechtFachgebiet);
 		columns.add(colGueltigVon);
 		columns.add(colGueltigBis);
-		
+
 		return columns;
 	}
 
@@ -363,14 +414,14 @@ public class DatabaseConfiguration {
 
 		ColumnDefinition colPersonId = new ColumnDefinition(DataType.INTEGER,
 				PERSON_ID_FK_NAME, "NOT NULL");
-		
+
 		ColumnDefinition colStartpassNr = new ColumnDefinition(
 				DataType.VARCHAR25, "startpass_nr", "NOT NULL UNIQUE");
-		
+
 		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
 		columns.add(colPersonId);
 		columns.add(colStartpassNr);
-		
+
 		return columns;
 	}
 
