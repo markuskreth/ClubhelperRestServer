@@ -137,8 +137,10 @@ public class DatabaseConfiguration {
 				addForeignKey(startrecht, "startpass_id", startpass, "id");
 				addForeignKey(startpass, "person_id", person, "id");
 
+				createForeignkeysForMainTables();
 				break;
 			case 9 :
+				createAll();
 				createForeignkeysForMainTables();
 				break;
 
