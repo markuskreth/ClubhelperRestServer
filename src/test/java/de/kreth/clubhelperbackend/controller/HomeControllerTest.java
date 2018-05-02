@@ -1,8 +1,12 @@
 package de.kreth.clubhelperbackend.controller;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -11,9 +15,13 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.springframework.context.ApplicationContext;
@@ -61,4 +69,24 @@ public class HomeControllerTest {
 				"Surname2, Prename2;;X", csv);
 	}
 
+	@Test
+	@Ignore
+	public void testRequestUri() throws Exception {
+		HttpServletRequest req = mock(HttpServletRequest.class);
+		when(req.getRequestURL()).thenReturn(new StringBuffer("testhost.de"));
+		HttpServletResponse response = mock(HttpServletResponse.class);
+		final StringWriter out = new StringWriter();
+		ServletOutputStream stream = new ServletOutputStream() {
+			
+			@Override
+			public void write(int b) throws IOException {
+				out.write(b);
+			}
+		};
+		when(response.getOutputStream()).thenReturn(stream);
+		controller.getHtmlUri(req, response);
+		String output = out.toString();
+		assertFalse(output.isEmpty());
+		
+	}
 }

@@ -10,9 +10,9 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
 
 import de.kreth.clubhelperbackend.pojo.Group;
+import de.kreth.clubhelperbackend.testutils.MockedLogger;
 
 public class ControllerLoggerAspectTest {
 
@@ -22,8 +22,8 @@ public class ControllerLoggerAspectTest {
 	@Before
 	public void initLogger() {
 		this.logger = new ControllerLoggerAspect();
-		logger.logger = mock(Logger.class);
-		configureLogger();
+		logger.logger = MockedLogger.mock();
+
 		joinPoint = mock(JoinPoint.class);
 
 		Signature sig = mock(Signature.class);
@@ -34,14 +34,6 @@ public class ControllerLoggerAspectTest {
 		when(joinPoint.getArgs()).thenReturn(new Object[] {"text", 1});
 	}
 	
-	private void configureLogger() {
-		when(logger.logger.isTraceEnabled()).thenReturn(true);
-		when(logger.logger.isDebugEnabled()).thenReturn(true);
-		when(logger.logger.isInfoEnabled()).thenReturn(true);
-		when(logger.logger.isWarnEnabled()).thenReturn(true);
-		when(logger.logger.isErrorEnabled()).thenReturn(true);
-	}
-
 	@Test
 	public void testLogDao() throws Throwable {
 		logger.logDao(joinPoint);

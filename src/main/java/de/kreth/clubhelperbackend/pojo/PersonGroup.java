@@ -13,6 +13,12 @@ public class PersonGroup extends AbstractData {
 	public PersonGroup() {
 	}
 
+	public PersonGroup(Long id, long personId, long groupId) {
+		super(id);
+		this.personId = personId;
+		this.groupId = groupId;
+	}
+
 	public PersonGroup(Long id, long personId, long groupId,
 			java.util.Date changed, java.util.Date created) {
 		super(id, changed, created);

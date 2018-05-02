@@ -5,11 +5,11 @@ import java.util.Date;
 
 public class CellValue<T> {
 	
-	private T object;
+	private T innerObject;
 	private int column;
 	private int row;
 	
-	public CellValue(T object, int column, int row) {
+	public CellValue(T object, int columnIndex, int rowIndex) {
 		super();
 		assert object != null:"Value Object must not be null!";
 
@@ -18,20 +18,20 @@ public class CellValue<T> {
 		this.row = row;
 	}
 
-	public T getObject() {
-		return object;
+	public final T getObject() {
+		return innerObject;
 	}
 
-	public int getColumn() {
+	public final int getColumn() {
 		return column;
 	}
 
-	public int getRow() {
+	public final int getRow() {
 		return row;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("CellValue ");
 		stringBuilder.append(GoogleSpreadsheetsAdapter.intToColumn(column));
@@ -43,7 +43,7 @@ public class CellValue<T> {
 	}
 
 	@Override
-	public int hashCode() {
+	public final int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + column;
@@ -53,16 +53,19 @@ public class CellValue<T> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public final boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		@SuppressWarnings("unchecked")
 		CellValue<T> other = (CellValue<T>) obj;
-		if (column != other.column)
+		if (column != other.column) {
 			return false;
 		if (row != other.row)
 			return false;

@@ -18,6 +18,11 @@ public class Group extends AbstractData {
 		this.name = name;
 	}
 
+	public Group(Long id, String name) {
+		super(id);
+		this.name = name;
+	}
+
 	public String getName() {
 		return name;
 	}

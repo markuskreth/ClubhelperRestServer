@@ -22,6 +22,11 @@ import de.kreth.clubhelperbackend.pojo.Attendance;
 
 public class AttendenceTests extends AbstractDaoTest<Attendance> {
 
+	private static final int NOW_SECOND = 15;
+	private static final int NOW_MINUTE = 10;
+	private static final int NOW_HOUR = 17;
+	private static final int NOW_DAY = 18;
+	private static final int NOW_YYYY = 2017;
 	private AttendanceController controller;
 
 	@Before
@@ -34,7 +39,7 @@ public class AttendenceTests extends AbstractDaoTest<Attendance> {
 
 		when(jdbcTemplate.update(anyString(), Matchers.<Object[]>any())).thenReturn(1);
 		Date now = now();
-		Attendance toCreate = new Attendance(-1L, now, 1L, null, null);
+		Attendance toCreate = new Attendance(-1L, now, 1L);
 		Attendance created = controller.post(toCreate);
 		assertNotNull(created);
 		String sql = DaoPackageMemberAccessor.getSQL_INSERTWithoutId(dao);
@@ -49,7 +54,7 @@ public class AttendenceTests extends AbstractDaoTest<Attendance> {
 	}
 
 	private Date now() {
-		return new GregorianCalendar(2017, Calendar.DECEMBER, 18, 17, 10, 15).getTime();
+		return new GregorianCalendar(NOW_YYYY, Calendar.DECEMBER, NOW_DAY, NOW_HOUR, NOW_MINUTE, NOW_SECOND).getTime();
 	}
 
 	private Date nowWithoutTime() {

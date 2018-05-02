@@ -2,9 +2,7 @@ package de.kreth.clubhelperbackend.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +20,7 @@ public class AttendanceDao extends AbstractDao<Attendance>
 		implements
 			Dao<Attendance> {
 
-	private static final String columnNames[] = {"on_date", "person_id"};
+	static final String[] columnNames = {"on_date", "person_id"};
 
 	private static DaoConfig<Attendance> daoConfig = new DaoConfig<Attendance>(
 			"attendance", columnNames, new RowMapper(), null);
@@ -31,26 +29,18 @@ public class AttendanceDao extends AbstractDao<Attendance>
 		super(daoConfig);
 	}
 
-	private static class RowMapper extends AbstractDao.RowMapper<Attendance> {
+	public static class RowMapper extends AbstractDao.RowMapper<Attendance> {
 
-		@Override
-		public Attendance mapRow(ResultSet rs, int rowNr) throws SQLException {
-			Attendance a = new Attendance(rs.getLong("id"),
-					rs.getTimestamp("on_date"), rs.getLong("person_id"),
-					rs.getTimestamp("changed"), rs.getTimestamp("created"));
-
-			return appendDefault(a, rs);
+		public RowMapper() {
+			super(Attendance.class);
 		}
 
 		@Override
-		public Collection<Object> mapObject(Attendance obj) {
-			List<Object> values = new ArrayList<Object>();
+		public Collection<Object> mapObject(Attendance obj, String[] columnNames) {
 
 			Date time = normalizeDateToDay(obj.getOnDate());
 			obj.setOnDate(time);
-			values.add(time);
-			values.add(obj.getPersonId());
-			return values;
+			return super.mapObject(obj, columnNames);
 		}
 
 	};

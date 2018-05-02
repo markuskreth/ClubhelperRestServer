@@ -21,8 +21,8 @@ import com.google.api.services.sheets.v4.model.ValueRange;
 
 public class JumpHeightSheet {
 
-	public static final DateFormat defaultDf = new SimpleDateFormat("dd.MM.yyyy");
-	static DateFormat invalidDf = new SimpleDateFormat("dd.MM.yy");
+	final DateFormat defaultDf = new SimpleDateFormat("dd.MM.yyyy");
+	final DateFormat invalidDf = new SimpleDateFormat("dd.MM.yy");
 	
 	private static final int rowIndexDate = 2;
 	private static final int taskIndexIncrementor = 4;

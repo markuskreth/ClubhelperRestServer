@@ -1,5 +1,7 @@
 package de.kreth.clubhelperbackend.pojo;
 
+import java.util.Date;
+
 /**
  * Entity mapped to table "DELETED_ENTRIES".
  */
@@ -13,8 +15,13 @@ public class DeletedEntries extends AbstractData {
 	public DeletedEntries() {
 	}
 
-	public DeletedEntries(Long id, String tablename, Long entryId,
-			java.util.Date changed, java.util.Date created) {
+	public DeletedEntries(Long id, String tablename, Long entryId) {
+		super(entryId);
+		this.tablename = tablename;
+		this.entryId = entryId;
+	}
+
+	public DeletedEntries(Long id, String tablename, Long entryId, Date changed, Date created) {
 		super(entryId, changed, created);
 		this.tablename = tablename;
 		this.entryId = entryId;
