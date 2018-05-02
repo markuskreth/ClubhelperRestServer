@@ -11,7 +11,7 @@ public class CellValue<T> {
 
 	public CellValue(T object, int columnIndex, int rowIndex) {
 		super();
-		assert object != null : "Value Object must not be null!";
+		assert object != null:"Value Object must not be null!";
 
 		this.innerObject = object;
 		this.column = column;
