@@ -22,20 +22,33 @@ public class ObjectArrayMatcher extends ArgumentMatcher<Object[]> implements Var
 		if (values == null) {
 			if (argument instanceof List<?> || argument instanceof Object[]) {
 				return true;
+			} else {
+				return false;
 			}
+		} 
+		if (argument == null) {
+			return false;
 		}
 
 		Object[] argValues = (Object[]) argument;
-		assertEquals("Expected=" + objArrayToString(values) + "; actual=" + argValues, values.length,
+		StringBuilder errMsg = new StringBuilder();
+		errMsg.append("Expected=");
+		errMsg.append(objArrayToString(values));
+		errMsg.append("; actual=");
+		errMsg.append(objArrayToString(argValues));
+		
+		assertEquals(errMsg.toString(), values.length,
 				argValues.length);
 		for (int i = 0; i < values.length; i++) {
-			if (!values[i].equals(argValues[i]))
-				return false;
+			assertEquals("At index " + i + " values differ.", values[i], argValues[i]);
 		}
 		return true;
 	}
 
 	private String objArrayToString(Object[] v) {
+		if(v == null) {
+			return "NULL";
+		}
 		StringBuilder bld = new StringBuilder("[");
 		if (v.length > 0)
 			bld.append(v[0]);

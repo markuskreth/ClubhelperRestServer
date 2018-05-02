@@ -17,9 +17,8 @@ public class Adress extends AbstractData {
 	}
 
 	public Adress(Long id, String adress1, String adress2, String plz,
-			String city, long personId, java.util.Date changed,
-			java.util.Date created) {
-		super(id, changed, created);
+			String city, long personId) {
+		super(id);
 		this.adress1 = adress1;
 		this.adress2 = adress2;
 		this.plz = plz;

@@ -65,6 +65,8 @@ var listCreator = (function(){
 					personStore.set(person, person.id);
 					itemCreator(person);
 				}
+				
+				$("#personList").listview().listview('refresh');
 			});
 
 		} else {
@@ -72,9 +74,9 @@ var listCreator = (function(){
 			for (const person of personStore){
 				itemCreator(person);
 			}
+
+			$("#personList").listview().listview('refresh');
 		}
-		
-		$("#personList").listview().listview('refresh');
 		
 	}
 
@@ -482,6 +484,7 @@ function showDialog(dialogId, headText, contentText, action) {
 			.attr("data-icon", "cancel")
 			.text("Abbrechen"));
 
+	editDialog.enhanceWithin();
 	$.mobile.changePage(dialogId, {
         transition: "pop",
         role: "dialog",

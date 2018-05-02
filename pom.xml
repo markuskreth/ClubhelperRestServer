@@ -4,7 +4,7 @@
 	<artifactId>clubhelperbackend</artifactId>
 	<name>ClubHelperBackend</name>
 	<packaging>war</packaging>
-	<version>1.0.7.12-SNAPSHOT</version>
+	<version>1.0.7.15-SNAPSHOT</version>
 	<description>Clubhelper Rest Service with jquery mobile ui</description>
 
 	<parent>
@@ -17,7 +17,6 @@
 		<connection>scm:git:https://github.com/markuskreth/ClubhelperRestServer.git</connection>
 		<developerConnection>scm:git:https://github.com/markuskreth/ClubhelperRestServer.git</developerConnection>
 		<url>http://github.com/markuskreth/ClubhelperRestServer</url>
-		<tag>clubhelperbackend-1.0.7.7</tag>
 	</scm>
 
 	<properties>

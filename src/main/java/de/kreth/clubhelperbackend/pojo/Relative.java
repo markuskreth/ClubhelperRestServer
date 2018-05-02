@@ -15,6 +15,15 @@ public class Relative extends AbstractData {
 	}
 
 	public Relative(Long id, long person1, long person2,
+			String toPerson2Relation, String toPerson1Relation) {
+		super(id);
+		this.person1 = person1;
+		this.person2 = person2;
+		this.toPerson2Relation = toPerson2Relation;
+		this.toPerson1Relation = toPerson1Relation;
+	}
+
+	public Relative(Long id, long person1, long person2,
 			String toPerson2Relation, String toPerson1Relation,
 			java.util.Date changed, java.util.Date created) {
 		super(id, changed, created);

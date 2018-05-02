@@ -1,11 +1,5 @@
 package de.kreth.clubhelperbackend.dao;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.springframework.stereotype.Repository;
 
 import de.kreth.clubhelperbackend.dao.abstr.AbstractDao;
@@ -14,33 +8,16 @@ import de.kreth.clubhelperbackend.pojo.PersonGroup;
 @Repository
 public class PersonGroupDao extends AbstractDao<PersonGroup> {
 
-	private final static String columnNames[] = {"person_id", "group_id"};
+	public static final String COLUMN_GROUP_ID = "group_id";
+	public static final String COLUMN_PERSON_ID = "person_id";
+
+	final static String columnNames[] = {COLUMN_PERSON_ID, COLUMN_GROUP_ID};
 
 	private final static DaoConfig<PersonGroup> config = new DaoConfig<PersonGroup>(
-			"persongroup", columnNames, new PersonGroupRowMapper(), null);
+			"persongroup", columnNames, new RowMapper<PersonGroup>(PersonGroup.class), null);
 
 	public PersonGroupDao() {
 		super(config);
 	}
 
-	private static class PersonGroupRowMapper extends RowMapper<PersonGroup> {
-
-		@Override
-		public PersonGroup mapRow(ResultSet rs, int rowNum)
-				throws SQLException {
-			PersonGroup p = new PersonGroup(rs.getLong("id"),
-					rs.getLong("person_id"), rs.getLong("group_id"),
-					rs.getTimestamp("changed"), rs.getTimestamp("created"));
-			return appendDefault(p, rs);
-		}
-
-		@Override
-		public Collection<Object> mapObject(PersonGroup obj) {
-			List<Object> values = new ArrayList<Object>();
-			values.add(obj.getPersonId());
-			values.add(obj.getGroupId());
-			return values;
-		}
-
-	}
 }

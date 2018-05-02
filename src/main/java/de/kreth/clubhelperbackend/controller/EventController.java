@@ -44,32 +44,39 @@ public class EventController {
 	public List<Map<String, Object>> getEvents(ServletRequest request) throws IOException, InterruptedException {
 		List<Map<String, Object>> result = new ArrayList<>();
 		adapter.getAllEvents(request).forEach(e -> {
-			Map<String, Object> properties = new HashMap<>();
+			if (e.getSummary() != null) {
 
-			adjustExcludedEndDate(e);
-			StringBuilder msg = new StringBuilder();
-			msg.append("Event: ").append(e.getSummary()).append(", Start=").append(e.getStart())
-					.append(" skipped properties:");
-			for (Entry<String, Object> entry : e.entrySet()) {
+				Map<String, Object> properties = new HashMap<>();
 
-				Entry<String, Object> ev = map(entry);
-				if (ev != null) {
-					properties.put(ev.getKey(), ev.getValue());
-				} else if (log.isTraceEnabled()) {
-					msg.append("\n\t\"").append(entry.getKey()).append("\", value: ").append(entry.getValue());
+				adjustExcludedEndDate(e);
+				StringBuilder msg = new StringBuilder();
+				EventDateTime start = e.getStart();
+				if (start == null) {
+					start = e.getOriginalStartTime();
 				}
+				msg.append("Event: ").append(e.getSummary()).append(", Start=").append(start)
+						.append(" skipped properties:");
+				for (Entry<String, Object> entry : e.entrySet()) {
+
+					Entry<String, Object> ev = map(entry);
+					if (ev != null) {
+						properties.put(ev.getKey(), ev.getValue());
+					} else if (log.isTraceEnabled()) {
+						msg.append("\n\t\"").append(entry.getKey()).append("\", value: ").append(entry.getValue());
+					}
+				}
+				if (log.isTraceEnabled()) {
+					log.trace(msg.toString());
+				}
+				result.add(properties);
 			}
-			if (log.isTraceEnabled()) {
-				log.trace(msg.toString());
-			}
-			result.add(properties);
 		});
 		return result;
 	}
 
 	private void adjustExcludedEndDate(com.google.api.services.calendar.model.Event e) {
 		if (e.isEndTimeUnspecified() == false
-				&& (e.getStart().getDate() != null || e.getStart().getDateTime().isDateOnly())) {
+				&& startIsFullDate(e)) {
 			EventDateTime end = e.getEnd();
 			GregorianCalendar calendar = new GregorianCalendar();
 			calendar.setTimeInMillis(end.getDate() != null ? end.getDate().getValue() : end.getDateTime().getValue());
@@ -77,6 +84,16 @@ public class EventController {
 			end.setDate(new DateTime(String.format("%d-%02d-%02d", calendar.get(Calendar.YEAR),
 					calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH))));
 		}
+	}
+
+	boolean startIsFullDate(com.google.api.services.calendar.model.Event e) {
+		
+		EventDateTime start = e.getStart();
+		if (start == null) {
+			start = e.getOriginalStartTime();
+		}
+		return (start.getDate() != null 
+				|| (start.getDateTime()!=null && start.getDateTime().isDateOnly()));
 	}
 
 	private Entry<String, Object> map(Entry<String, Object> entry) {

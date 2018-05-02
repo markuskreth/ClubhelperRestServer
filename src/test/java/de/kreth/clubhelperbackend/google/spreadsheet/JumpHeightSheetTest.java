@@ -93,7 +93,7 @@ public class JumpHeightSheetTest extends AbstractGoogleTests {
 		assertEquals(2, values.getValues().size());
 		List<String> dates = values.getValues().get(0);
 		assertEquals(1, dates.size());
-		assertEquals(JumpHeightSheet.defaultDf.format(testDate.getTime()),
+		assertEquals(test.defaultDf.format(testDate.getTime()),
 				dates.get(0));
 
 		List<String> spruenge = values.getValues().get(1);

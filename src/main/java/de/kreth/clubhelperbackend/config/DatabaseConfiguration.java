@@ -3,6 +3,8 @@ package de.kreth.clubhelperbackend.config;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -17,7 +19,9 @@ import de.kreth.dbmanager.UniqueConstraint;
 
 public class DatabaseConfiguration {
 
-	private static final int LATEST_VERSION = 8;
+	private static final String PERSON_ID_FK_NAME = "person_id";
+
+	private static final int LATEST_VERSION = 10;
 
 	private final Logger logger;
 	private final DatabaseType dbType;
@@ -33,6 +37,8 @@ public class DatabaseConfiguration {
 	private TableDefinition deletedEntries;
 	private TableDefinition group;
 	private TableDefinition persongroup;
+	private TableDefinition startpass;
+	private TableDefinition startrecht;
 
 	private final List<MyStatement> statements;
 
@@ -53,14 +59,18 @@ public class DatabaseConfiguration {
 			case 0 :
 				createAll();
 				createWith(person, contact, relative, adress, attendance,
-						version, deletedEntries, group, persongroup);
+						version, deletedEntries, group, persongroup, startpass,
+						startrecht);
 				createAttendenceUniqueConstraint();
+				createForeignkeysForMainTables();
+				addForeignKey(startrecht, "startpass_id", startpass, "id");
+				addForeignKey(startpass, "person_id", person, "id");
 				break;
 			case 1 :
 				createAll();
 				createWith(deletedEntries, group, persongroup);
 				addDeletedColumn(person, contact, relative, adress, attendance,
-						version);
+						version, startpass);
 				addAuthColumns(person);
 				statements.add(new DirectStatement(
 						"INSERT INTO `groupDef`(`name`,`changed`,`created`)VALUES('ADMIN',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)"));
@@ -71,7 +81,7 @@ public class DatabaseConfiguration {
 				break;
 			case 2 :
 				createAll();
-				createWith();
+				createWith(startpass);
 				addDeletedColumn(person, contact, relative, adress, attendance,
 						version, deletedEntries, group, persongroup);
 				addAuthColumns(person);
@@ -85,6 +95,7 @@ public class DatabaseConfiguration {
 				break;
 			case 3 :
 				createAll();
+				createWith(startpass);
 				addAuthColumns(person);
 				statements.add(new DirectStatement(
 						"INSERT INTO `groupDef`(`name`,`changed`,`created`)VALUES('ADMIN',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)"));
@@ -95,6 +106,7 @@ public class DatabaseConfiguration {
 				createAttendenceUniqueConstraint();
 				break;
 			case 4 :
+				createWith(startpass);
 				addUniqueGroupName();
 				addUniquePersonGroup();
 				addDeleteColumnStm(person, new ColumnDefinition(DataType.TEXT,
@@ -103,18 +115,33 @@ public class DatabaseConfiguration {
 				break;
 			case 5 :
 				createAll();
+				createWith(startpass);
 				addDeleteColumnStm(person, new ColumnDefinition(DataType.TEXT,
 						"type", "NOT NULL"));
 				createAttendenceUniqueConstraint();
 				break;
 			case 6 :
 				createAll();
+				createWith(startpass);
 				createAttendenceUniqueConstraint();
 				changeIdNamesInAllTables();
 				break;
 			case 7 :
 				createAll();
+				createWith(startpass);
 				changeIdNamesInAllTables();
+				break;
+			case 8 :
+				createAll();
+				createWith(startpass, startrecht);
+				addForeignKey(startrecht, "startpass_id", startpass, "id");
+				addForeignKey(startpass, "person_id", person, "id");
+
+				createForeignkeysForMainTables();
+				break;
+			case 9 :
+				createAll();
+				createForeignkeysForMainTables();
 				break;
 
 		}
@@ -123,6 +150,100 @@ public class DatabaseConfiguration {
 			logger.info("Prepared Datebase update from Version " + fromVersion
 					+ " to Version " + LATEST_VERSION);
 		}
+	}
+
+	private void createForeignkeysForMainTables() {
+		addForeignKey(contact, "person_id", person, "id");
+
+		addForeignKey(relative, "person1", person, "id");
+		addForeignKey(relative, "person2", person, "id");
+
+		addForeignKey(persongroup, "person_id", person, "id");
+		addForeignKey(persongroup, "group_id", group, "id");
+
+		addForeignKey(attendance, "person_id", person, "id");
+
+		addForeignKey(adress, "person_id", person, "id");
+	}
+
+	private void addForeignKey(TableDefinition foreignTable,
+			String foreignColumn, TableDefinition targetTable,
+			String targetColumn) {
+
+		throwExecptionIfColumnNotContained(foreignTable, foreignColumn);
+		throwExecptionIfColumnNotContained(targetTable, targetColumn);
+
+		StringBuilder sql = new StringBuilder("ALTER TABLE ")
+				.append(foreignTable.getTableName())
+				.append(" ADD FOREIGN KEY (").append(foreignColumn)
+				.append(") REFERENCES ").append(targetTable.getTableName())
+				.append("(").append(targetColumn).append(")");
+		add(sql.toString());
+
+	}
+
+	private void throwExecptionIfColumnNotContained(
+			TableDefinition foreignTable, String foreignColumn) {
+
+		for (Iterator<ColumnDefinition> iterator = foreignTable.getColumns()
+				.iterator(); iterator.hasNext();) {
+			ColumnDefinition def = iterator.next();
+			if (def.getColumnName().equals(foreignColumn)) {
+				return;
+			}
+		}
+
+		throw new IllegalArgumentException(foreignTable
+				+ " does not contain column with name " + foreignColumn);
+
+	}
+
+	public List<TableDefinition> getAllTables() {
+		return Collections.unmodifiableList(allTables);
+	}
+
+	public TableDefinition getPerson() {
+		return person;
+	}
+
+	public TableDefinition getContact() {
+		return contact;
+	}
+
+	public TableDefinition getRelative() {
+		return relative;
+	}
+
+	public TableDefinition getAdress() {
+		return adress;
+	}
+
+	public TableDefinition getAttendance() {
+		return attendance;
+	}
+
+	public TableDefinition getVersion() {
+		return version;
+	}
+
+	public TableDefinition getDeletedEntries() {
+		return deletedEntries;
+	}
+
+	public TableDefinition getGroup() {
+		return group;
+	}
+
+	public TableDefinition getPersongroup() {
+		return persongroup;
+	}
+
+	public TableDefinition getStartpass() {
+		return startpass;
+	}
+
+	public TableDefinition getStartrecht() {
+		return startrecht;
 	}
 
 	private void changeIdNamesInAllTables() {
@@ -136,7 +257,7 @@ public class DatabaseConfiguration {
 	private void createAttendenceUniqueConstraint() {
 		ColumnDefinition[] columns = new ColumnDefinition[2];
 		attendance.getColumns().forEach(col -> {
-			if ("person_id".equals(col.getColumnName())) {
+			if (PERSON_ID_FK_NAME.equals(col.getColumnName())) {
 				columns[0] = col;
 			} else if ("on_date".equals(col.getColumnName())) {
 				columns[1] = col;
@@ -248,8 +369,62 @@ public class DatabaseConfiguration {
 		addCreateChangeColumn(columns);
 		addDeleteColumn(columns);
 		persongroup = new TableDefinition("persongroup", dbType, columns);
+
+		columns = createStartpassColumns();
+		addCreateChangeColumn(columns);
+		addDeleteColumn(columns);
+		startpass = new TableDefinition("startpaesse", dbType, columns);
+
+		columns = createStartrechtColumns();
+		addCreateChangeColumn(columns);
+		addDeleteColumn(columns);
+		startrecht = new TableDefinition("startpass_startrechte", dbType,
+				columns);
+
 		allTables = Arrays.asList(person, contact, relative, adress, attendance,
-				version, deletedEntries, group, persongroup);
+				version, deletedEntries, group, persongroup, startpass,
+				startrecht);
+	}
+
+	private List<ColumnDefinition> createStartrechtColumns() {
+		ColumnDefinition colStartpassId = new ColumnDefinition(DataType.INTEGER,
+				"startpass_id", "NOT NULL");
+
+		ColumnDefinition colStartRechtVerein = new ColumnDefinition(
+				DataType.VARCHAR100, "verein_name", "NOT NULL");
+
+		ColumnDefinition colStartRechtFachgebiet = new ColumnDefinition(
+				DataType.VARCHAR25, "fachgebiet", "NOT NULL");
+
+		ColumnDefinition colGueltigVon = new ColumnDefinition(DataType.DATETIME,
+				"startrecht_beginn", "NOT NULL");
+
+		ColumnDefinition colGueltigBis = new ColumnDefinition(DataType.DATETIME,
+				"startrecht_ende", "NOT NULL");
+
+		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
+		columns.add(colStartpassId);
+		columns.add(colStartRechtVerein);
+		columns.add(colStartRechtFachgebiet);
+		columns.add(colGueltigVon);
+		columns.add(colGueltigBis);
+
+		return columns;
+	}
+
+	private List<ColumnDefinition> createStartpassColumns() {
+
+		ColumnDefinition colPersonId = new ColumnDefinition(DataType.INTEGER,
+				PERSON_ID_FK_NAME, "NOT NULL");
+
+		ColumnDefinition colStartpassNr = new ColumnDefinition(
+				DataType.VARCHAR25, "startpass_nr", "NOT NULL UNIQUE");
+
+		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
+		columns.add(colPersonId);
+		columns.add(colStartpassNr);
+
+		return columns;
 	}
 
 	private List<ColumnDefinition> createGroupColumns() {
@@ -262,7 +437,7 @@ public class DatabaseConfiguration {
 
 	private List<ColumnDefinition> createPersonGroupColumns() {
 		ColumnDefinition colPersonId = new ColumnDefinition(DataType.INTEGER,
-				"person_id", "NOT NULL");
+				PERSON_ID_FK_NAME, "NOT NULL");
 		ColumnDefinition colGroupId = new ColumnDefinition(DataType.INTEGER,
 				"group_id", "NOT NULL");
 
@@ -288,7 +463,7 @@ public class DatabaseConfiguration {
 		ColumnDefinition colOnDate = new ColumnDefinition(DataType.DATETIME,
 				"on_date");
 		ColumnDefinition colPersonId = new ColumnDefinition(DataType.INTEGER,
-				"person_id", "NOT NULL");
+				PERSON_ID_FK_NAME, "NOT NULL");
 
 		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
 		columns.add(colOnDate);
@@ -304,7 +479,7 @@ public class DatabaseConfiguration {
 		ColumnDefinition colPlz = new ColumnDefinition(DataType.TEXT, "plz");
 		ColumnDefinition colCity = new ColumnDefinition(DataType.TEXT, "city");
 		ColumnDefinition colPersonId = new ColumnDefinition(DataType.INTEGER,
-				"person_id", "NOT NULL");
+				PERSON_ID_FK_NAME, "NOT NULL");
 
 		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
 		columns.add(colAdress1);
@@ -331,7 +506,7 @@ public class DatabaseConfiguration {
 		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
 		columns.add(new ColumnDefinition(DataType.TEXT, "type", "NOT NULL"));
 		columns.add(new ColumnDefinition(DataType.TEXT, "value"));
-		columns.add(new ColumnDefinition(DataType.INTEGER, "person_id",
+		columns.add(new ColumnDefinition(DataType.INTEGER, PERSON_ID_FK_NAME,
 				"NOT NULL"));
 		return columns;
 	}
