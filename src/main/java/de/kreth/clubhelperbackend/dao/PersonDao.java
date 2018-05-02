@@ -1,10 +1,6 @@
 package de.kreth.clubhelperbackend.dao;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
@@ -16,38 +12,17 @@ import de.kreth.clubhelperbackend.pojo.Person;
 @Repository
 public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 
-	private final static String columnNames[] = {"prename", "surname", "birth"};
+	final static String COLUMN_NAMES[] = {"prename", "surname", "birth"};
+	private final static String ORDER_BY[] = {"surname", "prename"};
 
 	private final static DaoConfig<Person> config = new DaoConfig<Person>(
-			"person", columnNames, new PersonRowMapper(),
-			new String[]{"surname", "prename"});
+			"person", COLUMN_NAMES, new RowMapper<Person>(PersonToString.class), ORDER_BY);
 
 	public PersonDao() {
 		super(config);
 	}
 
-	private static class PersonRowMapper extends RowMapper<Person> {
-
-		@Override
-		public Person mapRow(ResultSet rs, int rowNum) throws SQLException {
-			Person p = new PersonToString(rs.getLong("id"),
-					rs.getString("prename"), rs.getString("surname"),
-					rs.getTimestamp("birth"), rs.getTimestamp("changed"),
-					rs.getTimestamp("created"));
-			return appendDefault(p, rs);
-		}
-
-		@Override
-		public Collection<Object> mapObject(Person p) {
-			List<Object> values = new ArrayList<Object>();
-			values.add(p.getPrename());
-			values.add(p.getSurname());
-			values.add(p.getBirth());
-			return values;
-		}
-	}
-
-	private static class PersonToString extends Person {
+	public static class PersonToString extends Person {
 
 		private static final long serialVersionUID = -2909522514132832331L;
 
@@ -59,11 +34,6 @@ public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 			return bld.toString();
 		}
 
-		public PersonToString(Long id, String prename, String surname,
-				Date birth, Date changed, Date created) {
-			super(id, prename, surname, birth, changed, created);
-		}
-
 	}
 
 	/**
@@ -71,6 +41,6 @@ public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 	 */
 	@Override
 	public List<Person> getByWhere(String where) {
-		return new ArrayList<Person>();
+		return Collections.emptyList();
 	}
 }

@@ -24,22 +24,30 @@ public class CellRange {
 	public String toString() {
 		StringBuilder bld = new StringBuilder();
 		for (List<String> l: values) {
-			if(bld.length()>0) {
+			if (bld.length() > 0) {
 				bld.append("\n");
 			}
 			bld.append(String.join(", ", l));
 		}
 		return bld.toString();
 	}
+	
 	public static class Builder {
 
 		private List<List<String>> values = new ArrayList<>();
 		
-		public Builder add(int columnIndex, int rowIndex, String value) {
+		/**
+		 * Add value to Range.
+		 * @param columnIndex Column
+		 * @param rowIndex	Row
+		 * @param value	additional value
+		 * @return this
+		 */
+		public final Builder add(int columnIndex, int rowIndex, String value) {
 			List<String> row;
-			if(rowIndex >= values.size()) {
+			if (rowIndex >= values.size()) {
 				row = new ArrayList<>();
-				while(rowIndex>values.size()) {
+				while (rowIndex > values.size()) {
 					values.add(Collections.emptyList());
 				}
 				values.add(rowIndex, row);
@@ -53,7 +61,7 @@ public class CellRange {
 			return this;
 		}
 		
-		public CellRange build() {
+		public final CellRange build() {
 			return new CellRange(this);
 		}
 	}

@@ -13,9 +13,8 @@ public class Attendance extends AbstractData {
 	public Attendance() {
 	}
 
-	public Attendance(Long id, java.util.Date onDate, long personId,
-			java.util.Date changed, java.util.Date created) {
-		super(id, changed, created);
+	public Attendance(Long id, java.util.Date onDate, long personId) {
+		super(id);
 		this.onDate = onDate;
 		this.personId = personId;
 	}

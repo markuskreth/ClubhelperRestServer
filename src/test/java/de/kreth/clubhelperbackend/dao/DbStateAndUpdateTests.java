@@ -64,7 +64,6 @@ public class DbStateAndUpdateTests extends AbstractDatabaseTests<Person> {
 			columns.add(meta.getColumnName(i + 1));
 		}
 		assertTrue("No Columns in Person table", columnCount > 0);
-		System.out.println(columns);
 	}
 
 	@Test
@@ -107,7 +106,7 @@ public class DbStateAndUpdateTests extends AbstractDatabaseTests<Person> {
 
 		rs.close();
 
-		assertEquals("Found tables: " + tables, 10, tables.size());
+		assertEquals(11, tables.size());
 
 		assertTrue("Person Table not found!",
 				tables.contains(Person.class.getSimpleName().toLowerCase()));
@@ -128,6 +127,8 @@ public class DbStateAndUpdateTests extends AbstractDatabaseTests<Person> {
 		assertTrue("version Table not found!", tables.contains("version"));
 		assertTrue("personcompetition Table not found!",
 				tables.contains("personcompetition"));
+		assertTrue("startpaesse Table not found!", tables.contains("startpaesse"));
+		assertTrue("version Table not found!", tables.contains("startpass_startrechte"));
 
 	}
 

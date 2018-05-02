@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -27,8 +28,12 @@ public abstract class AbstractDatabaseTests<T extends Data> {
 	static final String db_file_name_prefix = "TestDatabase";
 
 	protected DbCheckAspect dbCheck;
-	protected static DataSource dataSource;
+	protected DataSource dataSource;
 	protected AbstractDao<T> dao;
+
+	protected DataSourceTransactionManager transMan;
+
+	protected DeletedEntriesDao deletedEntriesDao;
 
 	@Before
 	public void setUp() throws Exception {
@@ -42,10 +47,9 @@ public abstract class AbstractDatabaseTests<T extends Data> {
 		dao = initDao();
 
 		dbCheck.checkDb();
-		DataSourceTransactionManager transMan = new DataSourceTransactionManager(
-				dataSource);
+		transMan = new DataSourceTransactionManager(dataSource);
 
-		DeletedEntriesDao deletedEntriesDao = new DeletedEntriesDao();
+		deletedEntriesDao = new DeletedEntriesDao();
 		deletedEntriesDao.setDataSource(dataSource);
 		deletedEntriesDao.setPlatformTransactionManager(transMan);
 		deletedEntriesDao.setSqlDialect(new SqlForHsqlDb(dataSource));
@@ -65,10 +69,8 @@ public abstract class AbstractDatabaseTests<T extends Data> {
 
 		Connection conn = dataSource.getConnection();
 		deleteTables(conn);
+		conn.close();
 
-		if (conn != null) {
-			conn.close();
-		}
 		File dbFile = new File(db_file_name_prefix);
 		if (dbFile.exists()) {
 			dbFile.delete();
@@ -94,13 +96,21 @@ public abstract class AbstractDatabaseTests<T extends Data> {
 			}
 		}
 		rs.close();
+		List<String> tableOrder = Arrays.asList("version", "deleted_entries",
+				"contact", "relative", "ATTENDANCE".toLowerCase(), "adress",
+				"persongroup", "startpass_startrechte", "startpaesse",
+				"groupdef", "person");
+
 		allSql.sort((sql1, sql2) -> {
 
-			if (sql1.toLowerCase().endsWith(" person")) {
-				return 1;
-			}
-			if (sql2.toLowerCase().endsWith(" person")) {
-				return -1;
+			String t1 = sql1.trim().substring(sql1.trim().lastIndexOf(' ') + 1)
+					.toLowerCase();
+			String t2 = sql2.trim().substring(sql2.trim().lastIndexOf(' ') + 1)
+					.toLowerCase();
+
+			if (tableOrder.contains(t1) || tableOrder.contains(t2)) {
+				return Integer.compare(tableOrder.indexOf(t1),
+						tableOrder.indexOf(t2));
 			}
 			return sql1.compareTo(sql2);
 
