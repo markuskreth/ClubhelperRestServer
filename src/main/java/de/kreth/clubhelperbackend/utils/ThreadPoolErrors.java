@@ -3,7 +3,6 @@ package de.kreth.clubhelperbackend.utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -50,14 +49,4 @@ public class ThreadPoolErrors extends ThreadPoolExecutor {
 				&& exceptions.isEmpty();
 	}
 
-	public static void main(String[] args)
-			throws InterruptedException, ExecutionException {
-		ThreadPoolErrors threadPool = new ThreadPoolErrors(1);
-		threadPool.execute(new Runnable() {
-			public void run() {
-				throw new RuntimeException("Ouch! Got an error.");
-			}
-		});
-		threadPool.shutdown();
-	}
 }
