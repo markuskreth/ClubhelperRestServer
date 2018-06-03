@@ -1,5 +1,6 @@
 package de.kreth.clubhelperbackend.config;
 
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,9 +28,10 @@ public class SqlForHsqlDb implements SqlForDialect {
 
 	@Override
 	public boolean tableExists(String tableName) {
-		try {
-			DatabaseMetaData meta = dataSource.getConnection().getMetaData();
-			ResultSet res = meta.getTables(null, null, tableName,
+		try (Connection connection = dataSource.getConnection()) {
+
+			DatabaseMetaData meta = connection.getMetaData();
+			ResultSet res = meta.getTables(null, null, tableName.toUpperCase(),
 					new String[]{"TABLE"});
 			return res.next();
 		} catch (SQLException e) {

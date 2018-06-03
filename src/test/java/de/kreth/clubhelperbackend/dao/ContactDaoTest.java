@@ -4,11 +4,16 @@ import static org.apache.commons.lang3.StringUtils.join;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.matches;
+import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Matchers.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +41,7 @@ import de.kreth.clubhelperbackend.pojo.Contact;
 public class ContactDaoTest extends AbstractDaoTest<Contact> {
 
 	private String tableName = "tableName";
-//	private String[] columnNames = {"column1", "column2"};
+	// private String[] columnNames = {"column1", "column2"};
 
 	protected AbstractDao<Contact> configureDao() {
 
@@ -69,9 +74,8 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 		Matcher<String> sqlMatcher = sqlMatcher(Arrays.asList("select", "*",
 				"from", "tablename", "where", "deleted", "is", "null"));
 		dao.getAll();
-		
-		verify(jdbcTemplate).query(argThat(sqlMatcher),
-				any(RowMapper.class));
+
+		verify(jdbcTemplate).query(argThat(sqlMatcher), any(RowMapper.class));
 	}
 
 	@Test
@@ -84,8 +88,8 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 		c.setId(id);
 
 		dao.delete(c);
-		verify(jdbcTemplate).update(argThat(sqlMatcher),
-				any(Date.class), eq(id));
+		verify(jdbcTemplate).update(argThat(sqlMatcher), any(Date.class),
+				eq(id));
 
 	}
 
@@ -114,7 +118,8 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 
 			@Override
 			public void describeTo(Description arg0) {
-				arg0.appendText("Statement missing ").appendValue(words.get(0)).appendText(" at index " + index);
+				arg0.appendText("Statement missing ").appendValue(words.get(0))
+						.appendText(" at index " + index);
 			}
 		};
 	}
@@ -127,8 +132,8 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 		long id = 1;
 
 		dao.delete(id);
-		verify(jdbcTemplate).update(argThat(sqlMatcher),
-				any(Date.class), eq(id));
+		verify(jdbcTemplate).update(argThat(sqlMatcher), any(Date.class),
+				eq(id));
 
 	}
 
@@ -142,8 +147,7 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 				"from", "tablename", "where", "personid=1"));
 		dao.getByWhere(where);
 
-		verify(jdbcTemplate).query(argThat(sqlMatcher),
-				any(RowMapper.class));
+		verify(jdbcTemplate).query(argThat(sqlMatcher), any(RowMapper.class));
 
 	}
 
@@ -163,7 +167,8 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 		String regex = "(?iu)insert\\s+into\\s+tablename\\s*\\(\\s*id\\s*,\\s*"
 				+ join(ContactDao.columnNames, "\\s*,\\s*")
 				+ "\\s*,\\s*changed\\s*,\\s*created\\s*\\)\\s*values\\s*\\(\\s*"
-				+ countToQuestionmarkList(ContactDao.columnNames.length + 3) + "\\s*\\)";
+				+ countToQuestionmarkList(ContactDao.columnNames.length + 3)
+				+ "\\s*\\)";
 
 		List<Object> list = new ArrayList<Object>();
 		list.add(512L);
@@ -190,8 +195,7 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 		SqlForDialect sqlDialect = mock(SqlForMysql.class);
 		when(sqlDialect.queryForIdentity(any(String.class)))
 				.thenReturn("SQLcode for queriing id");
-		when(jdbcTemplate.queryForObject(
-				same("SQLcode for queriing id"), any(),
+		when(jdbcTemplate.queryForObject(same("SQLcode for queriing id"), any(),
 				same(Long.class))).thenReturn(512L);
 
 		dao.setSqlDialect(sqlDialect);
@@ -208,7 +212,8 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 		String regex = "(?iu)insert\\s+into\\s+tablename\\s*\\(\\s*"
 				+ join(ContactDao.columnNames, "\\s*,\\s*")
 				+ "\\s*,\\s*changed\\s*,\\s*created\\s*\\)\\s*values\\s*\\(\\s*"
-				+ countToQuestionmarkList(ContactDao.columnNames.length + 2) + "\\s*\\)";
+				+ countToQuestionmarkList(ContactDao.columnNames.length + 2)
+				+ "\\s*\\)";
 
 		List<Object> list = new ArrayList<Object>();
 
@@ -251,7 +256,8 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 		obj.setCreated(calendar.getTime());
 
 		Matcher<String> sqlMatcher = sqlMatcher(Arrays.asList("update",
-				"tableName", "set", "type=?,", "value=?,", "person_id=?,", "changed=?", "where", "id=?"));
+				"tableName", "set", "type=?,", "value=?,", "person_id=?,",
+				"changed=?", "where", "id=?"));
 
 		when(jdbcTemplate.update(anyString(),
 				argThat(new ObjectArrayMatcher(null)))).thenReturn(1);
@@ -273,8 +279,8 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 										// also. Update is executed also with no
 										// changes.
 		assertEquals(2L, obj.getId().longValue());
-		verify(jdbcTemplate, times(2))
-		.update(argThat(sqlMatcher), argThat(new ObjectArrayMatcher(values)));
+		verify(jdbcTemplate, times(2)).update(argThat(sqlMatcher),
+				argThat(new ObjectArrayMatcher(values)));
 
 	}
 
