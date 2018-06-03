@@ -57,9 +57,10 @@ public class CalendarAdapterTest extends AbstractGoogleTests {
 		when(request.getLocalName()).thenReturn("localhost");
 		when(request.getServerName()).thenReturn("localhost");
 		when(request.getRemoteHost()).thenReturn("localhost");
-		
+
 		CalendarAdapter calendarAdapter = new CalendarAdapter();
-		List<CalendarListEntry> items = calendarAdapter.getCalendarList(request);
+		List<CalendarListEntry> items = calendarAdapter
+				.getCalendarList(request);
 		items.forEach(calEntr -> {
 			if (summaryText.equals(calEntr.getSummary())) {
 				System.out.println("Deleting " + calEntr.getSummary() + ": "
