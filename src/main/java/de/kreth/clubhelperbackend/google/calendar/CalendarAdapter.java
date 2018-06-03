@@ -21,27 +21,32 @@ import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventAttendee;
 
 import de.kreth.clubhelperbackend.google.GoogleBaseAdapter;
+import de.kreth.clubhelperbackend.google.calendar.CalendarResource.CalendarKonfig;
 
 public class CalendarAdapter extends GoogleBaseAdapter {
 
 	com.google.api.services.calendar.Calendar service;
 	private Lock lock = new ReentrantLock();
+	private CalendarResource res;
 
 	public CalendarAdapter() throws GeneralSecurityException, IOException {
 		super();
+		res = new CalendarResource();
+
 	}
 
 	@Override
-	protected void checkRefreshToken(ServletRequest request) throws IOException {
+	protected void checkRefreshToken(ServletRequest request)
+			throws IOException {
 		try {
-			if(lock.tryLock(10, TimeUnit.SECONDS)) {
+			if (lock.tryLock(10, TimeUnit.SECONDS)) {
 				try {
 					super.checkRefreshToken(request);
 					if (service == null && credential != null) {
-						service = new com.google.api.services.calendar.Calendar
-								.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
-								.setApplicationName(APPLICATION_NAME)
-								.build();
+						service = new com.google.api.services.calendar.Calendar.Builder(
+								HTTP_TRANSPORT, JSON_FACTORY, credential)
+										.setApplicationName(APPLICATION_NAME)
+										.build();
 					}
 				} finally {
 					lock.unlock();
@@ -52,11 +57,12 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 				log.warn("Lock interrupted", e);
 			}
 		}
-		if(service == null) {
-			throw new IllegalStateException("Calendar Service not instanciated!");
+		if (service == null) {
+			throw new IllegalStateException(
+					"Calendar Service not instanciated!");
 		}
 	}
-	
+
 	Calendar getCalendarBySummaryName(List<CalendarListEntry> items,
 			String calendarSummary) throws IOException {
 
@@ -75,20 +81,23 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 		return cal;
 	}
 
-	public List<Event> getAllEvents(ServletRequest request) throws IOException, InterruptedException {
+	public List<Event> getAllEvents(ServletRequest request)
+			throws IOException, InterruptedException {
 
 		final List<Event> events = new ArrayList<>();
 
 		List<CalendarListEntry> items = getCalendarList(request);
 		final long oldest = getOldest();
 
-		ExecutorService exec = Executors.newFixedThreadPool(2);
-		exec.execute(new FetchEventsRunner(items, "mtv_wettkampf", events,
-				oldest, "color1"));
-		exec.execute(new FetchEventsRunner(items, "mtv_allgemein", events,
-				oldest, "color2"));
+		List<CalendarKonfig> configs = res.getConfigs();
+		ExecutorService exec = Executors.newFixedThreadPool(configs.size());
+		for (CalendarKonfig c : configs) {
+			exec.execute(new FetchEventsRunner(items, c.getName(), events,
+					oldest, c.getColor()));
+		}
+
 		exec.shutdown();
-		try { 
+		try {
 			exec.awaitTermination(20, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			log.error("Thread terminated - event list may be incomplete.", e);
@@ -107,7 +116,8 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 		return oldest;
 	}
 
-	List<CalendarListEntry> getCalendarList(ServletRequest request) throws IOException {
+	List<CalendarListEntry> getCalendarList(ServletRequest request)
+			throws IOException {
 		checkRefreshToken(request);
 		CalendarList calendarList;
 		try {
@@ -153,8 +163,9 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 						.setTimeMin(timeMin).execute().getItems();
 				items.forEach(item -> item.set("colorClass", colorClass));
 				events.addAll(items);
-				log.debug("Added " + items.size() + " Events for \"" + summary + "\"");
-				
+				log.debug("Added " + items.size() + " Events for \"" + summary
+						+ "\"");
+
 			} catch (IOException e) {
 				log.error("Unable to fetch Events from " + summary, e);
 			}

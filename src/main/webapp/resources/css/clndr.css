@@ -122,6 +122,10 @@
 	background-color:#00ff00;color:#000000;
 }
 
+#full-clndr .color3 {
+	background-color:#6f0db9;color:#000000;
+}
+
 .clearfix:after{
 	content:".";display:block;clear:both;visibility:hidden;line-height:0;height:0
 }
