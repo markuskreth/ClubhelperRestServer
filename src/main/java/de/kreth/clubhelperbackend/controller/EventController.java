@@ -39,11 +39,13 @@ public class EventController {
 		log = LoggerFactory.getLogger(getClass());
 	}
 
-	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = {"/",
+			""}, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public List<Map<String, Object>> getEvents(ServletRequest request) throws IOException, InterruptedException {
+	public List<Map<String, Object>> getEvents(ServletRequest request)
+			throws IOException, InterruptedException {
 		List<Map<String, Object>> result = new ArrayList<>();
-		adapter.getAllEvents(request).forEach(e -> {
+		adapter.getAllEvents(request.getServerName()).forEach(e -> {
 			if (e.getSummary() != null) {
 
 				Map<String, Object> properties = new HashMap<>();
@@ -54,15 +56,16 @@ public class EventController {
 				if (start == null) {
 					start = e.getOriginalStartTime();
 				}
-				msg.append("Event: ").append(e.getSummary()).append(", Start=").append(start)
-						.append(" skipped properties:");
+				msg.append("Event: ").append(e.getSummary()).append(", Start=")
+						.append(start).append(" skipped properties:");
 				for (Entry<String, Object> entry : e.entrySet()) {
 
 					Entry<String, Object> ev = map(entry);
 					if (ev != null) {
 						properties.put(ev.getKey(), ev.getValue());
 					} else if (log.isTraceEnabled()) {
-						msg.append("\n\t\"").append(entry.getKey()).append("\", value: ").append(entry.getValue());
+						msg.append("\n\t\"").append(entry.getKey())
+								.append("\", value: ").append(entry.getValue());
 					}
 				}
 				if (log.isTraceEnabled()) {
@@ -74,53 +77,57 @@ public class EventController {
 		return result;
 	}
 
-	private void adjustExcludedEndDate(com.google.api.services.calendar.model.Event e) {
-		if (e.isEndTimeUnspecified() == false
-				&& startIsFullDate(e)) {
+	private void adjustExcludedEndDate(
+			com.google.api.services.calendar.model.Event e) {
+		if (e.isEndTimeUnspecified() == false && startIsFullDate(e)) {
 			EventDateTime end = e.getEnd();
 			GregorianCalendar calendar = new GregorianCalendar();
-			calendar.setTimeInMillis(end.getDate() != null ? end.getDate().getValue() : end.getDateTime().getValue());
+			calendar.setTimeInMillis(end.getDate() != null
+					? end.getDate().getValue()
+					: end.getDateTime().getValue());
 			calendar.add(Calendar.DAY_OF_MONTH, -1);
-			end.setDate(new DateTime(String.format("%d-%02d-%02d", calendar.get(Calendar.YEAR),
-					calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH))));
+			end.setDate(new DateTime(
+					String.format("%d-%02d-%02d", calendar.get(Calendar.YEAR),
+							calendar.get(Calendar.MONTH) + 1,
+							calendar.get(Calendar.DAY_OF_MONTH))));
 		}
 	}
 
 	boolean startIsFullDate(com.google.api.services.calendar.model.Event e) {
-		
+
 		EventDateTime start = e.getStart();
 		if (start == null) {
 			start = e.getOriginalStartTime();
 		}
-		return (start.getDate() != null 
-				|| (start.getDateTime()!=null && start.getDateTime().isDateOnly()));
+		return (start.getDate() != null || (start.getDateTime() != null
+				&& start.getDateTime().isDateOnly()));
 	}
 
 	private Entry<String, Object> map(Entry<String, Object> entry) {
 		Object value = entry.getValue();
 		switch (entry.getKey()) {
-		case "summary":
-			entry = Maps.immutableEntry("title", value);
-			break;
-		case "start":
-		case "end":
-		case "creator":
-		case "organizer":
-			entry = Maps.immutableEntry(entry.getKey(), firstValue(value));
-			break;
-		case "created":
-		case "updated":
-		case "status":
-		case "colorClass":
-		case "id":
-		case "location":
-		case "description":
-		case "sequence":
-		case "attendees":
-			entry = Maps.immutableEntry(entry.getKey(), value);
-			break;
-		default:
-			entry = null;
+			case "summary" :
+				entry = Maps.immutableEntry("title", value);
+				break;
+			case "start" :
+			case "end" :
+			case "creator" :
+			case "organizer" :
+				entry = Maps.immutableEntry(entry.getKey(), firstValue(value));
+				break;
+			case "created" :
+			case "updated" :
+			case "status" :
+			case "colorClass" :
+			case "id" :
+			case "location" :
+			case "description" :
+			case "sequence" :
+			case "attendees" :
+				entry = Maps.immutableEntry(entry.getKey(), value);
+				break;
+			default :
+				entry = null;
 		}
 		return entry;
 	}
@@ -128,7 +135,8 @@ public class EventController {
 	private String firstValue(Object value) {
 		int index = -1;
 		index = value.toString().indexOf(':') + 2;
-		String substring = value.toString().substring(index, value.toString().indexOf('\"', index));
+		String substring = value.toString().substring(index,
+				value.toString().indexOf('\"', index));
 		return substring;
 	}
 

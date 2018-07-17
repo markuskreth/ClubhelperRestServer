@@ -11,8 +11,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.servlet.ServletRequest;
-
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Calendar;
 import com.google.api.services.calendar.model.CalendarList;
@@ -36,12 +34,11 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 	}
 
 	@Override
-	protected void checkRefreshToken(ServletRequest request)
-			throws IOException {
+	protected void checkRefreshToken(String serverName) throws IOException {
 		try {
 			if (lock.tryLock(10, TimeUnit.SECONDS)) {
 				try {
-					super.checkRefreshToken(request);
+					super.checkRefreshToken(serverName);
 					if (service == null && credential != null) {
 						service = new com.google.api.services.calendar.Calendar.Builder(
 								HTTP_TRANSPORT, JSON_FACTORY, credential)
@@ -81,12 +78,12 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 		return cal;
 	}
 
-	public List<Event> getAllEvents(ServletRequest request)
+	public List<Event> getAllEvents(String serverName)
 			throws IOException, InterruptedException {
 
 		final List<Event> events = new ArrayList<>();
 
-		List<CalendarListEntry> items = getCalendarList(request);
+		List<CalendarListEntry> items = getCalendarList(serverName);
 		final long oldest = getOldest();
 
 		List<CalendarKonfig> configs = res.getConfigs();
@@ -116,9 +113,9 @@ public class CalendarAdapter extends GoogleBaseAdapter {
 		return oldest;
 	}
 
-	List<CalendarListEntry> getCalendarList(ServletRequest request)
+	List<CalendarListEntry> getCalendarList(String serverName)
 			throws IOException {
-		checkRefreshToken(request);
+		checkRefreshToken(serverName);
 		CalendarList calendarList;
 		try {
 			calendarList = service.calendarList().list().execute();

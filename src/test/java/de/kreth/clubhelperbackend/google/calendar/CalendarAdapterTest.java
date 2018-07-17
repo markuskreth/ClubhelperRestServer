@@ -59,8 +59,7 @@ public class CalendarAdapterTest extends AbstractGoogleTests {
 		when(request.getRemoteHost()).thenReturn("localhost");
 
 		CalendarAdapter calendarAdapter = new CalendarAdapter();
-		List<CalendarListEntry> items = calendarAdapter
-				.getCalendarList(request);
+		List<CalendarListEntry> items = calendarAdapter.getCalendarList("");
 		items.forEach(calEntr -> {
 			if (summaryText.equals(calEntr.getSummary())) {
 				System.out.println("Deleting " + calEntr.getSummary() + ": "
@@ -80,7 +79,7 @@ public class CalendarAdapterTest extends AbstractGoogleTests {
 	@Test
 	public void testInit() throws GeneralSecurityException, IOException {
 
-		List<CalendarListEntry> items = adapter.getCalendarList(request);
+		List<CalendarListEntry> items = adapter.getCalendarList("");
 		assertTrue(items.size() > 0);
 		Calendar wettkampf = adapter.getCalendarBySummaryName(items,
 				"mtv_wettkampf");
@@ -90,7 +89,7 @@ public class CalendarAdapterTest extends AbstractGoogleTests {
 	@Test
 	public void getWettkampfEvents() throws IOException {
 		Calendar wettkampf = adapter.getCalendarBySummaryName(
-				adapter.getCalendarList(request), "mtv_wettkampf");
+				adapter.getCalendarList(""), "mtv_wettkampf");
 		List<Event> events = adapter.service.events().list(wettkampf.getId())
 				.execute().getItems();
 		assertNotNull(events);

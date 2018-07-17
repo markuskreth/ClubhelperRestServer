@@ -9,8 +9,6 @@ import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.servlet.ServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,11 +61,10 @@ public abstract class GoogleBaseAdapter {
 		DATA_STORE_DIR.mkdirs();
 	}
 
-	protected void checkRefreshToken(ServletRequest request)
-			throws IOException {
+	protected void checkRefreshToken(String serverName) throws IOException {
 
 		if (credential == null) {
-			credential = authorize(request);
+			credential = authorize(serverName);
 		}
 
 		if ((credential.getExpiresInSeconds() != null
@@ -92,7 +89,7 @@ public abstract class GoogleBaseAdapter {
 	 * @return an authorized Credential object.
 	 * @throws IOException
 	 */
-	private synchronized Credential authorize(ServletRequest request)
+	private synchronized Credential authorize(String serverName)
 			throws IOException {
 		if (credential != null && (credential.getExpiresInSeconds() != null
 				&& credential.getExpiresInSeconds() < 3600)) {
@@ -129,7 +126,6 @@ public abstract class GoogleBaseAdapter {
 						.setAccessType("offline").setApprovalPrompt("force")
 						.build();
 
-		String serverName = request.getServerName();
 		if (log.isDebugEnabled()) {
 			log.debug("Configuring google LocalServerReceiver on " + serverName
 					+ ":" + GOOGLE_SECRET_PORT);
