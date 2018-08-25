@@ -83,7 +83,10 @@ public class ClubhelperAuthenticationProvider
 			ResultSet rs = stmGroups.executeQuery();
 
 			while (rs.next()) {
-				grantedAuths.add(createAuthority(rs.getString("groupname")));
+				String groupName = rs.getString("groupname");
+				if (groupName != null) {
+					grantedAuths.add(createAuthority(groupName));
+				}
 			}
 
 		}

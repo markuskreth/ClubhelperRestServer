@@ -94,7 +94,7 @@ PersonInstance.prototype.processGroups = function (targetFunction) {
 };
 
 PersonInstance.prototype.groups = function (targetFunction) {
-	if(this.persGroups === null) {
+	if(this.persGroups == null) {
 		var me = this;
 		repo(baseUrl + "persongroup/for/" + me.id, function(response) {
 			me.persGroups = response;
