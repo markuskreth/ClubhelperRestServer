@@ -31,12 +31,16 @@ import de.kreth.clubhelperbackend.google.calendar.CalendarAdapter;
 @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'STAFF')")
 public class EventController {
 
-	private final CalendarAdapter adapter;
+	final CalendarAdapter adapter;
 	private final Logger log;
 
 	public EventController() throws GeneralSecurityException, IOException {
-		adapter = new CalendarAdapter();
-		log = LoggerFactory.getLogger(getClass());
+		this(new CalendarAdapter(), LoggerFactory.getLogger(EventController.class));
+	}
+
+	EventController(CalendarAdapter calendarAdapter, Logger logger) {
+		adapter = calendarAdapter;
+		log = logger;
 	}
 
 	@RequestMapping(value = { "/", "" }, method = RequestMethod.GET, produces = "application/json")
@@ -51,9 +55,6 @@ public class EventController {
 				adjustExcludedEndDate(e);
 				StringBuilder msg = new StringBuilder();
 				EventDateTime start = e.getStart();
-				if (start == null) {
-					start = e.getOriginalStartTime();
-				}
 				msg.append("Event: ").append(e.getSummary()).append(", Start=").append(start)
 						.append(" skipped properties:");
 				for (Entry<String, Object> entry : e.entrySet()) {
@@ -78,6 +79,9 @@ public class EventController {
 		if (e.isEndTimeUnspecified() == false
 				&& startIsFullDate(e)) {
 			EventDateTime end = e.getEnd();
+			if (end == null) {
+				return;
+			}
 			GregorianCalendar calendar = new GregorianCalendar();
 			calendar.setTimeInMillis(end.getDate() != null ? end.getDate().getValue() : end.getDateTime().getValue());
 			calendar.add(Calendar.DAY_OF_MONTH, -1);
@@ -126,29 +130,17 @@ public class EventController {
 	}
 
 	private String firstValue(Object value) {
+		if(value == null) {
+			return "";
+		}
+		String string = value.toString();
+		if (string.contains(":") == false || string.contains("\"") == false) {
+			return "";
+		}
 		int index = -1;
-		index = value.toString().indexOf(':') + 2;
-		String substring = value.toString().substring(index, value.toString().indexOf('\"', index));
+		index = string.indexOf(':') + 2;
+		String substring = string.substring(index, string.indexOf('\"', index));
 		return substring;
 	}
 
-	public class Event {
-		private String title;
-		private long start;
-
-		public Event(String title, long l) {
-			super();
-			this.title = title;
-			this.start = l;
-		}
-
-		public String getTitle() {
-			return title;
-		}
-
-		public long getStart() {
-			return start;
-		}
-
-	}
 }

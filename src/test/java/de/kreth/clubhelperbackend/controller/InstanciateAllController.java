@@ -3,6 +3,8 @@ package de.kreth.clubhelperbackend.controller;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,6 +28,10 @@ public class InstanciateAllController {
     @SuppressWarnings("rawtypes")
 	@Parameters(name = "{index}: {0}")
     public static Set<Class<? extends ClubController>> data() {
+    	List<Class<? extends ClubController>> excluded = new ArrayList<>();
+    	excluded.add(AttendanceController.class);
+    	excluded.add(DeletedEntriesController.class);
+    	excluded.add(StartpassController.class);
     	Reflections reflections = new Reflections("de.kreth.clubhelperbackend.controller");
     	Set<Class<? extends ClubController>> classes = reflections.getSubTypesOf(ClubController.class).stream()
     			.filter(c -> !c.isAnonymousClass() && !Modifier.isAbstract(c.getModifiers())).collect(Collectors.toSet());
