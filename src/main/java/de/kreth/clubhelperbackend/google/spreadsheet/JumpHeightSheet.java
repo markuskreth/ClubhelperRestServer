@@ -21,23 +21,30 @@ import com.google.api.services.sheets.v4.model.ValueRange;
 
 public class JumpHeightSheet {
 
+	private static final Logger log = LoggerFactory.getLogger(JumpHeightSheet.class);
+	
 	final DateFormat defaultDf = new SimpleDateFormat("dd.MM.yyyy");
 	final DateFormat invalidDf = new SimpleDateFormat("dd.MM.yy");
 	
 	private static final int rowIndexDate = 2;
 	private static final int taskIndexIncrementor = 4;
 
-	private static final Logger log = LoggerFactory.getLogger(JumpHeightSheet.class);
-	
 	Sheet sheet;
 	private ArrayList<String> tasks;
 	private List<CellValue<Date>> dates;
+
+	private final Sheets service;
 	
 	public JumpHeightSheet(Sheet sheet) throws SheetDataException {
-		assert(sheet != null);
-		this.sheet = sheet;
+		this(SheetService.INSTANCE.getService(), sheet);
 	}
 	
+	JumpHeightSheet(Sheets service, Sheet sheet) {
+		assert(sheet != null);
+		this.sheet = sheet;
+		this.service = service;
+	}
+
 	public String getTitle() {
 		return sheet.getProperties().getTitle();
 	}
@@ -45,7 +52,7 @@ public class JumpHeightSheet {
 	public List<CellValue<Date>> getDates() throws IOException {
 		if(dates == null) {
 			dates = new ArrayList<>();
-			ValueRange values = SheetService.getRange(getTitle(), "3:3");
+			ValueRange values = service.getRange(getTitle(), "3:3");
 			int column = 0;
 			for (List<Object> l: values.getValues()) {
 				for (Object o : l) {
@@ -74,7 +81,7 @@ public class JumpHeightSheet {
 			builder.add(columnIndex++, 0, defaultDf.format(date.getObject()));
 		}
 		int row = getIndexOf(name);
-		ValueRange values = SheetService.getRange(getTitle(), new StringBuilder().append(row).append(':').append(row).toString());
+		ValueRange values = service.getRange(getTitle(), new StringBuilder().append(row).append(':').append(row).toString());
 		MutableInt count = new MutableInt(0);
 
 		values.getValues().get(0).stream().forEach(o -> {
@@ -91,7 +98,7 @@ public class JumpHeightSheet {
 		int column = getIndexOf(date);
 		int row = getIndexOf(taskName);
 		
-		ExtendedValue res = SheetService.set(getTitle(), column , row, value);
+		ExtendedValue res = service.set(getTitle(), column , row, value);
 		
 		return new CellValue<Double>(res.getNumberValue().doubleValue(), column, row);
 	}
@@ -102,7 +109,7 @@ public class JumpHeightSheet {
 		row = tasks.indexOf(taskName);
 		if(row<0) {
 			row = tasks.size() + taskIndexIncrementor;
-			SheetService.set(getTitle(), 1, row, taskName);
+			service.set(getTitle(), 1, row, taskName);
 			this.tasks.add(taskName);
 		} else {
 			row += taskIndexIncrementor;
@@ -122,7 +129,7 @@ public class JumpHeightSheet {
 		
 		if(column<0) {
 			column = dates.size() + 2;
-			SheetService.set(getTitle(), column, rowIndexDate + 1, defaultDf.format(date.getTime()));
+			service.set(getTitle(), column, rowIndexDate + 1, defaultDf.format(date.getTime()));
 			this.dates.add(new CellValue<Date>(date.getTime(), column, rowIndexDate + 1));
 		}
 		return column;
@@ -132,7 +139,7 @@ public class JumpHeightSheet {
 		if(tasks == null) {
 			tasks = new ArrayList<>();
 	
-			ValueRange values = SheetService.getRange(getTitle(), "A:A");
+			ValueRange values = service.getRange(getTitle(), "A:A");
 			for (List<Object> l: values.getValues()) {
 				for (Object o : l) {
 					String task = o.toString();
@@ -148,7 +155,7 @@ public class JumpHeightSheet {
 	public List<String> addTask(String taskName) throws IOException {
 		
 		int row = getTasks().size() + taskIndexIncrementor;
-		SheetService.set(getTitle(), 1, row, taskName);
+		service.set(getTitle(), 1, row, taskName);
 		tasks.add(taskName);
 		return getTasks();
 	}
@@ -160,7 +167,7 @@ public class JumpHeightSheet {
 	}
 
 	public void setTitle(ServletRequest request, String name) throws IOException, InterruptedException {
-		JumpHeightSheet result = SheetService.changeTitle(request, sheet, name);
+		JumpHeightSheet result = service.changeTitle(request, sheet, name);
 		update(result);
 	}
 

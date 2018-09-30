@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -21,14 +22,20 @@ import de.kreth.clubhelperbackend.AbstractGoogleTests;
 public class JumpHeightSheetTest extends AbstractGoogleTests {
 
 	static AtomicInteger testCount = new AtomicInteger(0);
+	private static Sheets service;
 	private static final Calendar testDate = new GregorianCalendar(2017,
 			Calendar.OCTOBER, 30);
 	private JumpHeightSheet test;
 
+	@BeforeClass
+	public static void initService() {
+		service = SheetService.INSTANCE.getService();
+	}
+	
 	@Before
 	public void createTestSheet() throws IOException {
 		String nextTitle = nextTitle();
-		test = SheetService.create(request, nextTitle);
+		test = service.create(request, nextTitle);
 	}
 
 	private String nextTitle() {
@@ -37,13 +44,13 @@ public class JumpHeightSheetTest extends AbstractGoogleTests {
 
 	@After
 	public void deleteTestSheet() throws IOException {
-		SheetService.delete(test);
+		service.delete(test);
 	}
 
 	@Test
 	public void testGetSheetAndTitle() throws Exception {
 		String title = test.getTitle();
-		JumpHeightSheet clone = SheetService.get(request, title);
+		JumpHeightSheet clone = service.get(request, title);
 		assertNotNull(clone);
 		assertEquals(title, clone.getTitle());
 
@@ -87,7 +94,7 @@ public class JumpHeightSheetTest extends AbstractGoogleTests {
 		test.add("10Sprünge", testDate, 13.1);
 		test.add("10Sprünge", testDate, 13.2);
 
-		test = SheetService.get(request, test.getTitle());
+		test = service.get(request, test.getTitle());
 		CellRange values = test.getValues("10Sprünge");
 		assertNotNull(values);
 		assertEquals(2, values.getValues().size());
@@ -111,10 +118,10 @@ public class JumpHeightSheetTest extends AbstractGoogleTests {
 	@Test
 	public void testCreateAndDeleteSheet() throws Exception {
 		String nextTi = nextTitle();
-		JumpHeightSheet test = SheetService.create(request, nextTi);
+		JumpHeightSheet test = service.create(request, nextTi);
 		assertNotNull(test);
 		assertEquals(nextTi, test.getTitle());
 
-		SheetService.delete(test);
+		service.delete(test);
 	}
 }

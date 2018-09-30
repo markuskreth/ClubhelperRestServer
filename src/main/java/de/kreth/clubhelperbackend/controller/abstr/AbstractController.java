@@ -149,9 +149,10 @@ public abstract class AbstractController<T extends Data>
 		if (toCreate.getId() < 0) {
 			return dao.insert(toCreate);
 		} else {
-			if (getById(toCreate.getId()) != null) {
+			T byId = getById(toCreate.getId());
+			if (byId != null) {
 				dao.undelete(toCreate.getId());
-				return toCreate;
+				return byId;
 			} else {
 				return dao.insert(toCreate);
 			}

@@ -3,9 +3,11 @@ package de.kreth.clubhelperbackend;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -13,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ExtendedModelMap;
+import org.springframework.ui.Model;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -110,6 +113,22 @@ public class PersonControllerTest {
 		assertEquals(TestDataPerson.INSTANCE.birth, out.getBirth());
 	}
 
+	@Test
+	public void testGetAllAsView() {
+		Model model = mock(Model.class);
+		assertEquals("PersonAllAjax", controller.getAllAsView(true, null, model));
+		assertEquals("PersonAll", controller.getAllAsView(false, null, model));
+	}
+	
+	@Test
+	public void testPost() {
+		Person toCreate = new Person(3L, "prename", "surname", new Date());
+		controller.post(3L, toCreate);
+		assertEquals(1, dao.inserted.size());
+		dao.byId.put(3l, toCreate);
+		controller.post(3L, toCreate);
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void personGetAsView() {
@@ -152,4 +171,11 @@ public class PersonControllerTest {
 		assertEquals(TestDataPerson.getPerson2(),
 				relative.get(0).getToPerson());
 	}
+	
+	@Test
+	public void testGetChangedSince() {
+		List<Person> changedPersons = controller.getChangedSince(1L);
+		assertNotNull(changedPersons);
+	}
+	
 }

@@ -34,6 +34,7 @@ import de.kreth.clubhelperbackend.google.spreadsheet.JumpHeightSheet;
 import de.kreth.clubhelperbackend.google.spreadsheet.JumpHightTask;
 import de.kreth.clubhelperbackend.google.spreadsheet.SheetDataException;
 import de.kreth.clubhelperbackend.google.spreadsheet.SheetService;
+import de.kreth.clubhelperbackend.google.spreadsheet.Sheets;
 import de.kreth.clubhelperbackend.google.spreadsheet.JumpHightTask.Builder;
 import de.kreth.clubhelperbackend.utils.ThreadPoolErrors;
 
@@ -42,20 +43,30 @@ import de.kreth.clubhelperbackend.utils.ThreadPoolErrors;
 @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'STAFF')")
 public class JumpHeightSheetController {
 
-	private final Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log;
+	private final Sheets sheetService;
+	
+	public JumpHeightSheetController() {
+		this(SheetService.INSTANCE.getService(), LoggerFactory.getLogger(JumpHeightSheetController.class));
+	}
+
+	JumpHeightSheetController(Sheets sheets, Logger logger) {
+		this.sheetService = sheets;
+		this.log = logger;
+	}
 
 	@RequestMapping(value = "/tasks/{title}/{taskName}", method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
 	public List<String> addTask(ServletRequest request, @PathVariable("title") String title, @PathVariable("taskName") String taskName)
 			throws IOException, InterruptedException {
-		return SheetService.get(request, title).addTask(taskName);
+		return sheetService.get(request, title).addTask(taskName);
 	}
 
 	@RequestMapping(value = "/{title}", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
 	public Map<String, List<?>> createCompetitor(ServletRequest request, @PathVariable("title") String title)
 			throws IOException, InterruptedException {
-		JumpHeightSheet sheet = SheetService.create(request, title);
+		JumpHeightSheet sheet = sheetService.create(request, title);
 		Map<String, List<?>> result = createTaskValues(sheet);
 		return result;
 	}
@@ -72,7 +83,7 @@ public class JumpHeightSheetController {
 	public boolean addValue(ServletRequest request, @PathVariable("prename") String prename, @PathVariable("surname") String surname,
 			@PathVariable("task") String task, @RequestBody Double value) throws IOException, InterruptedException {
 		String title = concatNameToTitle(prename, surname);
-		JumpHeightSheet sheet = SheetService.get(request, title);
+		JumpHeightSheet sheet = sheetService.get(request, title);
 		CellValue<Double> result = sheet.add(task, getToday(), value);
 		return result.getObject().equals(value);
 	}
@@ -93,7 +104,7 @@ public class JumpHeightSheetController {
 	@RequestMapping(value = "/tasks/{title}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public List<JumpHightTask> getTasks(ServletRequest request, @PathVariable("title") String title) throws IOException, InterruptedException {
-		JumpHeightSheet sheet = SheetService.get(request, title);
+		JumpHeightSheet sheet = sheetService.get(request, title);
 		List<JumpHightTask> tasks = buildTasks(sheet);
 		return tasks;
 	}
@@ -191,11 +202,11 @@ public class JumpHeightSheetController {
 			if (log.isDebugEnabled()) {
 				log.debug("Fetching " + JumpHeightSheet.class.getSimpleName() + " for " + title);
 			}
-			sheet = SheetService.get(request, title);
+			sheet = sheetService.get(request, title);
 		} catch (IOException e) {
 			if (e.getMessage().equals("Sheet with title \"" + title + "\" not found.")) {
 				log.warn("Sheet load failed!", e);
-				sheet = SheetService.create(request, title);
+				sheet = sheetService.create(request, title);
 			} else {
 				throw e;
 			}
@@ -242,7 +253,7 @@ public class JumpHeightSheetController {
 	@ResponseBody
 	public List<String> getTitles(ServletRequest request) throws IOException, InterruptedException {
 		List<String> result = new ArrayList<>();
-		List<JumpHeightSheet> sheets = SheetService.getSheets(request);
+		List<JumpHeightSheet> sheets = sheetService.getSheets(request);
 		sheets.sort(new Comparator<JumpHeightSheet>() {
 
 			@Override

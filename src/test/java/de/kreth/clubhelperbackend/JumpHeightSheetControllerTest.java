@@ -19,7 +19,7 @@ public class JumpHeightSheetControllerTest extends AbstractGoogleTests {
 
 	@Test
 	public void DateComparissonMatches() throws Exception {
-		List<CellValue<Date>> dates = SheetService.get(request, "Langenhagen,Anna")
+		List<CellValue<Date>> dates = SheetService.INSTANCE.getService().get(request, "Langenhagen,Anna")
 				.getDates();
 		System.out.println(dates.get(0).getObject());
 		Calendar date = new GregorianCalendar(2015, Calendar.MAY, 11, 17, 13,
