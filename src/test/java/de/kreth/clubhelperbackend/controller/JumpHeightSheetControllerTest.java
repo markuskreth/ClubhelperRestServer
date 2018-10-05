@@ -30,32 +30,25 @@ import de.kreth.clubhelperbackend.google.spreadsheet.CellRange;
 import de.kreth.clubhelperbackend.google.spreadsheet.CellValue;
 import de.kreth.clubhelperbackend.google.spreadsheet.JumpHeightSheet;
 import de.kreth.clubhelperbackend.google.spreadsheet.Sheets;
+import de.kreth.clubhelperbackend.testutils.MockedLogger;
 
 public class JumpHeightSheetControllerTest {
 
 	@Mock
 	Sheets service;
 	@Mock
-	private Logger logger;
-	@Mock
 	private ServletRequest request;
+	private Logger logger;
 	
 	private JumpHeightSheetController controller;
 	
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		setupLogger();
+		logger = MockedLogger.mock();
 		controller = new JumpHeightSheetController(service, logger);
 	}
 
-	private void setupLogger() {
-		when(logger.isDebugEnabled()).thenReturn(true);
-		when(logger.isErrorEnabled()).thenReturn(true);
-		when(logger.isInfoEnabled()).thenReturn(true);
-		when(logger.isTraceEnabled()).thenReturn(true);
-		when(logger.isWarnEnabled()).thenReturn(true);
-	}
 	
 	@Test
 	public void test() throws IOException, InterruptedException {

@@ -18,7 +18,6 @@ import javax.sql.DataSource;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.context.ApplicationContext;
@@ -92,7 +91,7 @@ public class HomeControllerTest {
 
 		Statement stm = mock(Statement.class);
 		when(conn.createStatement()).thenReturn(stm);
-		when(stm.executeQuery(Matchers.anyString())).thenReturn(rs);
+		when(stm.executeQuery(anyString())).thenReturn(rs);
 		String csv = controller.getAttendenceGeneral();
 		assertFalse(csv.trim().isEmpty());
 		assertEquals(";01.01.2018;02.01.2018\n" + "Surname1, Prename1;X;\n"

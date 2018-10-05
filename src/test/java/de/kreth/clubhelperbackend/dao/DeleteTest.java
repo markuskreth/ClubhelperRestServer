@@ -28,6 +28,7 @@ import de.kreth.clubhelperbackend.config.SqlForDialect;
 import de.kreth.clubhelperbackend.config.SqlForHsqlDb;
 import de.kreth.clubhelperbackend.pojo.Contact;
 import de.kreth.clubhelperbackend.pojo.Person;
+import de.kreth.clubhelperbackend.testutils.MockedLogger;
 import de.kreth.dbmanager.DatabaseType;
 
 //@RunWith(SpringJUnit4ClassRunner.class)
@@ -67,7 +68,7 @@ public class DeleteTest {
 		contactDao.setDeletedEntriesDao(deletedEnriesDao);
 
 		DbCheckAspect mysqlCheck = new DbCheckAspect(dataSource,
-				DatabaseType.HSQLDB);
+				DatabaseType.HSQLDB, MockedLogger.mock());
 		mysqlCheck.checkDb();
 
 		insertPersons(4L, man, deletedEnriesDao);

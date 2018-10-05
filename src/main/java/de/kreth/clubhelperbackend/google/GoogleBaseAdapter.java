@@ -2,9 +2,11 @@ package de.kreth.clubhelperbackend.google;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
+import com.google.api.client.extensions.java6.auth.oauth2.VerificationCodeReceiver;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
@@ -94,16 +97,62 @@ public abstract class GoogleBaseAdapter {
 	 */
 	private synchronized Credential authorize(ServletRequest request)
 			throws IOException {
-		if (credential != null && (credential.getExpiresInSeconds() != null
-				&& credential.getExpiresInSeconds() < 3600)) {
+		if (credentialIsValid()) {
 			credential.refreshToken();
 			return credential;
 		}
+		
+		Reader in = getSecretFileInputStream();
+		
+		GoogleClientSecrets clientSecrets = GoogleClientSecrets
+				.load(JSON_FACTORY, in);
+		if (log.isTraceEnabled()) {
+			log.trace("client secret json resource loaded.");
+		}
+
+		String serverName = request.getServerName();
+		if (log.isDebugEnabled()) {
+			log.debug("Configuring google LocalServerReceiver on " + serverName
+					+ ":" + GOOGLE_SECRET_PORT);
+		}
+
+		Credential credential = loadCredential(clientSecrets, serverName);
+		if (log.isDebugEnabled()) {
+			log.debug(
+					"Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
+		}
+
+		credential.setExpiresInSeconds(Long.valueOf(691200L));
+
+		return credential;
+	}
+
+	Credential loadCredential(GoogleClientSecrets clientSecrets, String serverName) throws IOException {
+		// Build flow and trigger user authorization request.
+		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+				HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
+						.setDataStoreFactory(DATA_STORE_FACTORY)
+						.setAccessType("offline").setApprovalPrompt("force")
+						.build();
+
+		VerificationCodeReceiver localServerReceiver = initReceiver(serverName);
+
+		Credential credential = new AuthorizationCodeInstalledApp(flow,
+				localServerReceiver).authorize("user");
+		return credential;
+	}
+
+	private VerificationCodeReceiver initReceiver(String serverName) {
+		LocalServerReceiver localServerReceiver = new LocalServerReceiver.Builder()
+				.setHost(serverName).setPort(GOOGLE_SECRET_PORT).build();
+		return localServerReceiver;
+	}
+
+	Reader getSecretFileInputStream() throws FileNotFoundException, IOException {
 		// Load client secrets.
 		InputStream in = getClass().getResourceAsStream("/client_secret.json");
 		if (in == null) {
-			File inHome = new File(System.getProperty("user.home"),
-					"client_secret.json");
+			File inHome = getClientSecretFile();
 			if (inHome.exists()) {
 				if (log.isInfoEnabled()) {
 					log.info(
@@ -113,41 +162,21 @@ public abstract class GoogleBaseAdapter {
 			} else {
 				log.error(
 						"Failed to load client_secret.json. Download from google console.");
-				return null;
+				throw new IOException("Failed to load google secret file. Download from google console and install on Server");
 			}
 		}
-		GoogleClientSecrets clientSecrets = GoogleClientSecrets
-				.load(JSON_FACTORY, new InputStreamReader(in));
-		if (log.isTraceEnabled()) {
-			log.trace("client secret json resource loaded.");
-		}
+		return new InputStreamReader(in);
+	}
 
-		// Build flow and trigger user authorization request.
-		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-				HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
-						.setDataStoreFactory(DATA_STORE_FACTORY)
-						.setAccessType("offline").setApprovalPrompt("force")
-						.build();
+	File getClientSecretFile() {
+		File inHome = new File(System.getProperty("user.home"),
+				"client_secret.json");
+		return inHome;
+	}
 
-		String serverName = request.getServerName();
-		if (log.isDebugEnabled()) {
-			log.debug("Configuring google LocalServerReceiver on " + serverName
-					+ ":" + GOOGLE_SECRET_PORT);
-		}
-
-		LocalServerReceiver localServerReceiver = new LocalServerReceiver.Builder()
-				.setHost(serverName).setPort(GOOGLE_SECRET_PORT).build();
-
-		Credential credential = new AuthorizationCodeInstalledApp(flow,
-				localServerReceiver).authorize("user");
-		if (log.isDebugEnabled()) {
-			log.debug(
-					"Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
-		}
-
-		credential.setExpiresInSeconds(Long.valueOf(691200L));
-
-		return credential;
+	boolean credentialIsValid() {
+		return credential != null && (credential.getExpiresInSeconds() != null
+				&& credential.getExpiresInSeconds() < 3600);
 	}
 
 }

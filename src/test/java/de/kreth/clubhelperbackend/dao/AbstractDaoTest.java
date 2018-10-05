@@ -1,11 +1,9 @@
 package de.kreth.clubhelperbackend.dao;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import org.junit.After;
 import org.junit.Before;
-import org.mockito.Matchers;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -38,7 +36,7 @@ public abstract class AbstractDaoTest<T extends Data> {
 
 		dao = configureDao();
 
-		when(dialect.queryForIdentity(Matchers.eq(DaoPackageMemberAccessor.getTableName(dao)))).thenReturn("queryForIdentity");
+		when(dialect.queryForIdentity(eq(DaoPackageMemberAccessor.getTableName(dao)))).thenReturn("queryForIdentity");
 		when(jdbcTemplate.queryForObject("queryForIdentity", null, Long.class)).thenReturn(objectId);
 		
 		dao.setJdbcTemplate(jdbcTemplate);

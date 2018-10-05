@@ -37,6 +37,7 @@ import com.google.api.services.calendar.model.Event.Creator;
 import com.google.api.services.calendar.model.EventDateTime;
 
 import de.kreth.clubhelperbackend.google.calendar.CalendarAdapter;
+import de.kreth.clubhelperbackend.testutils.MockedLogger;
 
 public class EventControllerTest {
 	
@@ -49,13 +50,13 @@ public class EventControllerTest {
 	private List<Event> eventResult;
 	@Mock
 	private ServletRequest request;
-	@Mock
+	
 	private Logger logger;
 
 	@Before
 	public void initController() throws GeneralSecurityException, IOException, InterruptedException {
 		MockitoAnnotations.initMocks(this);
-		setupLogger();
+		logger = MockedLogger.mock();
 		eventDateTime = new EventDateTime();
 		event = new Event();
 		event.setStart(eventDateTime);
@@ -66,15 +67,6 @@ public class EventControllerTest {
 		controller = new EventController(adapter, logger);
 		when(adapter.getAllEvents(any(ServletRequest.class))).thenReturn(eventResult);
 	}
-
-	private void setupLogger() {
-		when(logger.isDebugEnabled()).thenReturn(true);
-		when(logger.isErrorEnabled()).thenReturn(true);
-		when(logger.isInfoEnabled()).thenReturn(true);
-		when(logger.isTraceEnabled()).thenReturn(true);
-		when(logger.isWarnEnabled()).thenReturn(true);
-	}
-	
 
 	@Test
 	public void initDefaultConstructor() throws GeneralSecurityException, IOException {

@@ -36,12 +36,12 @@ public class DbCheckAspect implements Database {
 
 	@Autowired
 	public DbCheckAspect(DataSource dataSource) {
-		this(dataSource, DatabaseType.MYSQL);
+		this(dataSource, DatabaseType.MYSQL, LoggerFactory.getLogger(DbCheckAspect.class));
 	}
 
-	public DbCheckAspect(DataSource dataSource, DatabaseType dbType) {
+	public DbCheckAspect(DataSource dataSource, DatabaseType dbType, Logger log) {
 
-		logger = LoggerFactory.getLogger(getClass());
+		logger = log;
 		this.dbType = dbType;
 		if (logger.isDebugEnabled()) {
 			try {

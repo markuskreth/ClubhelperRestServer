@@ -15,12 +15,14 @@ import javax.sql.DataSource;
 import org.hsqldb.jdbc.JDBCDataSource;
 import org.junit.After;
 import org.junit.Before;
+import org.slf4j.Logger;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import de.kreth.clubhelperbackend.aspects.DbCheckAspect;
 import de.kreth.clubhelperbackend.config.SqlForHsqlDb;
 import de.kreth.clubhelperbackend.dao.abstr.AbstractDao;
 import de.kreth.clubhelperbackend.pojo.Data;
+import de.kreth.clubhelperbackend.testutils.MockedLogger;
 import de.kreth.dbmanager.DatabaseType;
 
 public abstract class AbstractDatabaseTests<T extends Data> {
@@ -35,15 +37,18 @@ public abstract class AbstractDatabaseTests<T extends Data> {
 
 	protected DeletedEntriesDao deletedEntriesDao;
 
+	private Logger logger;
+
 	@Before
 	public void setUp() throws Exception {
+		logger = MockedLogger.mock();
 		JDBCDataSource ds = new JDBCDataSource();
 		ds.setUrl("jdbc:hsqldb:mem:testdb");
 		ds.setUser("sa");
 
 		dataSource = ds;
 
-		dbCheck = new DbCheckAspect(dataSource, DatabaseType.HSQLDB);
+		dbCheck = new DbCheckAspect(dataSource, DatabaseType.HSQLDB, logger);
 		dao = initDao();
 
 		dbCheck.checkDb();
