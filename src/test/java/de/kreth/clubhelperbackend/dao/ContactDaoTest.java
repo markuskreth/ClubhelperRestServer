@@ -6,7 +6,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.ArgumentMatchers.same;
@@ -143,7 +142,6 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 
 		list.add(now);
 		list.add(now);
-		final Object[] values = list.toArray();
 
 		when(jdbcTemplate.update(anyString(), ArgumentMatchers.<Object>any())).thenReturn(1);
 
