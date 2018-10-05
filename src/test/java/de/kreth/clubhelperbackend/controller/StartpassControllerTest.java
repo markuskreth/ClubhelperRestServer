@@ -1,7 +1,7 @@
 package de.kreth.clubhelperbackend.controller;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
