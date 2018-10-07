@@ -1,5 +1,6 @@
 package de.kreth.clubhelperbackend.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,15 +35,18 @@ public class StartpassDao extends AbstractDao<Startpass> {
 	public StartpassDao() {
 		super(config);
 	}
-
+	
 	public List<Startpass> getForPersonId(long id) {
 		if(passMapper.selectStartrecht == null) {
 			startrechtMapper.setLog(log);
 			TableDefinition startrecht = dbConfig.getStartrecht();
 			
-			try {
-				PreparedStatement selectStartrecht = getConnection()
-						.prepareStatement(new StringBuilder("SELECT * FROM ").append(startrecht.getTableName()).append(" WHERE startpass_id=?").toString());
+			try (Connection connection = getConnection()) {
+				
+				String sql = new StringBuilder("SELECT * FROM ").append(startrecht.getTableName())
+						.append(" WHERE startpass_id=?").toString();
+				PreparedStatement selectStartrecht = connection
+						.prepareStatement(sql);
 				passMapper.selectStartrecht = selectStartrecht;
 			} catch (CannotGetJdbcConnectionException | SQLException e) {
 				throw new DataSourceLookupFailureException("Error creating Prepared Statement for " + startrecht.getTableName(), e);
