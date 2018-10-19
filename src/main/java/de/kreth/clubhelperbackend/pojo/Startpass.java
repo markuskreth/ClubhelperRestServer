@@ -9,6 +9,7 @@ public class Startpass extends AbstractData {
 	private static final long serialVersionUID = -6071881343354800916L;
 
 	private long personId;
+	private String startpassNr;
 	private List<Startrecht> startrechte;
 	
 	public Startpass() {
@@ -19,10 +20,11 @@ public class Startpass extends AbstractData {
 		super(id);
 	}
 	
-	public Startpass(Long id, long personId, List<Startrecht> startrechte, Date changed, Date created) {
+	public Startpass(Long id, long personId, String startpassNr, List<Startrecht> startrechte, Date changed, Date created) {
 		super(id, changed, created);
 		this.personId = personId;
 		this.startrechte = startrechte;
+		this.startpassNr = startpassNr;
 	}
 
 	public long getPersonId() {
@@ -31,6 +33,14 @@ public class Startpass extends AbstractData {
 
 	public void setPersonId(long personId) {
 		this.personId = personId;
+	}
+
+	public String getStartpassNr() {
+		return startpassNr;
+	}
+
+	public void setStartpassNr(String startpassNr) {
+		this.startpassNr = startpassNr;
 	}
 
 	public List<Startrecht> getStartrechte() {
@@ -44,7 +54,7 @@ public class Startpass extends AbstractData {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("Startpass [personId=").append(personId).append(", startrechte=").append(startrechte)
+		builder.append("Startpass [personId=").append(personId).append(", startpassNr=").append(startpassNr).append(", startrechte=").append(startrechte)
 				.append("]");
 		return builder.toString();
 	}

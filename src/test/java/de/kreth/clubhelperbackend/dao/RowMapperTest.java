@@ -35,7 +35,7 @@ import de.kreth.clubhelperbackend.dao.AdressDao.AdressWrapper;
 import de.kreth.clubhelperbackend.dao.PersonDao.PersonToString;
 import de.kreth.clubhelperbackend.dao.RelativeDao.ToStringRelative;
 import de.kreth.clubhelperbackend.dao.abstr.AbstractDao;
-import de.kreth.clubhelperbackend.dao.abstr.AbstractDao.RowMapper;
+import de.kreth.clubhelperbackend.dao.abstr.AbstractDao.ClubhelperRowMapper;
 import de.kreth.clubhelperbackend.pojo.AbstractData;
 import de.kreth.clubhelperbackend.pojo.Adress;
 import de.kreth.clubhelperbackend.pojo.Attendance;
@@ -88,7 +88,7 @@ public class RowMapperTest {
 		Date birth = new Date(1000000L);
 		when(rs.getTimestamp("birth")).thenReturn(new Timestamp(birth.getTime()));
 
-		RowMapper<Person> mapper = new RowMapper<Person>(PersonToString.class);
+		ClubhelperRowMapper<Person> mapper = new ClubhelperRowMapper<Person>(PersonToString.class);
 
 		mapper.setLog(log);
 		Person mapped = mapper.mapRow(rs, FIRST);
@@ -105,7 +105,7 @@ public class RowMapperTest {
 	public void testPersonMapperMapObject() {
 		Person p = TestDataPerson.getPerson();
 
-		RowMapper<Person> mapper = new RowMapper<Person>(PersonToString.class);
+		ClubhelperRowMapper<Person> mapper = new ClubhelperRowMapper<Person>(PersonToString.class);
 
 		mapper.setLog(log);
 		List<Object> values = new ArrayList<>(mapper.mapObject(p, PersonDao.COLUMN_NAMES));
@@ -123,14 +123,14 @@ public class RowMapperTest {
 	}
 
 	private void setupWithDefaultColumns(ResultSet rs) throws SQLException {
-		when(rs.getLong(RowMapper.ID_COLUMN)).thenReturn(expectedID);
+		when(rs.getLong(ClubhelperRowMapper.ID_COLUMN)).thenReturn(expectedID);
 
-		when(rs.getDate(RowMapper.CHANGED_COLUMN)).thenReturn(changed);
-		when(rs.getTimestamp(RowMapper.CHANGED_COLUMN)).thenReturn(new Timestamp(changed.getTime()));
+		when(rs.getDate(ClubhelperRowMapper.CHANGED_COLUMN)).thenReturn(changed);
+		when(rs.getTimestamp(ClubhelperRowMapper.CHANGED_COLUMN)).thenReturn(new Timestamp(changed.getTime()));
 
-		when(rs.getDate(RowMapper.CREATED_COLUMN)).thenReturn(created);
-		when(rs.getTimestamp(RowMapper.CREATED_COLUMN)).thenReturn(new Timestamp(created.getTime()));
-		when(rs.getBoolean(RowMapper.DELETE_COLUMN)).thenReturn(false);
+		when(rs.getDate(ClubhelperRowMapper.CREATED_COLUMN)).thenReturn(created);
+		when(rs.getTimestamp(ClubhelperRowMapper.CREATED_COLUMN)).thenReturn(new Timestamp(created.getTime()));
+		when(rs.getBoolean(ClubhelperRowMapper.DELETE_COLUMN)).thenReturn(false);
 	}
 
 	private ResultSetMetaData mockMetaData(int row_count_Person, Iterator<Integer> shuffeldedIndicee)
@@ -143,12 +143,12 @@ public class RowMapperTest {
 	}
 
 	private void initDefaultColumns(ResultSetMetaData meta, Iterator<Integer> shuffeldedIndicee) throws SQLException {
-		setColumnNameType(meta, shuffeldedIndicee.next(), RowMapper.ID_COLUMN, Types.INTEGER,
+		setColumnNameType(meta, shuffeldedIndicee.next(), ClubhelperRowMapper.ID_COLUMN, Types.INTEGER,
 				JDBCType.INTEGER.getName());
 
-		when(meta.getColumnName(shuffeldedIndicee.next())).thenReturn(RowMapper.CHANGED_COLUMN);
-		when(meta.getColumnName(shuffeldedIndicee.next())).thenReturn(RowMapper.CREATED_COLUMN);
-		when(meta.getColumnName(shuffeldedIndicee.next())).thenReturn(RowMapper.DELETE_COLUMN);
+		when(meta.getColumnName(shuffeldedIndicee.next())).thenReturn(ClubhelperRowMapper.CHANGED_COLUMN);
+		when(meta.getColumnName(shuffeldedIndicee.next())).thenReturn(ClubhelperRowMapper.CREATED_COLUMN);
+		when(meta.getColumnName(shuffeldedIndicee.next())).thenReturn(ClubhelperRowMapper.DELETE_COLUMN);
 	}
 
 	@Test
@@ -182,7 +182,7 @@ public class RowMapperTest {
 		when(rs.getString(RelativeDao.COLUMN_PERSON1_RELATION)).thenReturn(relation1);
 		when(rs.getString(RelativeDao.COLUMN_PERSON2_RELATION)).thenReturn(relation2);
 
-		RowMapper<Relative> mapper = new RowMapper<Relative>(ToStringRelative.class);
+		ClubhelperRowMapper<Relative> mapper = new ClubhelperRowMapper<Relative>(ToStringRelative.class);
 		mapper.setLog(log);
 
 		Relative mapped = mapper.mapRow(rs, FIRST);
@@ -197,7 +197,7 @@ public class RowMapperTest {
 	@Test
 	public void testRelativeMapperMapObject() {
 		Relative r = new Relative(expectedID, 2L, 3L, "toPerson2Relation", "toPerson1Relation");
-		RowMapper<Relative> mapper = new RowMapper<Relative>(ToStringRelative.class);
+		ClubhelperRowMapper<Relative> mapper = new ClubhelperRowMapper<Relative>(ToStringRelative.class);
 		List<Object> values = new ArrayList<>(mapper.mapObject(r, RelativeDao.columnNames));
 		assertEquals(4, values.size());
 		assertEquals(r.getPerson1(), values.get(0));
@@ -239,7 +239,7 @@ public class RowMapperTest {
 		when(rs.getString(AdressDao.CITY)).thenReturn(city);
 		when(rs.getString(AdressDao.PLZ)).thenReturn(plz);
 
-		RowMapper<Adress> mapper = new RowMapper<Adress>(AdressWrapper.class);
+		ClubhelperRowMapper<Adress> mapper = new ClubhelperRowMapper<Adress>(AdressWrapper.class);
 		mapper.setLog(log);
 
 		Adress mapped = mapper.mapRow(rs, FIRST);
@@ -255,7 +255,7 @@ public class RowMapperTest {
 	@Test
 	public void testAdressMapperMapObject() {
 		Adress a = new Adress(7L, "adress1", "adress2", "plz", "city", 13L);
-		RowMapper<Adress> mapper = new RowMapper<Adress>(AdressWrapper.class);
+		ClubhelperRowMapper<Adress> mapper = new ClubhelperRowMapper<Adress>(AdressWrapper.class);
 
 		List<Object> values = new ArrayList<>(mapper.mapObject(a, AdressDao.columnNames));
 		assertEquals(5, values.size());
@@ -290,7 +290,7 @@ public class RowMapperTest {
 		when(rs.getString(DeletedEntriesDao.COLUMN_TABLENAME)).thenReturn(tableName);
 		when(rs.getLong(DeletedEntriesDao.COLUMN_ENTRY_ID)).thenReturn(entryId);
 
-		AbstractDao.RowMapper<DeletedEntries> mapper = new AbstractDao.RowMapper<DeletedEntries>(DeletedEntries.class);
+		AbstractDao.ClubhelperRowMapper<DeletedEntries> mapper = new AbstractDao.ClubhelperRowMapper<DeletedEntries>(DeletedEntries.class);
 		DeletedEntries mapped = mapper.mapRow(rs, FIRST);
 
 		assertDefaults(mapped);
@@ -301,7 +301,7 @@ public class RowMapperTest {
 	@Test
 	public void testDeletedEntriesMapperMapObject() {
 		DeletedEntries obj = new DeletedEntries(3L, "tablename", 7L);
-		AbstractDao.RowMapper<DeletedEntries> mapper = new AbstractDao.RowMapper<DeletedEntries>(DeletedEntries.class);
+		AbstractDao.ClubhelperRowMapper<DeletedEntries> mapper = new AbstractDao.ClubhelperRowMapper<DeletedEntries>(DeletedEntries.class);
 		List<Object> values = new ArrayList<>(mapper.mapObject(obj, DeletedEntriesDao.columnNames));
 		assertEquals(2, values.size());
 		assertEquals(obj.getTablename(), values.get(0));
@@ -311,7 +311,7 @@ public class RowMapperTest {
 	@Test
 	public void testPersonGroupMapperMapObject() {
 		PersonGroup pg = new PersonGroup(expectedID, 13L, 14L);
-		RowMapper<PersonGroup> mapper = new RowMapper<PersonGroup>(PersonGroup.class);
+		ClubhelperRowMapper<PersonGroup> mapper = new ClubhelperRowMapper<PersonGroup>(PersonGroup.class);
 		List<Object> values = new ArrayList<>(mapper.mapObject(pg, PersonGroupDao.columnNames));
 		assertEquals(2, values.size());
 		assertEquals(pg.getPersonId(), values.get(0));
@@ -357,7 +357,7 @@ public class RowMapperTest {
 		when(rs.getLong(PersonGroupDao.COLUMN_PERSON_ID)).thenReturn(personId);
 		when(rs.getLong(PersonGroupDao.COLUMN_GROUP_ID)).thenReturn(groupId);
 
-		RowMapper<PersonGroup> mapper = new RowMapper<PersonGroup>(PersonGroup.class);
+		ClubhelperRowMapper<PersonGroup> mapper = new ClubhelperRowMapper<PersonGroup>(PersonGroup.class);
 		PersonGroup mapped = mapper.mapRow(rs, FIRST);
 
 		assertDefaults(mapped);

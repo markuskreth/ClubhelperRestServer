@@ -2,7 +2,10 @@ package de.kreth.clubhelperbackend.dao;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.startsWith;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -26,7 +29,7 @@ public class StartpassDaoTest extends AbstractDaoTest<Startpass> {
 		selectStartpaesse = mock(PreparedStatement.class);
 		when(connection.prepareStatement(startsWith("SELECT * FROM startpass_startrechte"))).thenReturn(selectStartpaesse);
 	}
-	
+
 	@Test
 	public void testGetForPersonId() {
 		List<Startpass> list = new ArrayList<>();

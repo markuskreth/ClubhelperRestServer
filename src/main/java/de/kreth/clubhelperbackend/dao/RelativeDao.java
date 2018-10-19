@@ -20,7 +20,7 @@ public class RelativeDao extends AbstractDao<Relative>
 			COLUMN_PERSON1_RELATION, COLUMN_PERSON2_RELATION};
 
 	private static final DaoConfig<Relative> daoConfig = new DaoConfig<Relative>(
-			"relative", columnNames, new RowMapper<Relative>(ToStringRelative.class), null);
+			"relative", columnNames, new ClubhelperRowMapper<Relative>(ToStringRelative.class), null);
 
 	public RelativeDao() {
 		super(daoConfig);

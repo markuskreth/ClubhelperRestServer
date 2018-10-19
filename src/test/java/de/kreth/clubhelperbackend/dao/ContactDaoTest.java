@@ -30,7 +30,7 @@ import de.kreth.clubhelperbackend.config.SqlForMysql;
 import de.kreth.clubhelperbackend.dao.ContactDao.ContactWrapper;
 import de.kreth.clubhelperbackend.dao.abstr.AbstractDao;
 import de.kreth.clubhelperbackend.dao.abstr.AbstractDao.DaoConfig;
-import de.kreth.clubhelperbackend.dao.abstr.AbstractDao.RowMapper;
+import de.kreth.clubhelperbackend.dao.abstr.AbstractDao.ClubhelperRowMapper;
 import de.kreth.clubhelperbackend.pojo.Contact;
 import de.kreth.clubhelperbackend.testutils.MockitoMatchers;
 
@@ -41,7 +41,7 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 
 	protected AbstractDao<Contact> configureDao() {
 
-		mapper = new RowMapper<Contact>(ContactWrapper.class);
+		mapper = new ClubhelperRowMapper<Contact>(ContactWrapper.class);
 		DaoConfig<Contact> config = new DaoConfig<Contact>(tableName,
 				ContactDao.columnNames, mapper, null);
 		AbstractDao<Contact> dao = new AbstractDao<Contact>(config) {
@@ -61,7 +61,7 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 		dao.getById(id);
 
 		verify(jdbcTemplate).queryForObject(MockitoMatchers.tokens(sqlItems),
-				any(RowMapper.class), eq(id));
+				any(ClubhelperRowMapper.class), eq(id));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -73,7 +73,7 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 
 		dao.getAll();
 
-		verify(jdbcTemplate).query(MockitoMatchers.tokens(expected), any(RowMapper.class));
+		verify(jdbcTemplate).query(MockitoMatchers.tokens(expected), any(ClubhelperRowMapper.class));
 	}
 
 	@Test
@@ -111,7 +111,7 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 		dao.getByWhere(where);
 
 		verify(jdbcTemplate).query(MockitoMatchers.tokens(Arrays.asList("select", "*",
-				"from", "tablename", "where", "personid=1", "AND", "deleted", "is", "null")), any(RowMapper.class));
+				"from", "tablename", "where", "personid=1", "AND", "deleted", "is", "null")), any(ClubhelperRowMapper.class));
 
 	}
 

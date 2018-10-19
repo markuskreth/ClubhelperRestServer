@@ -15,7 +15,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import de.kreth.clubhelperbackend.config.SqlForDialect;
 import de.kreth.clubhelperbackend.dao.abstr.AbstractDao;
-import de.kreth.clubhelperbackend.dao.abstr.AbstractDao.RowMapper;
+import de.kreth.clubhelperbackend.dao.abstr.AbstractDao.ClubhelperRowMapper;
 import de.kreth.clubhelperbackend.dao.abstr.DaoPackageMemberAccessor;
 import de.kreth.clubhelperbackend.pojo.Data;
 
@@ -23,7 +23,7 @@ public abstract class AbstractDaoTest<T extends Data> {
 
 	@Mock
 	protected JdbcTemplate jdbcTemplate;
-	protected RowMapper<T> mapper;
+	protected ClubhelperRowMapper<T> mapper;
 	protected AbstractDao<T> dao;
 	@Mock
 	protected SqlForDialect dialect;

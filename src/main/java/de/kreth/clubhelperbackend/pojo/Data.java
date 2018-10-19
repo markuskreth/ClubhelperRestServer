@@ -23,5 +23,5 @@ public interface Data extends Serializable {
 	boolean isDeleted();
 
 	void setDeleted(boolean deleted);
-
+	
 }

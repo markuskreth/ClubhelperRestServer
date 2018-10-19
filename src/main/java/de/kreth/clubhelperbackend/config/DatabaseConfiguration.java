@@ -10,6 +10,16 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.kreth.clubhelperbackend.pojo.Adress;
+import de.kreth.clubhelperbackend.pojo.Attendance;
+import de.kreth.clubhelperbackend.pojo.Contact;
+import de.kreth.clubhelperbackend.pojo.DeletedEntries;
+import de.kreth.clubhelperbackend.pojo.Group;
+import de.kreth.clubhelperbackend.pojo.Person;
+import de.kreth.clubhelperbackend.pojo.PersonGroup;
+import de.kreth.clubhelperbackend.pojo.Relative;
+import de.kreth.clubhelperbackend.pojo.Startpass;
+import de.kreth.clubhelperbackend.pojo.Startrecht;
 import de.kreth.dbmanager.ColumnDefinition;
 import de.kreth.dbmanager.DataType;
 import de.kreth.dbmanager.Database;
@@ -28,16 +38,26 @@ public class DatabaseConfiguration {
 
 	private List<TableDefinition> allTables;
 
+	@Pojo(pojoClass=Person.class)
 	private TableDefinition person;
+	@Pojo(pojoClass=Contact.class)
 	private TableDefinition contact;
+	@Pojo(pojoClass=Relative.class)
 	private TableDefinition relative;
+	@Pojo(pojoClass=Adress.class)
 	private TableDefinition adress;
+	@Pojo(pojoClass=Attendance.class)
 	private TableDefinition attendance;
 	private TableDefinition version;
+	@Pojo(pojoClass=DeletedEntries.class)
 	private TableDefinition deletedEntries;
+	@Pojo(pojoClass=Group.class)
 	private TableDefinition group;
+	@Pojo(pojoClass=PersonGroup.class)
 	private TableDefinition persongroup;
+	@Pojo(pojoClass=Startpass.class)
 	private TableDefinition startpass;
+	@Pojo(pojoClass=Startrecht.class)
 	private TableDefinition startrecht;
 
 	private final List<MyStatement> statements;
