@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -123,14 +123,14 @@ public class RowMapperTest {
 	}
 
 	private void setupWithDefaultColumns(ResultSet rs) throws SQLException {
-		when(rs.getLong(ClubhelperRowMapper.ID_COLUMN)).thenReturn(expectedID);
+		when(rs.getLong(AbstractDao.ID_COLUMN)).thenReturn(expectedID);
 
-		when(rs.getDate(ClubhelperRowMapper.CHANGED_COLUMN)).thenReturn(changed);
-		when(rs.getTimestamp(ClubhelperRowMapper.CHANGED_COLUMN)).thenReturn(new Timestamp(changed.getTime()));
+		when(rs.getDate(AbstractDao.CHANGED_COLUMN)).thenReturn(changed);
+		when(rs.getTimestamp(AbstractDao.CHANGED_COLUMN)).thenReturn(new Timestamp(changed.getTime()));
 
-		when(rs.getDate(ClubhelperRowMapper.CREATED_COLUMN)).thenReturn(created);
-		when(rs.getTimestamp(ClubhelperRowMapper.CREATED_COLUMN)).thenReturn(new Timestamp(created.getTime()));
-		when(rs.getBoolean(ClubhelperRowMapper.DELETE_COLUMN)).thenReturn(false);
+		when(rs.getDate(AbstractDao.CREATED_COLUMN)).thenReturn(created);
+		when(rs.getTimestamp(AbstractDao.CREATED_COLUMN)).thenReturn(new Timestamp(created.getTime()));
+		when(rs.getBoolean(AbstractDao.DELETE_COLUMN)).thenReturn(false);
 	}
 
 	private ResultSetMetaData mockMetaData(int row_count_Person, Iterator<Integer> shuffeldedIndicee)
@@ -143,12 +143,12 @@ public class RowMapperTest {
 	}
 
 	private void initDefaultColumns(ResultSetMetaData meta, Iterator<Integer> shuffeldedIndicee) throws SQLException {
-		setColumnNameType(meta, shuffeldedIndicee.next(), ClubhelperRowMapper.ID_COLUMN, Types.INTEGER,
+		setColumnNameType(meta, shuffeldedIndicee.next(), AbstractDao.ID_COLUMN, Types.INTEGER,
 				JDBCType.INTEGER.getName());
 
-		when(meta.getColumnName(shuffeldedIndicee.next())).thenReturn(ClubhelperRowMapper.CHANGED_COLUMN);
-		when(meta.getColumnName(shuffeldedIndicee.next())).thenReturn(ClubhelperRowMapper.CREATED_COLUMN);
-		when(meta.getColumnName(shuffeldedIndicee.next())).thenReturn(ClubhelperRowMapper.DELETE_COLUMN);
+		when(meta.getColumnName(shuffeldedIndicee.next())).thenReturn(AbstractDao.CHANGED_COLUMN);
+		when(meta.getColumnName(shuffeldedIndicee.next())).thenReturn(AbstractDao.CREATED_COLUMN);
+		when(meta.getColumnName(shuffeldedIndicee.next())).thenReturn(AbstractDao.DELETE_COLUMN);
 	}
 
 	@Test

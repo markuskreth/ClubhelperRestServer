@@ -1,7 +1,7 @@
 
 #full-clndr{
 	background-color:#ebebeb;font-weight:700;-moz-box-shadow:4px 4px 0 #343434;-webkit-box-shadow:4px 4px 0 #343434;box-shadow:4px 4px 0 #343434;
-	font-family:Inconsolata,Monaco,'Andale Mono',Courier;color:#212121;
+	font-family:Inconsolata,Monaco,'Andale Mono',Courier,sans-serif;color:#212121;
 }
 
 #full-clndr h1,#full-clndr h2,#full-clndr h3,#full-clndr h4,#full-clndr h5,#full-clndr h6{

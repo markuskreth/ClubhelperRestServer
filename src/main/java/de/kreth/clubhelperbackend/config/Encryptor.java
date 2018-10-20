@@ -16,13 +16,9 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Hex;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Encryptor {
 
-	Logger log = LoggerFactory.getLogger(getClass());
-			
 	private static final String encType = "AES";
 	private static final String key = "ClubhelperSecuri";
 	private static final Charset charset = Charset.forName("UTF-8");

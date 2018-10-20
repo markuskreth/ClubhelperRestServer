@@ -28,7 +28,7 @@ public class DeletedEntriesDao extends AbstractDao<DeletedEntries> {
 
 	@Override
 	public boolean delete(DeletedEntries obj) {
-		getJdbcTemplate().execute("DELETE FROM " + TABLE_NAME + " WHERE " + AbstractDao.ClubhelperRowMapper.ID_COLUMN + "=" + obj.getId());
+		getJdbcTemplate().execute("DELETE FROM " + TABLE_NAME + " WHERE " + AbstractDao.ID_COLUMN + "=" + obj.getId());
 		return true;
 	}
 

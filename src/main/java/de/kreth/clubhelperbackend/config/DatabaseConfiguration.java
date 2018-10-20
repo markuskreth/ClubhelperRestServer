@@ -658,7 +658,7 @@ public class DatabaseConfiguration {
 
 	}
 
-	private class DirectStatement implements MyStatement {
+	private static class DirectStatement implements MyStatement {
 
 		private String sql;
 

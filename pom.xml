@@ -24,6 +24,7 @@
 
 	<properties>
 		<sonar.login>66218c85d996b6c63c5247573c467307cb0f0d4d</sonar.login>
+		<sonar.exclusions>src/main/webapp/resources/js/libs/**</sonar.exclusions>
 		<google-api-version>1.23.0</google-api-version>
 		<google-api-sheets-version>v4-rev488-1.23.0</google-api-sheets-version>
 		<google-api-calendar-version>v3-rev271-1.23.0</google-api-calendar-version>

@@ -98,7 +98,6 @@ PersonInstance.prototype.groups = function (targetFunction) {
 		var me = this;
 		repo(baseUrl + "persongroup/for/" + me.id, function(response) {
 			me.persGroups = response;
-			var text = JSON.stringify(me);
 			personStore.set(me, me.id);
 			me.processGroups(targetFunction);
 		});
@@ -112,7 +111,6 @@ PersonInstance.prototype.updateContact = function (contact, targetFunction) {
 	var url = baseUrl + "contact/" + contact.id;
 	var me = this;
 	ajax(url, contact, "put", function(con) {
-		var text = JSON.stringify(me);
 		personStore.set(me, me.id);
 		targetFunction(contact);
 	});

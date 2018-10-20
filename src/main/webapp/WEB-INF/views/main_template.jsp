@@ -110,7 +110,7 @@ function sendPost(uri, data)
 		</div>
 	</div>
 	<div id="footer">
-		<center>Design by <a href="http://www.dreamtemplate.com" title="Website Templates" target="_blank">Website templates</a></center>
+		<div id="width">Design by <a href="http://www.dreamtemplate.com" title="Website Templates" target="_blank">Website templates</a></div>
 	</div>
 </body>
 </html>

@@ -99,8 +99,7 @@ public class JumpHeightSheet {
 		int row = getIndexOf(taskName);
 		
 		ExtendedValue res = service.set(getTitle(), column , row, value);
-		
-		return new CellValue<Double>(res.getNumberValue().doubleValue(), column, row);
+		return new CellValue<Double>(res.getNumberValue(), column, row);
 	}
 
 	public int getIndexOf(String taskName) throws IOException {
