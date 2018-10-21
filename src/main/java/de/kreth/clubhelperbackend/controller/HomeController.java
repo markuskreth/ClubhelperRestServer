@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -29,6 +31,7 @@ import org.springframework.mobile.device.Device;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -62,7 +65,7 @@ public class HomeController implements ApplicationContextAware {
 	 *            model to set response data
 	 * @return Name of View
 	 */
-	@RequestMapping(value = "/", method = RequestMethod.GET)
+	@GetMapping(value = "/")
 	public String home(HttpServletResponse response, Device device, Locale locale, Model model) {
 
 		logger.info("Welcome home! The client locale is {}.", locale);
@@ -91,13 +94,13 @@ public class HomeController implements ApplicationContextAware {
 	/**
 	 * @return
 	 */
-	@RequestMapping(value = "/allAtt", method = RequestMethod.GET, produces = "text/comma-separated-values")
+	@GetMapping(value = "/allAtt", produces = "text/comma-separated-values;charset=UTF-8")
 	@ResponseBody
 	public final String getAttendenceGeneral() {
 		DataSource datasource = context.getBean(DataSource.class);
 		StringBuilder txt = new StringBuilder();
-		try {
-			Statement stm = datasource.getConnection().createStatement();
+		try (Connection conn = datasource.getConnection()){
+			Statement stm = conn.createStatement();
 			ResultSet rs = stm.executeQuery("SELECT attendance.on_date, prename, surname\n" 
 					+ "FROM markuskreth.attendance\n" 
 					+ "	left join markuskreth.person on person.id = person_id\n" 
@@ -113,7 +116,6 @@ public class HomeController implements ApplicationContextAware {
 			System.out.println();
 		} catch (SQLException e) {
 			logger.error("Error fetching data", e);
-			e.printStackTrace();
 		}
 		return txt.toString();
 	}
@@ -123,7 +125,7 @@ public class HomeController implements ApplicationContextAware {
 		return "test";
 	}
 
-	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	@GetMapping(value = "/login")
 	public final String showLogin(HttpServletResponse response, Authentication auth) throws IOException {
 
 		if (auth == null) {
@@ -136,14 +138,14 @@ public class HomeController implements ApplicationContextAware {
 		}
 	}
 
-	@RequestMapping(value="/googleauth", method=RequestMethod.GET)
+	@GetMapping(value="/googleauth", produces = "text/plain;charset=UTF-8")
 	public final void getHtmlUri(HttpServletRequest req, HttpServletResponse response) throws IOException, GeneralSecurityException, URISyntaxException, InterruptedException {
 
 		URI uri = new URI(req.getRequestURL().toString());
 		GoogleInitAdapter adapter = new GoogleInitAdapter(uri);
 
 		List<String> titles = new ArrayList<>();
-		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
+		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_8));
 		out.write("Gefundene Sheets:");
 		out.newLine();
 		for(Sheet s: adapter.getSheets(req)) {

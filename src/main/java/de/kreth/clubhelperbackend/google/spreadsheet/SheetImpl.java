@@ -17,7 +17,7 @@ import com.google.api.services.sheets.v4.model.ValueRange;
 
 public class SheetImpl implements Sheets {
 
-	private static List<Sheet> sheets;
+	private static final List<Sheet> sheets = new ArrayList<>();
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private final GoogleSpreadsheetsAdapter service;
 	
@@ -27,7 +27,6 @@ public class SheetImpl implements Sheets {
 		}
 		try {
 			service = new GoogleSpreadsheetsAdapter();
-			sheets = new ArrayList<>();
 		} catch (IOException | GeneralSecurityException e) {
 			log.error("unable to init " + getClass().getName() + ", Service won't work.", e);
 			throw new RuntimeException(e);
@@ -78,10 +77,10 @@ public class SheetImpl implements Sheets {
 	}
 
 	private List<Sheet> getAllSheets(ServletRequest request) throws IOException, InterruptedException {
-		if(sheets != null && sheets.isEmpty() == false){
+		if(sheets.isEmpty() == false){
 			return sheets;
 		}
-		sheets = service.getSheets(request);
+		sheets.addAll(service.getSheets(request));
 		return sheets;
 	}
 
@@ -125,7 +124,7 @@ public class SheetImpl implements Sheets {
 	@Override
 	public JumpHeightSheet changeTitle(ServletRequest request, Sheet sheet, String name) throws IOException, InterruptedException {
 		service.setSheetTitle(sheet, name);
-		sheets = null;
+		sheets.clear();
 		return get(request, name);
 	}
 

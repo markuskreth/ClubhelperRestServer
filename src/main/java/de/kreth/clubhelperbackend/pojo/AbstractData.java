@@ -7,8 +7,8 @@ public abstract class AbstractData implements Data {
 	private static final long serialVersionUID = -6879650233333766171L;
 
 	private Long id;
-	private java.util.Date changed;
-	private java.util.Date created;
+	private Date changed;
+	private Date created;
 	private boolean deleted;
 
 	public AbstractData() {
@@ -23,8 +23,8 @@ public abstract class AbstractData implements Data {
 	public AbstractData(Long id, Date changed, Date created) {
 		super();
 		this.id = id;
-		this.changed = changed;
-		this.created = created;
+		setChanged(changed);
+		setCreated(created);
 	}
 
 	public Long getId() {
@@ -35,20 +35,34 @@ public abstract class AbstractData implements Data {
 		this.id = id;
 	}
 
-	public java.util.Date getChanged() {
-		return changed;
+	public Date getChanged() {
+		if (changed == null) {
+			return null;
+		}
+		return new Date(changed.getTime());
 	}
 
-	public void setChanged(java.util.Date changed) {
-		this.changed = changed;
+	public void setChanged(Date changed) {
+		if (changed != null) {
+			this.changed = new Date(changed.getTime());
+		} else {
+			this.changed = null;
+		}
 	}
 
-	public java.util.Date getCreated() {
-		return created;
+	public Date getCreated() {
+		if (created == null) {
+			return null;
+		}
+		return new Date(created.getTime());
 	}
 
-	public void setCreated(java.util.Date created) {
-		this.created = created;
+	public void setCreated(Date created) {
+		if (created != null) {
+			this.created = new Date(created.getTime());
+		} else {
+			this.created = null;
+		}
 	}
 
 	@Override

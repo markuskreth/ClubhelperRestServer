@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	
+
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>clubhelperbackend</artifactId>
 	<name>ClubHelperBackend</name>
@@ -25,6 +25,11 @@
 	<properties>
 		<sonar.login>66218c85d996b6c63c5247573c467307cb0f0d4d</sonar.login>
 		<sonar.exclusions>src/main/webapp/resources/js/libs/**</sonar.exclusions>
+		<sonar.jacoco.reportPaths>target/surefire-reports</sonar.jacoco.reportPaths>
+		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
+
 		<google-api-version>1.23.0</google-api-version>
 		<google-api-sheets-version>v4-rev488-1.23.0</google-api-sheets-version>
 		<google-api-calendar-version>v3-rev271-1.23.0</google-api-calendar-version>
@@ -319,7 +324,7 @@
 						<phase>package</phase>
 						<configuration>
 							<packaging>jar</packaging>
-							<file>${project.build.directory}\${artifactId}-${version}.jar</file>
+							<file>${project.build.directory}\${project.artifactId}-${project.version}.jar</file>
 						</configuration>
 						<goals>
 							<goal>install-file</goal>
@@ -359,6 +364,32 @@
 					<source>1.8</source>
 					<target>1.8</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.2</version>
+				<executions>
+					<execution>
+						<id>default-prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>default-report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>default-check</id>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

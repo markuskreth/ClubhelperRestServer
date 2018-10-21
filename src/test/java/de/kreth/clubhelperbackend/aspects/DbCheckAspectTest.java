@@ -2,8 +2,7 @@ package de.kreth.clubhelperbackend.aspects;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -20,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 
+import de.kreth.clubhelperbackend.config.TransactionalDatabase;
 import de.kreth.clubhelperbackend.testutils.MockedLogger;
 import de.kreth.clubhelperbackend.testutils.MockitoMatchers;
 import de.kreth.dbmanager.DatabaseType;
@@ -60,13 +60,17 @@ public class DbCheckAspectTest {
 	}
 
 	@Test
-	public void testSqlExceptions() {
-		
+	public void testSqlExceptions() throws SQLException {
+		dbCheck.checkDb(true);
+		verify(connection, atLeastOnce()).setAutoCommit(false);
+		verify(stm, atLeast(10)).execute(anyString());
+		verify(connection, atLeastOnce()).commit();
 	}
 
 	@Test
 	public void testSetVersion() throws SQLException {
-		dbCheck.setVersion(2);
+		TransactionalDatabase db = new TransactionalDatabase(connection);
+		db.setVersion(2);
 		verify(stm).executeUpdate(anyString());
 	}
 	

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
@@ -165,7 +166,7 @@ public abstract class GoogleBaseAdapter {
 				throw new IOException("Failed to load google secret file. Download from google console and install on Server");
 			}
 		}
-		return new InputStreamReader(in);
+		return new InputStreamReader(in, StandardCharsets.UTF_8);
 	}
 
 	File getClientSecretFile() {
