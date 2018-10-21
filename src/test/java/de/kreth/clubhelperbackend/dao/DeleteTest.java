@@ -29,12 +29,14 @@ import de.kreth.clubhelperbackend.config.SqlForHsqlDb;
 import de.kreth.clubhelperbackend.pojo.Contact;
 import de.kreth.clubhelperbackend.pojo.Person;
 import de.kreth.clubhelperbackend.testutils.MockedLogger;
+import de.kreth.clubhelperbackend.utils.TimeProviderImpl;
 import de.kreth.dbmanager.DatabaseType;
 
 //@RunWith(SpringJUnit4ClassRunner.class)
 // @ContextConfiguration(locations = { "/services-test-config.xml" })
 public class DeleteTest {
 
+	private static final TimeProviderImpl tp = new TimeProviderImpl();
 	private ContactDao contactDao;
 	private DeletedEntriesDao deletedEnriesDao;
 	private DataSource dataSource;
@@ -60,12 +62,14 @@ public class DeleteTest {
 		SqlForDialect sqlDialect = new SqlForHsqlDb(dataSource);
 		deletedEnriesDao.setSqlDialect(sqlDialect);
 		deletedEnriesDao.setPlatformTransactionManager(man);
+		deletedEnriesDao.setTimeProvider(tp);
 
 		contactDao = new ContactDao();
 		contactDao.setJdbcTemplate(jdbcTemplate);
 		contactDao.setSqlDialect(sqlDialect);
 		contactDao.setPlatformTransactionManager(man);
 		contactDao.setDeletedEntriesDao(deletedEnriesDao);
+		contactDao.setTimeProvider(tp);
 
 		DbCheckAspect mysqlCheck = new DbCheckAspect(dataSource,
 				DatabaseType.HSQLDB, MockedLogger.mock());

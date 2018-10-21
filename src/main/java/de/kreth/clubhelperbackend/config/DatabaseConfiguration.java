@@ -163,7 +163,8 @@ public class DatabaseConfiguration {
 				createAll();
 				createForeignkeysForMainTables();
 				break;
-
+			default:
+				break;
 		}
 
 		if (fromVersion != LATEST_VERSION && logger.isInfoEnabled()) {

@@ -118,9 +118,6 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 	@Test
 	public void testInsertWithId() {
 
-		Date now = new GregorianCalendar(2015, Calendar.AUGUST, 21, 8, 21, 0)
-				.getTime();
-
 		String type = "contactType";
 		String value = "contactValue";
 		long personId = 1L;
@@ -165,9 +162,6 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 				same(Long.class))).thenReturn(512L);
 
 		dao.setSqlDialect(sqlDialect);
-		Date now = new GregorianCalendar(2015, Calendar.AUGUST, 21, 8, 21, 0)
-				.getTime();
-
 		String type = "contactType";
 		String value = "contactValue";
 		long personId = 1L;
@@ -203,9 +197,9 @@ public class ContactDaoTest extends AbstractDaoTest<Contact> {
 	@Test
 	public void testUpdateWithId() {
 
-		GregorianCalendar calendar = new GregorianCalendar(2015,
-				Calendar.AUGUST, 21, 8, 21, 0);
-		Date now = calendar.getTime();
+		GregorianCalendar calendar = new GregorianCalendar();
+		calendar.setTime(now);
+
 		calendar.add(Calendar.DAY_OF_MONTH, -10);
 
 		String type = "contactType";

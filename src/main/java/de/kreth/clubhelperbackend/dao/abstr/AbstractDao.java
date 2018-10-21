@@ -37,6 +37,7 @@ import de.kreth.clubhelperbackend.config.SqlForDialect;
 import de.kreth.clubhelperbackend.dao.DeletedEntriesDao;
 import de.kreth.clubhelperbackend.pojo.Data;
 import de.kreth.clubhelperbackend.pojo.DeletedEntries;
+import de.kreth.clubhelperbackend.utils.TimeProvider;
 
 /**
  * Default implementation for database access with all common query methods.
@@ -73,6 +74,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 
 	final String SQL_INSERTWithoutId;
 	private final String[] columnNames;
+	protected TimeProvider timeProvider;
 
 	/**
 	 * Constructs this {@link Dao} implemetation.
@@ -130,6 +132,16 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 		this.deletedEntriesDao = deletedEntriesDao;
 	}
 
+	@Autowired
+	public void setTimeProvider(TimeProvider timeProvider) {
+		this.timeProvider = timeProvider;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Class<T> forDataType() {
+		return (Class<T>) mapper.itemClass;
+	}
+	
 	private String generateQuestionMarkList(int length) {
 		StringBuilder bld = new StringBuilder("?");
 		for (int i = 1; i < length; i++)
@@ -408,7 +420,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 	public boolean update(T obj) {
 
 		Collection<Object> values = mapper.mapObject(obj, columnNames);
-		obj.setChanged(new Date());
+		obj.setChanged(timeProvider.getNow());
 
 		values.add(obj.getChanged());
 		values.add(obj.getId());
@@ -439,7 +451,7 @@ public abstract class AbstractDao<T extends Data> extends JdbcDaoSupport impleme
 
 		Assert.notNull(deletedEntriesDao, "deletedEntriesDao was not initialized.");
 
-		Date date = new Date();
+		Date date = timeProvider.getNow();
 		int inserted = getJdbcTemplate().update(SQL_DELETE, date, id);
 		if (inserted == 1) {
 			DeletedEntries deleted = new DeletedEntries(-1L, tableName, id);

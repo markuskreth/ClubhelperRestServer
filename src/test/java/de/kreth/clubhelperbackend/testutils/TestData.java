@@ -22,10 +22,10 @@ public class TestData {
 		for (Class<? extends TestDataGenerator> toInit: gene) {
 			try {
 				if (Modifier.isAbstract(toInit.getModifiers()) == false) {
-					TestDataGenerator<? extends Data> gen = toInit.newInstance();
+					TestDataGenerator<? extends Data> gen = toInit.getConstructor().newInstance();
 					generators.add(gen);
 				}
-			} catch (InstantiationException | IllegalAccessException e) {
+			} catch (IllegalArgumentException | ReflectiveOperationException | SecurityException e) {
 				throw new RuntimeException(e);
 			}
 		}

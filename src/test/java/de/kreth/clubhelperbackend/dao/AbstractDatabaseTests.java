@@ -23,6 +23,8 @@ import de.kreth.clubhelperbackend.config.SqlForHsqlDb;
 import de.kreth.clubhelperbackend.dao.abstr.AbstractDao;
 import de.kreth.clubhelperbackend.pojo.Data;
 import de.kreth.clubhelperbackend.testutils.MockedLogger;
+import de.kreth.clubhelperbackend.utils.TimeProvider;
+import de.kreth.clubhelperbackend.utils.TimeProviderImpl;
 import de.kreth.dbmanager.DatabaseType;
 
 public abstract class AbstractDatabaseTests<T extends Data> {
@@ -36,12 +38,14 @@ public abstract class AbstractDatabaseTests<T extends Data> {
 	protected DataSourceTransactionManager transMan;
 
 	protected DeletedEntriesDao deletedEntriesDao;
+	protected TimeProvider timeProvider;
 
 	private Logger logger;
 
 	@Before
 	public void setUp() throws Exception {
 		logger = MockedLogger.mock();
+		timeProvider = new TimeProviderImpl();
 		JDBCDataSource ds = new JDBCDataSource();
 		ds.setUrl("jdbc:hsqldb:mem:testdb");
 		ds.setUser("sa");
@@ -50,6 +54,7 @@ public abstract class AbstractDatabaseTests<T extends Data> {
 
 		dbCheck = new DbCheckAspect(dataSource, DatabaseType.HSQLDB, logger);
 		dao = initDao();
+		dao.setTimeProvider(timeProvider);
 
 		dbCheck.checkDb();
 		transMan = new DataSourceTransactionManager(dataSource);

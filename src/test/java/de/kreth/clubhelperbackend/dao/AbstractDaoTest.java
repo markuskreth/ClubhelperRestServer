@@ -3,6 +3,7 @@ package de.kreth.clubhelperbackend.dao;
 import static org.mockito.Mockito.*;
 
 import java.sql.Connection;
+import java.util.Date;
 
 import javax.sql.DataSource;
 
@@ -18,6 +19,7 @@ import de.kreth.clubhelperbackend.dao.abstr.AbstractDao;
 import de.kreth.clubhelperbackend.dao.abstr.AbstractDao.ClubhelperRowMapper;
 import de.kreth.clubhelperbackend.dao.abstr.DaoPackageMemberAccessor;
 import de.kreth.clubhelperbackend.pojo.Data;
+import de.kreth.clubhelperbackend.utils.TimeProvider;
 
 public abstract class AbstractDaoTest<T extends Data> {
 
@@ -35,8 +37,11 @@ public abstract class AbstractDaoTest<T extends Data> {
 	protected DataSource dataSource;
 	@Mock
 	protected Connection connection;
+	@Mock
+	protected TimeProvider timeProvider;
 	
 	protected Long objectId = 100L;
+	protected Date now = new Date(1540058119L);
 
 	public AbstractDaoTest() {
 		super();
@@ -53,12 +58,14 @@ public abstract class AbstractDaoTest<T extends Data> {
 		when(dataSource.getConnection()).thenReturn(connection);
 		when(dataSource.getConnection(anyString(), anyString())).thenReturn(connection);
 		when(jdbcTemplate.getDataSource()).thenReturn(dataSource);
+		when(timeProvider.getNow()).thenReturn(now);
 		
 		dao.setDataSource(dataSource);
 		dao.setJdbcTemplate(jdbcTemplate);
 		dao.setPlatformTransactionManager(transMan);
 		dao.setDeletedEntriesDao(deletedEnriesDao);
 		dao.setSqlDialect(dialect);
+		dao.setTimeProvider(timeProvider);
 	}
 
 	@After

@@ -272,7 +272,7 @@ function showGroups(withDelete) {
 			$(this).parent().remove();
 		};
 		
-		for (let i = 0, let len=groups.length; i<len; i++) {
+		for (let i = 0, len=groups.length; i<len; i++) {
 			if(withDelete) {
 				part.attr("data-type","horizontal");
 			}
