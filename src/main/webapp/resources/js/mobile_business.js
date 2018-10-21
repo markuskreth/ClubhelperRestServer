@@ -324,7 +324,8 @@ function showGroups(withDelete) {
 				me.attr("lastEventTimestamp", e.timeStamp);
 			};
 			
-			for (let i = 0, let allLen = allGroupResult.length; i < allLen; i++) {
+			let allLen = allGroupResult.length;
+			for (let i = 0; i < allLen; i++) {
 				wrapper.append($("<button></button>")
 						.attr("data-mini","true")
 						.attr("data-icon","add")

@@ -51,7 +51,6 @@ import de.kreth.clubhelperbackend.dao.abstr.AbstractDao;
 import de.kreth.clubhelperbackend.dao.abstr.AbstractDao.ClubhelperRowMapper;
 import de.kreth.clubhelperbackend.pojo.Data;
 import de.kreth.clubhelperbackend.pojo.DeletedEntries;
-import de.kreth.clubhelperbackend.pojo.Group;
 import de.kreth.clubhelperbackend.pojo.PersonGroup;
 import de.kreth.clubhelperbackend.pojo.Relative;
 import de.kreth.clubhelperbackend.testutils.MockedLogger;
@@ -59,6 +58,7 @@ import de.kreth.clubhelperbackend.testutils.ResultSetStructure;
 import de.kreth.clubhelperbackend.testutils.TestData;
 import de.kreth.clubhelperbackend.testutils.TestDataPerson;
 import de.kreth.clubhelperbackend.utils.TimeProvider;
+import de.kreth.clubhelperbackend.utils.TimeProviderImpl;
 import de.kreth.dbmanager.DatabaseType;
 import de.kreth.dbmanager.TableDefinition;
 
@@ -119,6 +119,7 @@ public class DatabaseConfigurationTest<T extends Data> {
 			pDao.setJdbcTemplate(jdbcTemplate);
 			pDao.setPlatformTransactionManager(transMan);
 			pDao.setSqlDialect(sqlDialect);
+			pDao.setTimeProvider(new TimeProviderImpl());
 			pDao.insert(TestDataPerson.getPerson());
 		}
 	}
@@ -287,18 +288,18 @@ public class DatabaseConfigurationTest<T extends Data> {
 		return testDaos;
 	}
 
-	@SuppressWarnings("unchecked")
-	public static void main(String[] args) throws Exception {
-		initDatabase();
-		List<TestObjectMapping<? extends Data>> tests = getTestClasses();
-		TestObjectMapping<Group> map = (TestObjectMapping<Group>) tests.stream().filter(e -> e.pojo.equals(Group.class)).findFirst().get();
-		DatabaseConfigurationTest<Group> t = new DatabaseConfigurationTest<Group>();
-		t.mapping = map;
-		t.setUp();
-		t.testLoadAll();
-		
-		t.printTableContent();
-	}
+//	@SuppressWarnings("unchecked")
+//	public static void main(String[] args) throws Exception {
+//		initDatabase();
+//		List<TestObjectMapping<? extends Data>> tests = getTestClasses();
+//		TestObjectMapping<Group> map = (TestObjectMapping<Group>) tests.stream().filter(e -> e.pojo.equals(Group.class)).findFirst().get();
+//		DatabaseConfigurationTest<Group> t = new DatabaseConfigurationTest<Group>();
+//		t.mapping = map;
+//		t.setUp();
+//		t.testLoadAll();
+//		
+//		t.printTableContent();
+//	}
 	
 	static List<Field> getAllPojoDefinitions() {
 		return Arrays.asList(DatabaseConfiguration.class.getDeclaredFields())
