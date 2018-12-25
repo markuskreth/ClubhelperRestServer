@@ -32,10 +32,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import de.kreth.clubhelperbackend.google.spreadsheet.CellValue;
 import de.kreth.clubhelperbackend.google.spreadsheet.JumpHeightSheet;
 import de.kreth.clubhelperbackend.google.spreadsheet.JumpHightTask;
+import de.kreth.clubhelperbackend.google.spreadsheet.JumpHightTask.Builder;
 import de.kreth.clubhelperbackend.google.spreadsheet.SheetDataException;
 import de.kreth.clubhelperbackend.google.spreadsheet.SheetService;
 import de.kreth.clubhelperbackend.google.spreadsheet.Sheets;
-import de.kreth.clubhelperbackend.google.spreadsheet.JumpHightTask.Builder;
 import de.kreth.clubhelperbackend.utils.ThreadPoolErrors;
 
 @Controller
@@ -45,7 +45,7 @@ public class JumpHeightSheetController {
 
 	private final Logger log;
 	private final Sheets sheetService;
-	
+
 	public JumpHeightSheetController() {
 		this(SheetService.INSTANCE.getService(), LoggerFactory.getLogger(JumpHeightSheetController.class));
 	}
@@ -57,8 +57,8 @@ public class JumpHeightSheetController {
 
 	@RequestMapping(value = "/tasks/{title}/{taskName}", method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
-	public List<String> addTask(ServletRequest request, @PathVariable("title") String title, @PathVariable("taskName") String taskName)
-			throws IOException, InterruptedException {
+	public List<String> addTask(ServletRequest request, @PathVariable("title") String title,
+			@PathVariable("taskName") String taskName) throws IOException, InterruptedException {
 		return sheetService.get(request, title).addTask(taskName);
 	}
 
@@ -80,8 +80,9 @@ public class JumpHeightSheetController {
 
 	@RequestMapping(value = "/{prename}/{surname}/{task}", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
-	public boolean addValue(ServletRequest request, @PathVariable("prename") String prename, @PathVariable("surname") String surname,
-			@PathVariable("task") String task, @RequestBody Double value) throws IOException, InterruptedException {
+	public boolean addValue(ServletRequest request, @PathVariable("prename") String prename,
+			@PathVariable("surname") String surname, @PathVariable("task") String task, @RequestBody Double value)
+			throws IOException, InterruptedException {
 		String title = concatNameToTitle(prename, surname);
 		JumpHeightSheet sheet = sheetService.get(request, title);
 		CellValue<Double> result = sheet.add(task, getToday(), value);
@@ -103,7 +104,8 @@ public class JumpHeightSheetController {
 
 	@RequestMapping(value = "/tasks/{title}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public List<JumpHightTask> getTasks(ServletRequest request, @PathVariable("title") String title) throws IOException, InterruptedException {
+	public List<JumpHightTask> getTasks(ServletRequest request, @PathVariable("title") String title)
+			throws IOException, InterruptedException {
 		JumpHeightSheet sheet = sheetService.get(request, title);
 		List<JumpHightTask> tasks = buildTasks(sheet);
 		return tasks;
@@ -199,9 +201,7 @@ public class JumpHeightSheetController {
 			throws IOException, InterruptedException {
 		JumpHeightSheet sheet;
 		try {
-			if (log.isDebugEnabled()) {
-				log.debug("Fetching " + JumpHeightSheet.class.getSimpleName() + " for " + title);
-			}
+			log.debug("Fetching {} for {}", JumpHeightSheet.class.getSimpleName(), title);
 			sheet = sheetService.get(request, title);
 		} catch (IOException e) {
 			if (e.getMessage().equals("Sheet with title \"" + title + "\" not found.")) {

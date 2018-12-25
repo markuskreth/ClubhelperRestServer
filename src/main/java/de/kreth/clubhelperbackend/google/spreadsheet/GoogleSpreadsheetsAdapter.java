@@ -1,8 +1,20 @@
 package de.kreth.clubhelperbackend.google.spreadsheet;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import javax.servlet.ServletRequest;
+
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.Sheets.Spreadsheets;
 import com.google.api.services.sheets.v4.Sheets.Spreadsheets.BatchUpdate;
+import com.google.api.services.sheets.v4.Sheets.Spreadsheets.Values;
 import com.google.api.services.sheets.v4.Sheets.Spreadsheets.Values.Update;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetResponse;
@@ -17,17 +29,6 @@ import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
 import de.kreth.clubhelperbackend.google.GoogleBaseAdapter;
-
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import javax.servlet.ServletRequest;
 
 class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
 
@@ -55,9 +56,8 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
 			if (lock.tryLock(LOCK_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
 				try {
 					super.checkRefreshToken(request);
-					if (service == null && credential != null) {
-			            service =  new Sheets
-			            		.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
+					if (service == null) {
+			            service =  createSheetsBuilder()
 			                    .setApplicationName(APPLICATION_NAME)
 			                    .build();
 					}
@@ -74,7 +74,7 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
 			throw new IllegalStateException("Spread Sheet Service not initialized!");
 		}
     }
-    
+
 	private BatchUpdateSpreadsheetResponse 
 			sendRequest(Request request, Boolean includeSpreadsheetInResponse) 
 			throws IOException {
@@ -112,7 +112,7 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
 			if (log.isDebugEnabled()) {
 				log.debug("Error fetching SpreadSheed, trying token refresh", e);
 			}
-			credential.refreshToken();
+			refreshToken();
 			if (log.isInfoEnabled()) {
 				log.info("Successfully refreshed Google Security Token.");
 			}
@@ -197,7 +197,9 @@ class GoogleSpreadsheetsAdapter extends GoogleBaseAdapter {
 		stringBuilder.append(sheetTitle);
 		stringBuilder.append("!");
 		stringBuilder.append(range);
-		ValueRange result = service.spreadsheets().values()
+		Spreadsheets spreadsheets = service.spreadsheets();
+		Values values = spreadsheets.values();
+		ValueRange result = values
 				.get(SPREADSHEET_ID, stringBuilder.toString()).execute();
 		return result;
 	}

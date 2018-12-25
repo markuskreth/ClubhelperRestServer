@@ -29,6 +29,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.CalendarScopes;
+import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 
 public abstract class GoogleBaseAdapter {
@@ -38,10 +39,10 @@ public abstract class GoogleBaseAdapter {
 	/** Application name. */
 	protected static final String APPLICATION_NAME = "ClubHelperBackend";
 	/** Directory to store user credentials for this application. */
-	protected static final File DATA_STORE_DIR = new File(
+	private static final File DATA_STORE_DIR = new File(
 			System.getProperty("catalina.base"), ".credentials");
 	/** Global instance of the JSON factory. */
-	protected static final JsonFactory JSON_FACTORY = JacksonFactory
+	private static final JsonFactory JSON_FACTORY = JacksonFactory
 			.getDefaultInstance();
 	/**
 	 * Global instance of the scopes required by this quickstart.
@@ -51,14 +52,14 @@ public abstract class GoogleBaseAdapter {
 	static final List<String> SCOPES = Arrays.asList(SheetsScopes.SPREADSHEETS,
 			CalendarScopes.CALENDAR);
 
-	protected static volatile Credential credential;
+	private static volatile Credential credential;
 
 	protected static final Logger log = LoggerFactory
 			.getLogger(GoogleBaseAdapter.class);
 	/** Global instance of the {@link FileDataStoreFactory}. */
-	protected final FileDataStoreFactory DATA_STORE_FACTORY;
+	private final FileDataStoreFactory DATA_STORE_FACTORY;
 	/** Global instance of the HTTP transport. */
-	protected final HttpTransport HTTP_TRANSPORT;
+	private final HttpTransport HTTP_TRANSPORT;
 
 	public GoogleBaseAdapter() throws GeneralSecurityException, IOException {
 		super();
@@ -86,6 +87,26 @@ public abstract class GoogleBaseAdapter {
 						+ (result ? "successfull." : "failed."));
 			}
 		}
+	}
+
+	public Sheets.Builder createSheetsBuilder() {
+		if (credential == null) {
+			throw new IllegalStateException("credential is null, checkRefreshToken need to be called before.");
+		}
+		return new Sheets
+				.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential);
+	}
+
+	public com.google.api.services.calendar.Calendar.Builder createCalendarBuilder() {
+		if (credential == null) {
+			throw new IllegalStateException("credential is null, checkRefreshToken need to be called before.");
+		}
+		return new com.google.api.services.calendar.Calendar.Builder(
+				HTTP_TRANSPORT, JSON_FACTORY, credential);
+	}
+
+	public final boolean refreshToken() throws IOException {
+		return credential.refreshToken();
 	}
 
 	/**

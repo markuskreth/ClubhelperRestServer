@@ -1,7 +1,7 @@
 package de.kreth.clubhelperbackend.google;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -46,7 +46,7 @@ public class GoogleBaseAdapterTest {
 			
 			@Override
 			Credential loadCredential(GoogleClientSecrets clientSecrets, String serverName) throws IOException {
-				return credential;
+				return creditial;
 			}
 			
 			@Override
@@ -70,7 +70,9 @@ public class GoogleBaseAdapterTest {
 	public void testCheckRefreshToken() throws IOException {
 		when(credFile.exists()).thenReturn(true);
 		reader = new StringReader(getJsonInput());
+		when(creditial.getExpiresInSeconds()).thenReturn(10L);
 		adapter.checkRefreshToken(request);
+		verify(creditial).refreshToken();
 	}
 
 	private String getJsonInput() {
