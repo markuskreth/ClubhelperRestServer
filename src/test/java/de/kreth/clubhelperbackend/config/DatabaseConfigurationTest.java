@@ -222,9 +222,11 @@ public class DatabaseConfigurationTest<T extends Data> {
 
 		List<Field> fields = getAllPojoDefinitions();
 
-		Reflections refl = new Reflections(
-				new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage("de.kreth.clubhelperbackend.dao"))
-						.setScanners(new SubTypesScanner(false), new TypeAnnotationsScanner()));
+		ConfigurationBuilder configBuilder = new ConfigurationBuilder()
+				.setUrls(ClasspathHelper.forPackage("de.kreth.clubhelperbackend.dao"))
+				.setScanners(new SubTypesScanner(false), new TypeAnnotationsScanner());
+
+		Reflections refl = new Reflections(configBuilder);
 		Set<Class<?>> daos = refl.getTypesAnnotatedWith(Repository.class);
 
 		List<TestObjectMapping<? extends Data>> testDaos = new ArrayList<>();

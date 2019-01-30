@@ -2,6 +2,7 @@ package de.kreth.clubhelperbackend.controller;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -33,10 +34,10 @@ import de.kreth.clubhelperbackend.utils.ThreadPoolErrors;
 import de.kreth.googleconnectors.spreadsheet.CellValue;
 import de.kreth.googleconnectors.spreadsheet.JumpHeightSheet;
 import de.kreth.googleconnectors.spreadsheet.JumpHightTask;
+import de.kreth.googleconnectors.spreadsheet.JumpHightTask.Builder;
 import de.kreth.googleconnectors.spreadsheet.SheetDataException;
 import de.kreth.googleconnectors.spreadsheet.SheetService;
 import de.kreth.googleconnectors.spreadsheet.Sheets;
-import de.kreth.googleconnectors.spreadsheet.JumpHightTask.Builder;
 
 @Controller
 @RequestMapping("/jumpheights")
@@ -142,9 +143,8 @@ public class JumpHeightSheetController {
 							});
 							if (max.isPresent()) {
 								double average = BigDecimal.valueOf(avg.doubleValue())
-										.divide(BigDecimal.valueOf(valuecount.doubleValue()),
-												BigDecimal.ROUND_HALF_DOWN)
-										.setScale(2, BigDecimal.ROUND_HALF_DOWN).doubleValue();
+										.divide(BigDecimal.valueOf(valuecount.doubleValue()), RoundingMode.HALF_DOWN)
+										.setScale(2, RoundingMode.HALF_DOWN).doubleValue();
 								task.setInfo(new StringBuilder("Max=").append(max.get()).append(" Avg=").append(average)
 										.toString());
 							}

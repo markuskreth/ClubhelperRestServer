@@ -19,18 +19,20 @@ public class InstanciateAllDao {
 	@Parameter
 	public Class<? extends Dao<?>> testClass;
 
-    @SuppressWarnings("rawtypes")
+	@SuppressWarnings("rawtypes")
 	@Parameters(name = "{index}: {0}")
-    public static Set<Class<? extends Dao>> data() {
-    	Reflections reflections = new Reflections("de.kreth.clubhelperbackend.dao");
-    	Set<Class<? extends Dao>> classes = reflections.getSubTypesOf(Dao.class).stream()
-    			.filter(c -> !c.isAnonymousClass() && !Modifier.isAbstract(c.getModifiers())).collect(Collectors.toSet());
-    	return classes;
-    }
+	public static Set<Class<? extends Dao>> data() {
+		Reflections reflections = new Reflections("de.kreth.clubhelperbackend.dao");
+		Set<Class<? extends Dao>> classes = reflections.getSubTypesOf(Dao.class).stream()
+				.filter(c -> !c.isAnonymousClass() && !Modifier.isAbstract(c.getModifiers()))
+				.collect(Collectors.toSet());
+		return classes;
+	}
 
 	@Test
-	public void instanciate() throws InstantiationException, IllegalAccessException {
-		testClass.newInstance();
+	public void instanciate() throws InstantiationException, IllegalAccessException, IllegalArgumentException,
+			ReflectiveOperationException, SecurityException {
+		testClass.getConstructor().newInstance();
 	}
 
 }

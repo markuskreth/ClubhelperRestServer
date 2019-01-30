@@ -253,7 +253,7 @@ public class MockitoMatchersTest {
 		}
 	}
 
-	public static interface StringArg {
+	public interface StringArg {
 		String exec(String arg);
 	}
 }
