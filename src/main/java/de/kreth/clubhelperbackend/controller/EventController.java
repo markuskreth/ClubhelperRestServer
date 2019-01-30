@@ -24,7 +24,7 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.EventDateTime;
 import com.google.common.collect.Maps;
 
-import de.kreth.clubhelperbackend.google.calendar.CalendarAdapter;
+import de.kreth.googleconnectors.calendar.CalendarAdapter;
 
 @Controller
 @RequestMapping("/events")
@@ -47,7 +47,7 @@ public class EventController {
 	@ResponseBody
 	public List<Map<String, Object>> getEvents(ServletRequest request) throws IOException, InterruptedException {
 		List<Map<String, Object>> result = new ArrayList<>();
-		adapter.getAllEvents(request).forEach(e -> {
+		adapter.getAllEvents(request.getServerName()).forEach(e -> {
 			if (e.getSummary() != null) {
 
 				Map<String, Object> properties = new HashMap<>();
@@ -76,8 +76,7 @@ public class EventController {
 	}
 
 	private void adjustExcludedEndDate(com.google.api.services.calendar.model.Event e) {
-		if (e.isEndTimeUnspecified() == false
-				&& startIsFullDate(e)) {
+		if (e.isEndTimeUnspecified() == false && startIsFullDate(e)) {
 			EventDateTime end = e.getEnd();
 			if (end == null) {
 				return;
@@ -91,13 +90,12 @@ public class EventController {
 	}
 
 	boolean startIsFullDate(com.google.api.services.calendar.model.Event e) {
-		
+
 		EventDateTime start = e.getStart();
 		if (start == null) {
 			start = e.getOriginalStartTime();
 		}
-		return (start.getDate() != null 
-				|| (start.getDateTime()!=null && start.getDateTime().isDateOnly()));
+		return (start.getDate() != null || (start.getDateTime() != null && start.getDateTime().isDateOnly()));
 	}
 
 	private Entry<String, Object> map(Entry<String, Object> entry) {
@@ -130,7 +128,7 @@ public class EventController {
 	}
 
 	private String firstValue(Object value) {
-		if(value == null) {
+		if (value == null) {
 			return "";
 		}
 		String string = value.toString();

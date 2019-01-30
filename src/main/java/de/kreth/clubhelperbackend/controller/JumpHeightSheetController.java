@@ -29,14 +29,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import de.kreth.clubhelperbackend.google.spreadsheet.CellValue;
-import de.kreth.clubhelperbackend.google.spreadsheet.JumpHeightSheet;
-import de.kreth.clubhelperbackend.google.spreadsheet.JumpHightTask;
-import de.kreth.clubhelperbackend.google.spreadsheet.JumpHightTask.Builder;
-import de.kreth.clubhelperbackend.google.spreadsheet.SheetDataException;
-import de.kreth.clubhelperbackend.google.spreadsheet.SheetService;
-import de.kreth.clubhelperbackend.google.spreadsheet.Sheets;
 import de.kreth.clubhelperbackend.utils.ThreadPoolErrors;
+import de.kreth.googleconnectors.spreadsheet.CellValue;
+import de.kreth.googleconnectors.spreadsheet.JumpHeightSheet;
+import de.kreth.googleconnectors.spreadsheet.JumpHightTask;
+import de.kreth.googleconnectors.spreadsheet.SheetDataException;
+import de.kreth.googleconnectors.spreadsheet.SheetService;
+import de.kreth.googleconnectors.spreadsheet.Sheets;
+import de.kreth.googleconnectors.spreadsheet.JumpHightTask.Builder;
 
 @Controller
 @RequestMapping("/jumpheights")

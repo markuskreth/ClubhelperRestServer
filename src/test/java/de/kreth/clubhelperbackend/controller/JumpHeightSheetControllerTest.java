@@ -28,11 +28,11 @@ import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.SheetProperties;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
-import de.kreth.clubhelperbackend.google.spreadsheet.CellRange;
-import de.kreth.clubhelperbackend.google.spreadsheet.CellValue;
-import de.kreth.clubhelperbackend.google.spreadsheet.JumpHeightSheet;
-import de.kreth.clubhelperbackend.google.spreadsheet.Sheets;
 import de.kreth.clubhelperbackend.testutils.MockedLogger;
+import de.kreth.googleconnectors.spreadsheet.CellRange;
+import de.kreth.googleconnectors.spreadsheet.CellValue;
+import de.kreth.googleconnectors.spreadsheet.JumpHeightSheet;
+import de.kreth.googleconnectors.spreadsheet.Sheets;
 
 public class JumpHeightSheetControllerTest {
 

@@ -38,9 +38,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.api.services.sheets.v4.model.Sheet;
 
-import de.kreth.clubhelperbackend.google.spreadsheet.GoogleInitAdapter;
 import de.kreth.clubhelperbackend.pdf.AttendenceBean;
 import de.kreth.clubhelperbackend.pdf.AttendenceBeanCollector;
+import de.kreth.googleconnectors.spreadsheet.GoogleInitAdapter;
 
 /**
  * Handles requests for the application home page.
