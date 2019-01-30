@@ -100,9 +100,9 @@ public class ClubhelperAuthenticationProvider implements AuthenticationProvider,
 		try (Connection connection = dataSource.getConnection()) {
 
 			stmUser = connection
-					.prepareStatement("select person.password password, groupDef.name groupname from person \n"
+					.prepareStatement("select person.password password, groupdef.name groupname from person \n"
 							+ "	left join persongroup on persongroup.person_id = person.id\n"
-							+ " left join groupDef on persongroup.group_id = groupDef.id\n"
+							+ " left join groupdef on persongroup.group_id = groupdef.id\n"
 							+ " where person.username = ?");
 			stmUser.setString(1, username);
 			ResultSet rs = stmUser.executeQuery();
