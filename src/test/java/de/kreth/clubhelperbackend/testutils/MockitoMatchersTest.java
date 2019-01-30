@@ -4,7 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,9 +27,10 @@ public class MockitoMatchersTest {
 		assertTrue(Pattern.compile(regex).matcher("a text between").find());
 
 		assertTrue(Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher("a teXt between").find());
-		assertTrue(Pattern.compile(regex, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE).matcher("a teXt between").find());
+		assertTrue(Pattern.compile(regex, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE).matcher("a teXt between")
+				.find());
 	}
-	
+
 	@Test
 	public void testTokensEmpty() {
 		StringArg obj = mock(StringArg.class);
@@ -54,7 +57,8 @@ public class MockitoMatchersTest {
 		ArgumentMatcher<String> matcher;
 
 		obj.exec("insert into tableName (type, value, person_id, changed, created) values (?,?,?,?,?)");
-		matcher = MockitoMatchers.sqlMatcher(Arrays.asList("insert", "into", "tableName", "(type,", "value,", "person_id,", "changed,", "created)", "values", "(?,?,?,?,?)"));
+		matcher = MockitoMatchers.sqlMatcher(Arrays.asList("insert", "into", "tableName", "(type,", "value,",
+				"person_id,", "changed,", "created)", "values", "(?,?,?,?,?)"));
 		verify(obj, atLeastOnce()).exec(ArgumentMatchers.argThat(matcher));
 	}
 
@@ -122,7 +126,7 @@ public class MockitoMatchersTest {
 			assertTrue(msg.contains("arg3"));
 		}
 	}
-	
+
 	@Test
 	public void testContainsCaseInsensitive() {
 		ArgumentMatcher<String> matcher = MockitoMatchers.containsCaseInsensitive("tst");
@@ -172,7 +176,7 @@ public class MockitoMatchersTest {
 		ObjectArrayMethod method = Mockito.mock(ObjectArrayMethod.class);
 
 		Mockito.when(method.call(ArgumentMatchers.<Object>any())).thenReturn(15);
-		Object[] arg = new Object[] {null, null};
+		Object[] arg = new Object[] { null, null };
 		int actual = method.call(arg);
 		assertEquals(15, actual);
 
@@ -183,7 +187,7 @@ public class MockitoMatchersTest {
 
 		ObjectArrayMethod method = Mockito.mock(ObjectArrayMethod.class);
 
-		Object[] arg = {"", 1};
+		Object[] arg = { "", 1 };
 		Mockito.when(method.call(ArgumentMatchers.<Object>any())).thenReturn(15);
 		int actual = method.call(arg);
 		assertEquals(15, actual);
@@ -195,7 +199,7 @@ public class MockitoMatchersTest {
 
 		ObjectArrayMethod method = Mockito.mock(ObjectArrayMethod.class);
 
-		Object[] arg = {"", ""};
+		Object[] arg = { "", "" };
 
 		method.call(arg);
 
@@ -209,38 +213,38 @@ public class MockitoMatchersTest {
 
 		ObjectArrayMethod method = Mockito.mock(ObjectArrayMethod.class);
 
-		Object[] arg = new Object[] {"", ""};
+		Object[] arg = new Object[] { "", "" };
 		Mockito.when(method.call(ArgumentMatchers.<Object>any())).thenReturn(10);
-		
+
 		int actual = method.call(arg);
 		verify(method).call(arg);
-		
+
 		assertEquals(10, actual);
 
-		arg = new Object[] {"", 1};
+		arg = new Object[] { "", 1 };
 		Mockito.when(method.call(ArgumentMatchers.<Object>any())).thenReturn(12);
 		actual = method.call(arg);
 		verify(method).call(arg);
-		
+
 		assertEquals(12, actual);
 		Mockito.when(method.call(ArgumentMatchers.<Object>any())).thenReturn(15);
-		arg = new Object[] {"", Long.valueOf(2), new Date()};
+		arg = new Object[] { "", Long.valueOf(2), new Date() };
 		actual = method.call(arg);
 		verify(method).call(arg);
-		
+
 		assertEquals(15, actual);
 	}
-	
+
 	@Test
 	public void testObjectArray() {
-		ArgumentMatcher<Object[]> allObjectArraysMatcher = MockitoMatchers.objectArray((Object[])null);
+		ArgumentMatcher<Object[]> allObjectArraysMatcher = MockitoMatchers.objectArray((Object[]) null);
 		assertTrue("null Array", allObjectArraysMatcher.matches(null));
 
 		assertTrue("Empty Array", allObjectArraysMatcher.matches(new Object[0]));
 
 		assertTrue("Two Objects Array null values", allObjectArraysMatcher.matches(new Object[2]));
-		assertTrue("Two Objects Array String and int values", allObjectArraysMatcher.matches(new Object[] {"1", 1}));
-		
+		assertTrue("Two Objects Array String and int values", allObjectArraysMatcher.matches(new Object[] { "1", 1 }));
+
 	}
 
 	static class ObjectArrayMethod {
@@ -248,8 +252,8 @@ public class MockitoMatchersTest {
 			return 0;
 		}
 	}
-	
-	private interface StringArg {
+
+	public static interface StringArg {
 		String exec(String arg);
 	}
 }

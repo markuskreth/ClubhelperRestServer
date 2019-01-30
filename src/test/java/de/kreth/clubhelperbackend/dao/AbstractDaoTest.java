@@ -1,6 +1,8 @@
 package de.kreth.clubhelperbackend.dao;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
 import java.sql.Connection;
 import java.util.Date;
@@ -23,10 +25,11 @@ import de.kreth.clubhelperbackend.utils.TimeProvider;
 
 public abstract class AbstractDaoTest<T extends Data> {
 
-	@Mock
-	protected JdbcTemplate jdbcTemplate;
 	protected ClubhelperRowMapper<T> mapper;
 	protected AbstractDao<T> dao;
+
+	@Mock
+	protected JdbcTemplate jdbcTemplate;
 	@Mock
 	protected SqlForDialect dialect;
 	@Mock
@@ -39,7 +42,7 @@ public abstract class AbstractDaoTest<T extends Data> {
 	protected Connection connection;
 	@Mock
 	protected TimeProvider timeProvider;
-	
+
 	protected Long objectId = 100L;
 	protected Date now = new Date(1540058119L);
 
@@ -59,7 +62,7 @@ public abstract class AbstractDaoTest<T extends Data> {
 		when(dataSource.getConnection(anyString(), anyString())).thenReturn(connection);
 		when(jdbcTemplate.getDataSource()).thenReturn(dataSource);
 		when(timeProvider.getNow()).thenReturn(now);
-		
+
 		dao.setDataSource(dataSource);
 		dao.setJdbcTemplate(jdbcTemplate);
 		dao.setPlatformTransactionManager(transMan);
@@ -72,7 +75,7 @@ public abstract class AbstractDaoTest<T extends Data> {
 	public void increaseObjectIds() {
 		objectId++;
 	}
-	
+
 	protected abstract AbstractDao<T> configureDao();
 
 }

@@ -79,7 +79,7 @@ public class DatabaseConfigurationTest<T extends Data> {
 	protected TimeProvider timeProvider;
 
 	protected JdbcTemplate jdbcTemplate;
-	
+
 	@BeforeClass
 	public static void initDatabase() {
 		logger = MockedLogger.mock();
@@ -97,7 +97,7 @@ public class DatabaseConfigurationTest<T extends Data> {
 	private TableDefinition tableDef;
 	private T data;
 	private Connection connection;
-	
+
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
@@ -106,10 +106,10 @@ public class DatabaseConfigurationTest<T extends Data> {
 		dao.setDataSource(dataSource);
 		dao.setJdbcTemplate(jdbcTemplate);
 		dao.setPlatformTransactionManager(transMan);
-		dao.setSqlDialect(sqlDialect );
+		dao.setSqlDialect(sqlDialect);
 		dao.setDeletedEntriesDao(deletedEntriesDao);
 		dao.setTimeProvider(timeProvider);
-		
+
 		tableDef = mapping.tableDef;
 		data = TestData.getTestObject(mapping.pojo);
 		connection = dataSource.getConnection();
@@ -126,7 +126,7 @@ public class DatabaseConfigurationTest<T extends Data> {
 
 	@After
 	public void closeConnection() throws SQLException {
-		if (connection.isClosed() == false) {
+		if (connection != null && connection.isClosed() == false) {
 			connection.createStatement().execute("TRUNCATE TABLE " + tableDef.getTableName());
 			if (mapping.needPerson) {
 				connection.createStatement().execute("TRUNCATE TABLE " + config.getPerson().getTableName());
@@ -134,7 +134,7 @@ public class DatabaseConfigurationTest<T extends Data> {
 			connection.close();
 		}
 	}
-	
+
 	@Test
 	public void testInsert() throws SQLException {
 		T inserted = dao.insert(data);
@@ -143,8 +143,9 @@ public class DatabaseConfigurationTest<T extends Data> {
 		assertTrue(rs.next());
 		assertFalse(rs.next());
 	}
-	
+
 	static boolean executed = false;
+
 	@Test
 	public void testStatement() throws SQLException {
 		if (executed) {
@@ -159,10 +160,10 @@ public class DatabaseConfigurationTest<T extends Data> {
 		System.out.println(new ResultSetStructure(rs).toString());
 		System.out.println();
 		System.out.println(new ResultSetStructure(stm.executeQuery("select * from person")).toString());
-		
+
 		stm.close();
 	}
-	
+
 	@Test
 	@Ignore
 	public void testUpdate() {
@@ -170,15 +171,15 @@ public class DatabaseConfigurationTest<T extends Data> {
 		TestData.change(inserted);
 		assertTrue("Update failed for " + inserted, dao.update(inserted));
 	}
-	
+
 	@Test
 	public void testDelete() throws SQLException {
 		Long id = 11L;
-		data.setId(id );
+		data.setId(id);
 		T inserted = dao.insert(data);
 		when(deletedEntriesDao.insert(ArgumentMatchers.any(DeletedEntries.class)))
-			.thenReturn(new DeletedEntries(15L, tableDef.getTableName(), data.getId()));
-		
+				.thenReturn(new DeletedEntries(15L, tableDef.getTableName(), data.getId()));
+
 		assertTrue("Delete failed for " + inserted, dao.delete(inserted));
 
 		if (DeletedEntries.class.equals(mapping.pojo)) {
@@ -186,13 +187,13 @@ public class DatabaseConfigurationTest<T extends Data> {
 		} else {
 			ArgumentCaptor<DeletedEntries> delCap = ArgumentCaptor.forClass(DeletedEntries.class);
 			verify(deletedEntriesDao).insert(delCap.capture());
-			
+
 			DeletedEntries del = delCap.getValue();
 			assertEquals(id, del.getEntryId());
 			assertEquals(tableDef.getTableName(), del.getTablename());
 		}
 	}
-	
+
 	@Test
 	public void testLoadAll() {
 		List<T> entities = dao.getAll();
@@ -204,44 +205,46 @@ public class DatabaseConfigurationTest<T extends Data> {
 		entities = dao.getAll();
 		assertEquals(2, entities.size());
 	}
-	
+
 	public void printTableContent() throws SQLException {
 		System.out.println(new ResultSetStructure(getTableContent()));
 	}
-	
+
 	private ResultSet getTableContent() throws SQLException {
 		String sql = "select * from " + tableDef.getTableName();
 		return connection.createStatement().executeQuery(sql);
 	}
 
 	@SuppressWarnings("unchecked")
-	@Parameters(name="{index}: {0}")
-	public static List<TestObjectMapping<? extends Data>> getTestClasses() throws SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, ReflectiveOperationException {
-		
+	@Parameters(name = "{index}: {0}")
+	public static List<TestObjectMapping<? extends Data>> getTestClasses() throws SecurityException,
+			InstantiationException, IllegalAccessException, IllegalArgumentException, ReflectiveOperationException {
+
 		List<Field> fields = getAllPojoDefinitions();
-		
-		Reflections refl = new Reflections(new ConfigurationBuilder()
-			     .setUrls(ClasspathHelper.forPackage("de.kreth.clubhelperbackend.dao"))
-			     .setScanners(new SubTypesScanner(false), new TypeAnnotationsScanner())
-			     );
+
+		Reflections refl = new Reflections(
+				new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage("de.kreth.clubhelperbackend.dao"))
+						.setScanners(new SubTypesScanner(false), new TypeAnnotationsScanner()));
 		Set<Class<?>> daos = refl.getTypesAnnotatedWith(Repository.class);
-		
+
 		List<TestObjectMapping<? extends Data>> testDaos = new ArrayList<>();
-		
-		for (Class<?> daoClass: daos) {
+
+		for (Class<?> daoClass : daos) {
 			if (Modifier.isAbstract(daoClass.getModifiers())) {
 				System.err.println("ERROR: Skipped -> " + daoClass);
 				continue;
 			}
 
-			AbstractDao<? extends Data> instance = (AbstractDao<? extends Data>) daoClass.getConstructor().newInstance();
+			AbstractDao<? extends Data> instance = (AbstractDao<? extends Data>) daoClass.getConstructor()
+					.newInstance();
 			if (instance.forDataType().equals(PersonGroup.class)) {
 				continue;
 			}
-			
+
 			Field mapperField = daoClass.getSuperclass().getDeclaredField("mapper");
 			mapperField.setAccessible(true);
-			ClubhelperRowMapper<? extends Data> mapper =  (ClubhelperRowMapper<? extends Data>) mapperField.get(instance);
+			ClubhelperRowMapper<? extends Data> mapper = (ClubhelperRowMapper<? extends Data>) mapperField
+					.get(instance);
 			Field itemClassField;
 			try {
 
@@ -258,7 +261,7 @@ public class DatabaseConfigurationTest<T extends Data> {
 			itemClassField.setAccessible(true);
 			Class<?> classObj = (Class<?>) itemClassField.get(mapper);
 
-			for (Field f: fields) {
+			for (Field f : fields) {
 
 				Pojo pojoType = f.getDeclaredAnnotation(Pojo.class);
 				Class<? extends Data> pojoClass = pojoType.pojoClass();
@@ -269,10 +272,10 @@ public class DatabaseConfigurationTest<T extends Data> {
 					testObj.dao = instance;
 					f.setAccessible(true);
 					testObj.tableDef = (TableDefinition) f.get(config);
-					if (pojoClass.equals(Relative.class) ) {
+					if (pojoClass.equals(Relative.class)) {
 						testObj.needPerson = true;
-					} else  {
-						for (Method m: pojoClass.getMethods()) {
+					} else {
+						for (Method m : pojoClass.getMethods()) {
 							if (m.getName().equalsIgnoreCase("getPersonId") && m.getReturnType().equals(long.class)) {
 								testObj.needPerson = true;
 								break;
@@ -282,7 +285,7 @@ public class DatabaseConfigurationTest<T extends Data> {
 					testDaos.add(testObj);
 				}
 			}
-			
+
 		}
 
 		return testDaos;
@@ -300,14 +303,11 @@ public class DatabaseConfigurationTest<T extends Data> {
 //		
 //		t.printTableContent();
 //	}
-	
+
 	static List<Field> getAllPojoDefinitions() {
-		return Arrays.asList(DatabaseConfiguration.class.getDeclaredFields())
-				.stream()
-				.filter(f -> {
-					return f.getDeclaredAnnotation(Pojo.class) != null;
-				})
-				.collect(Collectors.toList());
+		return Arrays.asList(DatabaseConfiguration.class.getDeclaredFields()).stream().filter(f -> {
+			return f.getDeclaredAnnotation(Pojo.class) != null;
+		}).collect(Collectors.toList());
 	}
 
 	public static class TestObjectMapping<T extends Data> {
@@ -315,7 +315,7 @@ public class DatabaseConfigurationTest<T extends Data> {
 		AbstractDao<T> dao;
 		TableDefinition tableDef;
 		boolean needPerson;
-		
+
 		@Override
 		public String toString() {
 			return pojo.getName();

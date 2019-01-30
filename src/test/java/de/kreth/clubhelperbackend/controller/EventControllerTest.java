@@ -2,7 +2,6 @@ package de.kreth.clubhelperbackend.controller;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -55,6 +54,7 @@ public class EventControllerTest {
 
 	@Before
 	public void initController() throws GeneralSecurityException, IOException, InterruptedException {
+		adapter = null;
 		MockitoAnnotations.initMocks(this);
 		logger = MockedLogger.mock();
 		eventDateTime = new EventDateTime();
@@ -66,14 +66,7 @@ public class EventControllerTest {
 		eventResult = new ArrayList<>();
 		controller = new EventController(adapter, logger);
 		when(adapter.getAllEvents(anyString())).thenReturn(eventResult);
-	}
-
-	@Test
-	public void initDefaultConstructor() throws GeneralSecurityException, IOException {
-		assertNotEquals(CalendarAdapter.class, controller.adapter.getClass());
-		controller = new EventController();
-		assertNotNull(controller.adapter);
-		assertEquals(CalendarAdapter.class, controller.adapter.getClass());
+		when(request.getServerName()).thenReturn("serverName");
 	}
 
 	@Test
