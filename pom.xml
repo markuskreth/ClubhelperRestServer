@@ -7,7 +7,7 @@
 	<artifactId>clubhelperbackend</artifactId>
 	<name>ClubHelperBackend</name>
 	<packaging>war</packaging>
-	<version>1.0.7.18-SNAPSHOT</version>
+	<version>1.0.7.19-SNAPSHOT</version>
 	<description>Clubhelper Rest Service with jquery mobile ui</description>
 
 	<parent>
