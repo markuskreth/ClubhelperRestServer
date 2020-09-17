@@ -53,7 +53,7 @@
 		<level value="warn" />
 	</logger>
 
-	<logger name="org.springframework.web.servlet.view.tiles2">
+	<logger name="org.springframework.web.servlet.view">
 		<level value="info" />
 	</logger>
 

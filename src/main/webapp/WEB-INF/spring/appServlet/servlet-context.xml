@@ -48,7 +48,7 @@
 	<bean
 		class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver" />
 
-	<bean class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">
+	<bean class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
 		<property name="definitions">
 			<list>
 				<value>/WEB-INF/views/**/views.xml</value>
@@ -58,7 +58,7 @@
 	<bean
 		class="org.springframework.mobile.device.view.LiteDeviceDelegatingViewResolver">
 		<constructor-arg>
-			<bean class="org.springframework.web.servlet.view.tiles2.TilesViewResolver">
+			<bean class="org.springframework.web.servlet.view.tiles3.TilesViewResolver">
 			</bean>
 		</constructor-arg>
 		<property name="mobilePrefix" value="mobile/" />
