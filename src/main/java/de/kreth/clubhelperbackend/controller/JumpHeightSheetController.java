@@ -2,6 +2,7 @@ package de.kreth.clubhelperbackend.controller;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -29,33 +30,44 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import de.kreth.clubhelperbackend.google.spreadsheet.CellValue;
-import de.kreth.clubhelperbackend.google.spreadsheet.JumpHeightSheet;
-import de.kreth.clubhelperbackend.google.spreadsheet.JumpHightTask;
-import de.kreth.clubhelperbackend.google.spreadsheet.SheetDataException;
-import de.kreth.clubhelperbackend.google.spreadsheet.SheetService;
-import de.kreth.clubhelperbackend.google.spreadsheet.JumpHightTask.Builder;
 import de.kreth.clubhelperbackend.utils.ThreadPoolErrors;
+import de.kreth.googleconnectors.spreadsheet.CellValue;
+import de.kreth.googleconnectors.spreadsheet.JumpHeightSheet;
+import de.kreth.googleconnectors.spreadsheet.JumpHightTask;
+import de.kreth.googleconnectors.spreadsheet.JumpHightTask.Builder;
+import de.kreth.googleconnectors.spreadsheet.SheetDataException;
+import de.kreth.googleconnectors.spreadsheet.SheetService;
+import de.kreth.googleconnectors.spreadsheet.Sheets;
 
 @Controller
 @RequestMapping("/jumpheights")
 @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'STAFF')")
 public class JumpHeightSheetController {
 
-	private final Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log;
+	private final Sheets sheetService;
+
+	public JumpHeightSheetController() {
+		this(SheetService.INSTANCE.getService(), LoggerFactory.getLogger(JumpHeightSheetController.class));
+	}
+
+	JumpHeightSheetController(Sheets sheets, Logger logger) {
+		this.sheetService = sheets;
+		this.log = logger;
+	}
 
 	@RequestMapping(value = "/tasks/{title}/{taskName}", method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
-	public List<String> addTask(ServletRequest request, @PathVariable("title") String title, @PathVariable("taskName") String taskName)
-			throws IOException, InterruptedException {
-		return SheetService.get(request, title).addTask(taskName);
+	public List<String> addTask(ServletRequest request, @PathVariable("title") String title,
+			@PathVariable("taskName") String taskName) throws IOException, InterruptedException {
+		return sheetService.get(request, title).addTask(taskName);
 	}
 
 	@RequestMapping(value = "/{title}", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
 	public Map<String, List<?>> createCompetitor(ServletRequest request, @PathVariable("title") String title)
 			throws IOException, InterruptedException {
-		JumpHeightSheet sheet = SheetService.create(request, title);
+		JumpHeightSheet sheet = sheetService.create(request, title);
 		Map<String, List<?>> result = createTaskValues(sheet);
 		return result;
 	}
@@ -69,10 +81,11 @@ public class JumpHeightSheetController {
 
 	@RequestMapping(value = "/{prename}/{surname}/{task}", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
-	public boolean addValue(ServletRequest request, @PathVariable("prename") String prename, @PathVariable("surname") String surname,
-			@PathVariable("task") String task, @RequestBody Double value) throws IOException, InterruptedException {
+	public boolean addValue(ServletRequest request, @PathVariable("prename") String prename,
+			@PathVariable("surname") String surname, @PathVariable("task") String task, @RequestBody Double value)
+			throws IOException, InterruptedException {
 		String title = concatNameToTitle(prename, surname);
-		JumpHeightSheet sheet = SheetService.get(request, title);
+		JumpHeightSheet sheet = sheetService.get(request, title);
 		CellValue<Double> result = sheet.add(task, getToday(), value);
 		return result.getObject().equals(value);
 	}
@@ -92,8 +105,9 @@ public class JumpHeightSheetController {
 
 	@RequestMapping(value = "/tasks/{title}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public List<JumpHightTask> getTasks(ServletRequest request, @PathVariable("title") String title) throws IOException, InterruptedException {
-		JumpHeightSheet sheet = SheetService.get(request, title);
+	public List<JumpHightTask> getTasks(ServletRequest request, @PathVariable("title") String title)
+			throws IOException, InterruptedException {
+		JumpHeightSheet sheet = sheetService.get(request, title);
 		List<JumpHightTask> tasks = buildTasks(sheet);
 		return tasks;
 	}
@@ -129,9 +143,8 @@ public class JumpHeightSheetController {
 							});
 							if (max.isPresent()) {
 								double average = BigDecimal.valueOf(avg.doubleValue())
-										.divide(BigDecimal.valueOf(valuecount.doubleValue()),
-												BigDecimal.ROUND_HALF_DOWN)
-										.setScale(2, BigDecimal.ROUND_HALF_DOWN).doubleValue();
+										.divide(BigDecimal.valueOf(valuecount.doubleValue()), RoundingMode.HALF_DOWN)
+										.setScale(2, RoundingMode.HALF_DOWN).doubleValue();
 								task.setInfo(new StringBuilder("Max=").append(max.get()).append(" Avg=").append(average)
 										.toString());
 							}
@@ -188,14 +201,12 @@ public class JumpHeightSheetController {
 			throws IOException, InterruptedException {
 		JumpHeightSheet sheet;
 		try {
-			if (log.isDebugEnabled()) {
-				log.debug("Fetching " + JumpHeightSheet.class.getSimpleName() + " for " + title);
-			}
-			sheet = SheetService.get(request, title);
+			log.debug("Fetching {} for {}", JumpHeightSheet.class.getSimpleName(), title);
+			sheet = sheetService.get(request, title);
 		} catch (IOException e) {
 			if (e.getMessage().equals("Sheet with title \"" + title + "\" not found.")) {
 				log.warn("Sheet load failed!", e);
-				sheet = SheetService.create(request, title);
+				sheet = sheetService.create(request, title);
 			} else {
 				throw e;
 			}
@@ -242,7 +253,7 @@ public class JumpHeightSheetController {
 	@ResponseBody
 	public List<String> getTitles(ServletRequest request) throws IOException, InterruptedException {
 		List<String> result = new ArrayList<>();
-		List<JumpHeightSheet> sheets = SheetService.getSheets(request);
+		List<JumpHeightSheet> sheets = sheetService.getSheets(request);
 		sheets.sort(new Comparator<JumpHeightSheet>() {
 
 			@Override

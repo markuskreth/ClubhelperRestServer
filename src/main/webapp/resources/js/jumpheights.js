@@ -15,8 +15,8 @@ var jumpheightBusiness = function() {
 						tasks = response.tasks;
 						if(tasks) {
 							showTaskPage();
-						} else {
-							alert("Sheet not found, unable to create!");
+//						} else {
+//							alert("Sheet not found, unable to create!");
 						}
 					});
 					return;
@@ -30,7 +30,7 @@ var jumpheightBusiness = function() {
 
 			var taskList = $("#personJumpHeightTasks");
 			taskList.empty();
-			for (index = 0; index < tasks.length; ++index) {
+			for (let index = 0; index < tasks.length; ++index) {
 				var element = $("<li></li>");
 				element.attr("index", index);
 				if(tasks[index].info) {

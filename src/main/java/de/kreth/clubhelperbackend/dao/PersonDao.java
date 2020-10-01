@@ -16,7 +16,7 @@ public class PersonDao extends AbstractDao<Person> implements Dao<Person> {
 	private final static String ORDER_BY[] = {"surname", "prename"};
 
 	private final static DaoConfig<Person> config = new DaoConfig<Person>(
-			"person", COLUMN_NAMES, new RowMapper<Person>(PersonToString.class), ORDER_BY);
+			"person", COLUMN_NAMES, new ClubhelperRowMapper<Person>(PersonToString.class), ORDER_BY);
 
 	public PersonDao() {
 		super(config);

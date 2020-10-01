@@ -1,6 +1,8 @@
 package de.kreth.clubhelperbackend.controller.abstr;
 
+import static de.kreth.clubhelperbackend.utils.BoolUtils.not;
 import static java.time.temporal.ChronoUnit.MINUTES;
+
 import java.util.Date;
 import java.util.List;
 
@@ -8,10 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -38,7 +42,7 @@ public abstract class AbstractController<T extends Data>
 	}
 
 	@Override
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	@GetMapping(value = "/{id}")
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'STAFF')")
 	public String getAsView(@PathVariable("id") long id,
 			@RequestParam(required = false) boolean ajax, Device device,
@@ -49,7 +53,7 @@ public abstract class AbstractController<T extends Data>
 	}
 
 	@Override
-	@RequestMapping(value = {"/", ""}, method = RequestMethod.GET)
+	@GetMapping(value = {"/", ""})
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'STAFF')")
 	public String getAllAsView(@RequestParam(required = false) boolean ajax,
 			Device device, Model m) {
@@ -59,37 +63,36 @@ public abstract class AbstractController<T extends Data>
 	}
 
 	@Override
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = "/{id}", produces = "application/json")
 	@ResponseBody
 	public T getById(@PathVariable("id") long id) {
-		T obj = dao.getById(id);
-		return obj;
+		return dao.getById(id);
 	}
 
 	@Override
-	@RequestMapping(value = {"/",
-			""}, method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = {"/",
+			""}, produces = "application/json")
 	@ResponseBody
 	public List<T> getAll() {
 		return dao.getAll();
 	}
 
 	@Override
-	@RequestMapping(value = "/for/{id}", method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = "/for/{id}", produces = "application/json")
 	@ResponseBody
 	public List<T> getByParentId(@PathVariable("id") long id) {
 		return dao.getByWhere("person_id=" + id);
 	}
 
 	@Override
-	@RequestMapping(value = "/changed/{changed}", method = RequestMethod.GET, produces = "application/json")
+	@GetMapping(value = "/changed/{changed}", produces = "application/json")
 	@ResponseBody
 	public List<T> getChangedSince(@PathVariable("changed") long changed) {
 		return dao.getChangedSince(new Date(changed));
 	}
 
 	@Override
-	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json")
+	@PutMapping(value = "/{id}", produces = "application/json")
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@ResponseBody
 	public T put(@PathVariable("id") long id, @RequestBody T toUpdate) {
@@ -113,24 +116,24 @@ public abstract class AbstractController<T extends Data>
 	}
 
 	@Override
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json")
+	@DeleteMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<T> delete(@PathVariable("id") long id) {
 		T byId = getById(id);
-		if (byId.isDeleted() == false) {
+		if (not(byId.isDeleted())) {
 			dao.delete(id);
 		}
 		return ResponseEntity.ok(getById(id));
 	}
 
 	@Override
-	@RequestMapping(value = "/", method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = "/", produces = "application/json")
 	@ResponseBody
 	public T post(@RequestBody T toCreate) {
 		return post(-1L, toCreate);
 	}
 
 	@Override
-	@RequestMapping(value = "/{id}", method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = "/{id}", produces = "application/json")
 	@ResponseBody
 	public T post(@PathVariable("id") Long id, @RequestBody T toCreate) {
 		if (id == null) {
@@ -149,9 +152,10 @@ public abstract class AbstractController<T extends Data>
 		if (toCreate.getId() < 0) {
 			return dao.insert(toCreate);
 		} else {
-			if (getById(toCreate.getId()) != null) {
+			T byId = getById(toCreate.getId());
+			if (byId != null) {
 				dao.undelete(toCreate.getId());
-				return toCreate;
+				return byId;
 			} else {
 				return dao.insert(toCreate);
 			}

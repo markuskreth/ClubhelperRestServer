@@ -1,13 +1,18 @@
 package de.kreth.clubhelperbackend.config;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class SqlForMysql implements SqlForDialect {
 
+	private final Logger LOG = LoggerFactory.getLogger(getClass());
 	private DataSource dataSource;
 
 	public SqlForMysql(DataSource dataSource) {
@@ -24,39 +29,19 @@ public class SqlForMysql implements SqlForDialect {
 	public boolean tableExists(String tableName) {
 
 		boolean exists = false;
-		Statement stm = null;
-		ResultSet rs = null;
 
-		try {
-			stm = dataSource.getConnection().createStatement();
-			rs = stm.executeQuery("SHOW TABLES LIKE '" + tableName + "'");
+		try (Connection connection = dataSource.getConnection()) {
+
+			PreparedStatement showTablesLike = connection.prepareStatement("SHOW TABLES LIKE ?");
+			showTablesLike.setString(1, tableName);
+			ResultSet rs = showTablesLike.executeQuery();
 			exists = rs.next();
+			
 		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			if (rs != null) {
-				try {
-					rs.close();
-					if (stm != null)
-						stm.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
+			LOG.error("Error on table check for tableName={}", tableName, e);
 		}
+		
 		return exists;
 	}
-
-	// @Override
-	// public String escapeSqlNames(String name) {
-	// return String.format("%s", name);
-	// }
-	//
-	// @Override
-	// public String alterTableRenameColumn(String tableName, String
-	// columnOldName,
-	// String columnNewName) {
-	// return String.format("%s", tableName, columnOldName, columnNewName);
-	// }
 
 }

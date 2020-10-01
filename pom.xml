@@ -2,15 +2,25 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
 	
 	<groupId>de.kreth</groupId>
 	<artifactId>clubhelperbackend</artifactId>
 	<name>ClubHelperBackend</name>
 	<packaging>war</packaging>
-	<version>1.0.7.17-SNAPSHOT</version>
+	<version>1.0.7.19-SNAPSHOT</version>
 	<description>Clubhelper Rest Service with jquery mobile ui</description>
 
+<<<<<<< HEAD
+=======
+	<parent>
+		<groupId>de.kreth</groupId>
+		<version>1.0.12</version>
+		<artifactId>clubhelper-parent</artifactId>
+	</parent>
+
+>>>>>>> master
 	<scm>
 		<connection>scm:git:https://github.com/markuskreth/ClubhelperRestServer.git</connection>
 		<developerConnection>scm:git:https://github.com/markuskreth/ClubhelperRestServer.git</developerConnection>
@@ -18,6 +28,7 @@
 	</scm>
 
 	<properties>
+<<<<<<< HEAD
 	
 		<java-version>1.8</java-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -31,6 +42,16 @@
 		<org.slf4j-version>1.7.25</org.slf4j-version>
 		<org.log4j-version>2.9.1</org.log4j-version>
 		
+=======
+		<java.version>11</java.version>
+		<sonar.login>66218c85d996b6c63c5247573c467307cb0f0d4d</sonar.login>
+		<sonar.exclusions>src/main/webapp/resources/js/libs/**</sonar.exclusions>
+		<!-- <sonar.jacoco.reportPaths>target/surefire-reports</sonar.jacoco.reportPaths> -->
+		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
+
+>>>>>>> master
 		<google-api-version>1.23.0</google-api-version>
 		<google-api-sheets-version>v4-rev488-1.23.0</google-api-sheets-version>
 		<google-api-calendar-version>v3-rev271-1.23.0</google-api-calendar-version>
@@ -96,6 +117,16 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>8.0.16</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>27.0.1-jre</version>
 		</dependency>
 
 		<!-- Apache Tiles -->
@@ -265,11 +296,6 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.2.1</version>
 		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.40</version>
-		</dependency>
 
 		<!-- Test -->
 		<dependency>
@@ -279,7 +305,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
+			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -303,6 +329,17 @@
 			<artifactId>TestUtils</artifactId>
 			<version>0.0.2</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>0.9.11</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.kreth.googleconnect</groupId>
+			<artifactId>GoogleConnectors</artifactId>
+			<version>0.0.2</version>
 		</dependency>
 	</dependencies>
 
@@ -477,6 +514,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.1.0</version>
 				<executions>
 					<execution>
 						<id>make-a-jar</id>
@@ -490,13 +528,14 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-install-plugin</artifactId>
+				<version>3.0.0-M1</version>
 				<executions>
 					<execution>
 						<id>Add-2-local-repository</id>
 						<phase>package</phase>
 						<configuration>
 							<packaging>jar</packaging>
-							<file>${project.build.directory}\${artifactId}-${version}.jar</file>
+							<file>${project.build.directory}\${project.artifactId}-${project.version}.jar</file>
 						</configuration>
 						<goals>
 							<goal>install-file</goal>
@@ -531,14 +570,43 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>3.8.0</version>
 				<configuration>
+<<<<<<< HEAD
 					<source>${java-version}</source>
 					<target>${java-version}</target>
 					<compilerArgument>-Xlint:all</compilerArgument>
 					<showWarnings>true</showWarnings>
 					<showDeprecation>true</showDeprecation>
+=======
+					<release>${java.version}</release>
+>>>>>>> master
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.22.1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.2</version>
+				<executions>
+					<execution>
+						<id>default-jacoco-prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>default-jacoco-report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

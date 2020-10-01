@@ -16,10 +16,6 @@
 
 <link rel="stylesheet" href=<c:url value='/resources/js/libs/jquery.mobile-1.4.5.min.css' /> />
 
-<!-- <link rel="stylesheet/less" type="text/css" href=<c:url value='/resources/css/clndr.less' /> /> -->
-<%-- <script src=<c:url value='/resources/js/less.js' />></script> --%>
-<%-- <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.2/less.min.js"></script> --%>
-
 <script src=<c:url value='/resources/js/libs/jquery-1.11.1.min.js' />></script>
 <script src=<c:url value='/resources/js/libs/jquery.mobile-1.4.5.min.js' />></script>
 
@@ -259,9 +255,6 @@
 									<li><a href="#" onclick="addFlightTime()"
 										data-role="button" data-icon="edit"
 										data-theme="b" data-inline="true">Neuer Wert</a></li>
-<!-- 									<li><a href="#" onclick=""  -->
-<!-- 										data-role="button" data-icon="edit" data-theme="b" -->
-<!-- 										data-inline="true">???</a></li> -->
 								</ul>
 							</div>
 							<div id="personJumpHeights">
@@ -275,12 +268,6 @@
 									data-inset="true" data-filter="false">
 								</ul>
 							</div>
-<!-- 							<div data-collapsed="false" data-role="collapsible"> -->
-<!-- 								<h4>Daten:</h4> -->
-<!-- 								<ul id="personDetailAdresses" data-role="listview" -->
-<!-- 									data-inset="true" data-filter="false"> -->
-<!-- 								</ul> -->
-<!-- 							</div> -->
 						</div>
 					</div>
 				</div>
@@ -306,15 +293,7 @@
 				<div id="contentCalendar" class="width25 floatRight leftColumn">
 					<div class="width75 floatLeft">
 						<div class="gradient">
-<!-- 							<div data-role="navbar"> -->
-<!-- 								<ul> -->
-<!-- 									<li><a href="#" onclick="addFlightTime()" -->
-<!-- 										data-role="button" data-icon="edit" -->
-<!-- 										data-theme="b" data-inline="true">Neuer Termin</a></li> -->
-<!-- 								</ul> -->
-<!-- 							</div> -->
 							<div id="full-clndr"></div>
-<!-- 							<div id="event_container" style="background-color:powderblue;"><h3>Termine</h3></div> -->
 						</div>
 					</div>
 				</div>
@@ -327,10 +306,6 @@
 
 	</div>
 	<!-- /page -->
-
-<!-- 	<div id="printLists" data-role="popup"> -->
-<!-- 		<a href="#" data-role="button" onclick="printPhoneList2">Telefonliste</a> -->
-<!-- 	</div> -->
 
 	<div id="editDialog" data-role="page"></div>
 	<div id="editGroupDialog" data-role="page"></div>

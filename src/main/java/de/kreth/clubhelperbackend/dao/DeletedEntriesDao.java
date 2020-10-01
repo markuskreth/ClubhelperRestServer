@@ -15,7 +15,7 @@ public class DeletedEntriesDao extends AbstractDao<DeletedEntries> {
 	static final String[] columnNames = { COLUMN_TABLENAME, COLUMN_ENTRY_ID };
 
 	private static final DaoConfig<DeletedEntries> config = new DaoConfig<DeletedEntries>(TABLE_NAME, columnNames,
-			new AbstractDao.RowMapper<DeletedEntries>(DeletedEntries.class), null);
+			new AbstractDao.ClubhelperRowMapper<DeletedEntries>(DeletedEntries.class), null);
 
 	public DeletedEntriesDao() {
 		super(config);
@@ -28,7 +28,7 @@ public class DeletedEntriesDao extends AbstractDao<DeletedEntries> {
 
 	@Override
 	public boolean delete(DeletedEntries obj) {
-		getJdbcTemplate().execute("DELETE FROM " + TABLE_NAME + " WHERE _id=" + obj.getId());
+		getJdbcTemplate().execute("DELETE FROM " + TABLE_NAME + " WHERE " + AbstractDao.ID_COLUMN + "=" + obj.getId());
 		return true;
 	}
 

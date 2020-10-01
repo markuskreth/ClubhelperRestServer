@@ -10,10 +10,10 @@ import de.kreth.clubhelperbackend.pojo.Group;
 public class GroupDao extends AbstractDao<Group> implements Dao<Group> {
 
 	private static final String COLUMN_NAME = "name";
-	public static final String TABLE_NAME = "groupDef";
-	private static final String[] columnNames = {COLUMN_NAME};
-	private static final DaoConfig<Group> config = new DaoConfig<Group>(
-			TABLE_NAME, columnNames, new RowMapper<Group> (Group.class), null);
+	public static final String TABLE_NAME = "groupdef";
+	private static final String[] columnNames = { COLUMN_NAME };
+	private static final DaoConfig<Group> config = new DaoConfig<Group>(TABLE_NAME, columnNames,
+			new ClubhelperRowMapper<Group>(Group.class), null);
 
 	public GroupDao() {
 		super(config);

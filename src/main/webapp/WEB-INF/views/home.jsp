@@ -12,6 +12,4 @@
 <P>  Path to current server directory: ${directory}. </P>
 <p>
 
-<!-- <a href="person/">Alle Personen</a><br /> -->
-
 </p>

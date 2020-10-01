@@ -24,19 +24,23 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.EventDateTime;
 import com.google.common.collect.Maps;
 
-import de.kreth.clubhelperbackend.google.calendar.CalendarAdapter;
+import de.kreth.googleconnectors.calendar.CalendarAdapter;
 
 @Controller
 @RequestMapping("/events")
 @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'STAFF')")
 public class EventController {
 
-	private final CalendarAdapter adapter;
+	final CalendarAdapter adapter;
 	private final Logger log;
 
 	public EventController() throws GeneralSecurityException, IOException {
-		adapter = new CalendarAdapter();
-		log = LoggerFactory.getLogger(getClass());
+		this(new CalendarAdapter(), LoggerFactory.getLogger(EventController.class));
+	}
+
+	EventController(CalendarAdapter calendarAdapter, Logger logger) {
+		adapter = calendarAdapter;
+		log = logger;
 	}
 
 	@RequestMapping(value = {"/",
@@ -53,11 +57,16 @@ public class EventController {
 				adjustExcludedEndDate(e);
 				StringBuilder msg = new StringBuilder();
 				EventDateTime start = e.getStart();
+<<<<<<< HEAD
 				if (start == null) {
 					start = e.getOriginalStartTime();
 				}
 				msg.append("Event: ").append(e.getSummary()).append(", Start=")
 						.append(start).append(" skipped properties:");
+=======
+				msg.append("Event: ").append(e.getSummary()).append(", Start=").append(start)
+						.append(" skipped properties:");
+>>>>>>> master
 				for (Entry<String, Object> entry : e.entrySet()) {
 
 					Entry<String, Object> ev = map(entry);
@@ -77,10 +86,17 @@ public class EventController {
 		return result;
 	}
 
+<<<<<<< HEAD
 	private void adjustExcludedEndDate(
 			com.google.api.services.calendar.model.Event e) {
+=======
+	private void adjustExcludedEndDate(com.google.api.services.calendar.model.Event e) {
+>>>>>>> master
 		if (e.isEndTimeUnspecified() == false && startIsFullDate(e)) {
 			EventDateTime end = e.getEnd();
+			if (end == null) {
+				return;
+			}
 			GregorianCalendar calendar = new GregorianCalendar();
 			calendar.setTimeInMillis(end.getDate() != null
 					? end.getDate().getValue()
@@ -99,8 +115,12 @@ public class EventController {
 		if (start == null) {
 			start = e.getOriginalStartTime();
 		}
+<<<<<<< HEAD
 		return (start.getDate() != null || (start.getDateTime() != null
 				&& start.getDateTime().isDateOnly()));
+=======
+		return (start.getDate() != null || (start.getDateTime() != null && start.getDateTime().isDateOnly()));
+>>>>>>> master
 	}
 
 	private Entry<String, Object> map(Entry<String, Object> entry) {
@@ -133,30 +153,23 @@ public class EventController {
 	}
 
 	private String firstValue(Object value) {
+		if (value == null) {
+			return "";
+		}
+		String string = value.toString();
+		if (string.contains(":") == false || string.contains("\"") == false) {
+			return "";
+		}
 		int index = -1;
+<<<<<<< HEAD
 		index = value.toString().indexOf(':') + 2;
 		String substring = value.toString().substring(index,
 				value.toString().indexOf('\"', index));
+=======
+		index = string.indexOf(':') + 2;
+		String substring = string.substring(index, string.indexOf('\"', index));
+>>>>>>> master
 		return substring;
 	}
 
-	public class Event {
-		private String title;
-		private long start;
-
-		public Event(String title, long l) {
-			super();
-			this.title = title;
-			this.start = l;
-		}
-
-		public String getTitle() {
-			return title;
-		}
-
-		public long getStart() {
-			return start;
-		}
-
-	}
 }

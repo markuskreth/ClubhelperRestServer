@@ -29,7 +29,7 @@ public class AttendanceDao extends AbstractDao<Attendance>
 		super(daoConfig);
 	}
 
-	public static class RowMapper extends AbstractDao.RowMapper<Attendance> {
+	public static class RowMapper extends AbstractDao.ClubhelperRowMapper<Attendance> {
 
 		public RowMapper() {
 			super(Attendance.class);

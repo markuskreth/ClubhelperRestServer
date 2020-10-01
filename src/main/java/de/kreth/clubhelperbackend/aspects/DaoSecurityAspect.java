@@ -8,6 +8,8 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -20,6 +22,7 @@ import de.kreth.clubhelperbackend.config.Encryptor;
 @Component
 public class DaoSecurityAspect {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private Encryptor encryptor = null;
 
 	@Pointcut("execution (public * de.kreth.clubhelperbackend.dao..*(..))")
@@ -41,11 +44,9 @@ public class DaoSecurityAspect {
 		String token = request.getHeader("token");
 
 		if (time == null || userAgent == null || token == null) {
-			if (time != null && userAgent != null) {
-				Date remoteTime = new Date(Long.parseLong(time));
-				System.out.println("time=" + time + "; userAgent=" + userAgent + " - Token="
-						+ encryptor.encrypt(remoteTime, userAgent));
-			}
+			logger.error(
+				"time={}; userAgent={} - Token={}", time, userAgent, token);
+			
 			throw new HttpClientErrorException(HttpStatus.EXPECTATION_FAILED,
 					"Header expected: Some Header Values are missing.");
 		}
@@ -54,7 +55,7 @@ public class DaoSecurityAspect {
 		String encrypted = encryptor.encrypt(remoteTime, userAgent);
 
 		if (token.equals(encrypted)) {
-			System.out.println("authenticated");
+			logger.trace("{} successfully authenticated {}", getClass().getName(), request);
 		} else {
 			throw new SecurityException("Request not allowed!");
 		}

@@ -228,7 +228,7 @@
   		case "Symbol":
   			return type.toLowerCase();
   		default:
-  			return typeof obj === "undefined" ? "undefined" : _typeof(obj);
+  			return typeof obj == "undefined" ? "undefined" : _typeof(obj);
   	}
   }
 
@@ -765,7 +765,7 @@
   			} else if (obj.constructor === Error.prototype.constructor) {
   				type = "error";
   			} else {
-  				type = typeof obj === "undefined" ? "undefined" : _typeof(obj);
+  				type = typeof obj == "undefined" ? "undefined" : _typeof(obj);
   			}
   			return type;
   		},

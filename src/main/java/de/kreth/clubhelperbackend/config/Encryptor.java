@@ -32,14 +32,11 @@ public class Encryptor {
 		// Create key and cipher
 		try {
 			byte[] keyBytes = key.getBytes(charset);
-			System.out.println("Key Size: " + keyBytes.length);
 			aesKey = new SecretKeySpec(keyBytes, encType);
 			cipher = Cipher.getInstance(encType);
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		} catch (NoSuchPaddingException e) {
-			e.printStackTrace();
-		}
+		} catch (NoSuchAlgorithmException|NoSuchPaddingException e) {
+			throw new RuntimeException(e);
+		} 
 	}
 
 	public String encrypt(Date theDate, String userAgent)

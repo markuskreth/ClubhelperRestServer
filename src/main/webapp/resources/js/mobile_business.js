@@ -70,7 +70,6 @@ var listCreator = (function(){
 			});
 
 		} else {
-			var p1 = personStore.get(1);
 			for (const person of personStore){
 				itemCreator(person);
 			}
@@ -168,7 +167,7 @@ var attendants = (function(){
 	}
 	
 	function send() {
-		ui = $( "#flip-checkbox-attendance" );
+		var ui = $( "#flip-checkbox-attendance" );
 		ui.val("showPersonList");
 		$("#sendAttendance").hide();
 		window[ui.val()]();
@@ -273,7 +272,7 @@ function showGroups(withDelete) {
 			$(this).parent().remove();
 		};
 		
-		for (i = 0, len=groups.length; i<len; i++) {
+		for (let i = 0, len=groups.length; i<len; i++) {
 			if(withDelete) {
 				part.attr("data-type","horizontal");
 			}
@@ -325,7 +324,8 @@ function showGroups(withDelete) {
 				me.attr("lastEventTimestamp", e.timeStamp);
 			};
 			
-			for (i = 0, allLen = allGroupResult.length; i < allLen; i++) {
+			let allLen = allGroupResult.length;
+			for (let i = 0; i < allLen; i++) {
 				wrapper.append($("<button></button>")
 						.attr("data-mini","true")
 						.attr("data-icon","add")

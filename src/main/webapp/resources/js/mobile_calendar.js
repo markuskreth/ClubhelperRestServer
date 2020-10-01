@@ -77,7 +77,7 @@ function loadCalendarData() {
 	        			text+="\n";
 	        		}
 	        	});
-	        	alert(target.date.format("DD.MM.YY") + ": " + text);
+//	        	alert(target.date.format("DD.MM.YY") + ": " + text);
 	        },
 	        onMonthChange: function(month) {
 	        	theCalendarInstance.eventsThisInterval.forEach(function(event){

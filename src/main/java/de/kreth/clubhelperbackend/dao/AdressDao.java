@@ -18,7 +18,7 @@ public class AdressDao extends AbstractDao<Adress> {
 			CITY, PERSON_ID};
 
 	private static DaoConfig<Adress> daoConfig = new DaoConfig<Adress>("adress",
-			columnNames, new RowMapper<Adress>(AdressWrapper.class), null);
+			columnNames, new ClubhelperRowMapper<Adress>(AdressWrapper.class), null);
 
 	public AdressDao() {
 		super(daoConfig);
