@@ -35,7 +35,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<org.springframework-version>5.2.21.RELEASE</org.springframework-version>
 		<spring.security.version>5.3.9.RELEASE</spring.security.version>
-		<com.fasterxml.jackson-version>2.12.6.1</com.fasterxml.jackson-version>
+		<com.fasterxml.jackson-version>2.12.7.1</com.fasterxml.jackson-version>
 		<org.aspectj-version>1.9.6</org.aspectj-version>
 		<org.apache.tiles-version>3.0.8</org.apache.tiles-version>
 		<org.tiles.request.version>1.0.7</org.tiles.request.version>
